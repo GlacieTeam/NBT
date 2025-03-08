@@ -112,5 +112,4 @@ public:
     std::string toBinaryNbt() const;
 };
 
-
 } // namespace bedrock_protocol
