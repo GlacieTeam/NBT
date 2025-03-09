@@ -75,7 +75,9 @@ std::string BytesDataInput::getString() {
 
 std::string BytesDataInput::getLongString() {
     std::string result;
-    getBytes(&result, getInt());
+    auto        size = getInt();
+    result.resize(size);
+    getBytes(result.data(), size);
     return result;
 }
 
