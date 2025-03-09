@@ -32,4 +32,14 @@ void ByteArrayTag::load(BytesDataInput& stream) {
     stream.getBytes(mData.data(), size);
 }
 
+void ByteArrayTag::write(BinaryStream& stream) const {
+    stream.writeVarInt((int)mData.size());
+    for (auto& data : mData) { stream.writeByte(data); }
+}
+
+void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
+    auto size = stream.getVarInt();
+    for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getByte()); }
+}
+
 } // namespace bedrock_protocol

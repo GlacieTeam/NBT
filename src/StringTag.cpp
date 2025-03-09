@@ -18,4 +18,8 @@ void StringTag::write(BytesDataOutput& stream) const { stream.writeString(mData)
 
 void StringTag::load(BytesDataInput& stream) { mData = stream.getString(); }
 
+void StringTag::write(BinaryStream& stream) const { stream.writeString(mData); }
+
+void StringTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getString(); }
+
 } // namespace bedrock_protocol

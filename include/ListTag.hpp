@@ -27,6 +27,10 @@ public:
 
     void load(BytesDataInput& stream) override;
 
+    void write(BinaryStream& stream) const override;
+
+    void load(ReadOnlyBinaryStream& stream) override;
+
     std::unique_ptr<ListTag> copyList() const;
 };
 

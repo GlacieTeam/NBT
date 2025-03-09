@@ -60,6 +60,32 @@ void CompoundTag::load(BytesDataInput& stream) {
     } while (type != Tag::Type::End);
 }
 
+void CompoundTag::write(BinaryStream& stream) const {
+    for (const auto& [key, tag] : mTagMap) {
+        auto type = tag->getType();
+        stream.writeByte((uint8_t)type);
+        if (type != Tag::Type::End) {
+            stream.writeString(key);
+            tag->write(stream);
+        }
+    }
+    stream.writeByte((uint8_t)Type::End);
+}
+
+void CompoundTag::load(ReadOnlyBinaryStream& stream) {
+    mTagMap.clear();
+    auto type = Tag::Type::End;
+    do {
+        type = Tag::Type(stream.getByte());
+        if (type != Tag::Type::End) {
+            auto key = stream.getString();
+            auto tag = Tag::newTag(type);
+            tag->load(stream);
+            put(key, std::move(tag));
+        }
+    } while (type != Tag::Type::End);
+}
+
 void CompoundTag::put(std::string const& key, Tag&& tag) { mTagMap[key].emplace(std::forward<Tag>(tag)); }
 
 void CompoundTag::put(std::string const& key, std::unique_ptr<Tag> tag) {
@@ -286,183 +312,53 @@ CompoundTag::TagMap::const_iterator CompoundTag::begin() const { return mTagMap.
 
 CompoundTag::TagMap::const_iterator CompoundTag::end() const { return mTagMap.end(); }
 
-CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData) {
-    auto        dataBuffer = std::string(binaryData);
-    auto        stream     = BytesDataInput(dataBuffer, false);
-    CompoundTag result;
+void CompoundTag::serialize(BinaryStream& stream) const {
+    stream.writeByte((uint8_t)Tag::Type::Compound);
+    stream.writeString("");
+    write(stream);
+}
+
+void CompoundTag::serialize(BytesDataOutput& stream) const {
+    stream.writeByte((uint8_t)Tag::Type::Compound);
+    stream.writeString("");
+    write(stream);
+}
+
+void CompoundTag::deserialize(ReadOnlyBinaryStream& stream) {
     stream.getByte();
     stream.getString();
-    result.load(stream);
+    load(stream);
+}
+
+void CompoundTag::deserialize(BytesDataInput& stream) {
+    stream.getByte();
+    stream.getString();
+    load(stream);
+}
+
+CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData) {
+    BytesDataInput stream(binaryData, false);
+    CompoundTag    result;
+    result.deserialize(stream);
     return result;
 }
 
 std::string CompoundTag::toBinaryNbt() const {
-    auto stream = BytesDataOutput();
-    stream.writeByte((uint8_t)Tag::Type::Compound);
-    stream.writeString("");
-    write(stream);
+    BytesDataOutput stream;
+    serialize(stream);
     return stream.getAndReleaseData();
-}
-
-extern void writeCompoundData(BinaryStream& stream, CompoundTag const& nbt);
-
-void writeTag(BinaryStream& stream, Tag const& tag) {
-    switch (tag.getType()) {
-    case CompoundTag::Type::Byte: {
-        stream.writeByte(((ByteTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::Short: {
-        stream.writeSignedShort(((ShortTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::Int: {
-        stream.writeVarInt(((IntTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::Int64: {
-        stream.writeVarInt64(((Int64Tag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::Float: {
-        stream.writeFloat(((FloatTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::Double: {
-        stream.writeDouble(((DoubleTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::ByteArray: {
-        auto& array = ((ByteArrayTag&)tag).mData;
-        stream.writeVarInt((int)array.size());
-        for (auto& data : array) { stream.writeByte(data); }
-        break;
-    }
-    case CompoundTag::Type::String: {
-        stream.writeString(((StringTag&)tag).mData);
-        break;
-    }
-    case CompoundTag::Type::List: {
-        auto& list = ((ListTag&)tag).mData;
-        stream.writeByte((uint8_t)((ListTag&)tag).mType);
-        stream.writeVarInt((int)list.size());
-        for (auto& val : list) { writeTag(stream, *val); }
-        break;
-    }
-    case CompoundTag::Type::Compound: {
-        writeCompoundData(stream, (CompoundTag&)tag);
-        break;
-    }
-    case CompoundTag::Type::IntArray: {
-        auto& array = ((IntArrayTag&)tag).mData;
-        stream.writeVarInt((int)array.size());
-        for (auto& data : array) { stream.writeVarInt(data); }
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void writeCompoundData(BinaryStream& stream, CompoundTag const& nbt) {
-    for (auto& [name, tag] : nbt.mTagMap) {
-        stream.writeByte((uint8_t)tag.get()->getType());
-        if (tag->getType() != CompoundTag::Type::End) {
-            stream.writeString(name);
-            writeTag(stream, *tag.get());
-        }
-    }
-    stream.writeByte(0);
-}
-
-extern void getCompoundData(ReadOnlyBinaryStream& stream, CompoundTag& nbt);
-
-std::unique_ptr<Tag> getTag(ReadOnlyBinaryStream& stream, CompoundTag::Type type) {
-    switch (type) {
-    case CompoundTag::Type::Byte: {
-        return std::make_unique<ByteTag>(stream.getByte());
-    }
-    case CompoundTag::Type::Short: {
-        return std::make_unique<ShortTag>(stream.getSignedShort());
-    }
-    case CompoundTag::Type::Int: {
-        return std::make_unique<IntTag>(stream.getVarInt());
-    }
-    case CompoundTag::Type::Int64: {
-        return std::make_unique<Int64Tag>(stream.getVarInt64());
-    }
-    case CompoundTag::Type::Float: {
-        return std::make_unique<FloatTag>(stream.getFloat());
-    }
-    case CompoundTag::Type::Double: {
-        return std::make_unique<DoubleTag>(stream.getDouble());
-    }
-    case CompoundTag::Type::ByteArray: {
-        auto                 size = stream.getVarInt();
-        std::vector<uint8_t> data;
-        for (auto i = 0; i < size; i++) { data.emplace_back(stream.getByte()); }
-        return std::make_unique<ByteArrayTag>(data);
-    }
-    case CompoundTag::Type::String: {
-        return std::make_unique<StringTag>(stream.getString());
-    }
-    case CompoundTag::Type::List: {
-        auto                            listType = CompoundTag::Type(stream.getByte());
-        auto                            size     = stream.getVarInt();
-        std::vector<CompoundTagVariant> data;
-        for (auto i = 0; i < size; i++) { data.emplace_back(getTag(stream, listType)); }
-        return std::make_unique<ListTag>(std::move(data));
-    }
-    case CompoundTag::Type::Compound: {
-        auto data = std::make_unique<CompoundTag>();
-        getCompoundData(stream, *data);
-        return data;
-    }
-    case CompoundTag::Type::IntArray: {
-        auto             size = stream.getVarInt();
-        std::vector<int> data;
-        for (auto i = 0; i < size; i++) { data.emplace_back(stream.getVarInt()); }
-        return std::make_unique<IntArrayTag>(data);
-    }
-    default:
-        return std::make_unique<EndTag>();
-    }
-}
-
-void getCompoundData(ReadOnlyBinaryStream& stream, CompoundTag& nbt) {
-    auto type = CompoundTag::Type::End;
-    do {
-        type = CompoundTag::Type(stream.getByte());
-        if (type != CompoundTag::Type::End) {
-            auto name = stream.getString();
-            auto tag  = getTag(stream, type);
-            nbt.put(name, std::move(tag));
-        }
-    } while (type != CompoundTag::Type::End);
-}
-
-void writeCompoundTag(BinaryStream& stream, CompoundTag const& nbt) {
-    stream.writeByte(10);
-    stream.writeString("");
-    writeCompoundData(stream, nbt);
-}
-
-CompoundTag getCompoundTag(ReadOnlyBinaryStream& stream) {
-    CompoundTag nbt;
-    stream.getByte();
-    stream.getString();
-    getCompoundData(stream, nbt);
-    return std::move(nbt);
 }
 
 CompoundTag CompoundTag::fromNetworkNbt(std::string_view binaryData) {
     ReadOnlyBinaryStream stream(binaryData, false);
-    return getCompoundTag(stream);
+    CompoundTag          result;
+    result.deserialize(stream);
+    return result;
 }
 
 std::string CompoundTag::toNetworkNbt() const {
     BinaryStream stream;
-    writeCompoundTag(stream, *this);
+    serialize(stream);
     return stream.getAndReleaseData();
 }
 

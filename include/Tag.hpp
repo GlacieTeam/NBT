@@ -1,5 +1,5 @@
 #pragma once
-#include <io/BytesDataInput.hpp>
+#include <BinaryStream.hpp>
 #include <io/BytesDataOutput.hpp>
 
 namespace bedrock_protocol {
@@ -35,6 +35,10 @@ public:
     virtual void write(BytesDataOutput& stream) const = 0;
 
     virtual void load(BytesDataInput& stream) = 0;
+
+    virtual void write(BinaryStream& stream) const = 0;
+
+    virtual void load(ReadOnlyBinaryStream& stream) = 0;
 
 public:
     static std::unique_ptr<Tag> newTag(Type type);

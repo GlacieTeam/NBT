@@ -38,6 +38,10 @@ public:
 
     void load(BytesDataInput& stream) override;
 
+    void write(BinaryStream& stream) const override;
+
+    void load(ReadOnlyBinaryStream& stream) override;
+
 public:
     void put(std::string const& key, Tag&& tag);
     void put(std::string const& key, std::unique_ptr<Tag> tag);
@@ -103,6 +107,13 @@ public:
     TagMap::const_iterator end() const;
 
     std::unique_ptr<CompoundTag> clone() const;
+
+public:
+    void serialize(BinaryStream& stream) const;
+    void serialize(BytesDataOutput& stream) const;
+
+    void deserialize(ReadOnlyBinaryStream& stream);
+    void deserialize(BytesDataInput& stream);
 
 public:
     static CompoundTag fromNetworkNbt(std::string_view binaryData);

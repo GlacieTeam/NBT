@@ -14,4 +14,8 @@ void EndTag::write(BytesDataOutput&) const {}
 
 void EndTag::load(BytesDataInput&) {}
 
+void EndTag::write(BinaryStream&) const {}
+
+void EndTag::load(ReadOnlyBinaryStream&) {}
+
 } // namespace bedrock_protocol

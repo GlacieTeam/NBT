@@ -18,4 +18,8 @@ void FloatTag::write(BytesDataOutput& stream) const { stream.writeFloat(mData); 
 
 void FloatTag::load(BytesDataInput& stream) { mData = stream.getFloat(); }
 
+void FloatTag::write(BinaryStream& stream) const { stream.writeFloat(mData); }
+
+void FloatTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getFloat(); }
+
 } // namespace bedrock_protocol

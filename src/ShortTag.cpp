@@ -18,4 +18,8 @@ void ShortTag::write(BytesDataOutput& stream) const { stream.writeShort(mData); 
 
 void ShortTag::load(BytesDataInput& stream) { mData = stream.getShort(); }
 
+void ShortTag::write(BinaryStream& stream) const { stream.writeSignedShort(mData); }
+
+void ShortTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getSignedShort(); }
+
 } // namespace bedrock_protocol

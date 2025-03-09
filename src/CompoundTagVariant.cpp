@@ -31,7 +31,6 @@ Tag& CompoundTagVariant::emplace(Tag&& tag) {
         return emplace<CompoundTag>(static_cast<CompoundTag&&>(tag));
     case Tag::Type::IntArray:
         return emplace<IntArrayTag>(static_cast<IntArrayTag&&>(tag));
-    case Tag::Type::End:
     default:
         return emplace<EndTag>();
     }
