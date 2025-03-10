@@ -2,7 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("binarystream 1.0.0")
+add_requires("binarystream 1.0.1")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
@@ -19,23 +19,21 @@ target("NBT")
         "UNICODE"
     )
     add_cxflags(
-        "/EHa", 
-        "/utf-8", 
-        "/W4", 
-        "/w44265", 
-        "/w44289", 
-        "/w44296", 
-        "/w45263", 
-        "/w44738", 
-        "/w45204", 
-        "/O2", 
-        "/Ob3", 
-        "/Gy", 
-        "/GF"
+        "/EHa",
+        "/utf-8",
+        "/W4",
+        "/w44265",
+        "/w44289",
+        "/w44296",
+        "/w45263",
+        "/w44738",
+        "/w45204",
+        "/O2",
+        "/Ob3"
     )
     add_ldflags(
         "/OPT:REF", 
         "/OPT:ICF"
     )
-    add_files("src/*.cpp")
+    add_files("src/**.cpp")
     add_packages("binarystream")
