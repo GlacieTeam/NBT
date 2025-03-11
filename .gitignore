@@ -38,3 +38,7 @@
 .xmake
 build
 CmakeLists.txt
+compile_commands.json
+
+# clangd
+.cache
