@@ -13,12 +13,12 @@ void byteswap(T& v) {
     v = value;
 }
 
-BytesDataInput::BytesDataInput() {
+BytesDataInput::BytesDataInput(bool isLittleEndian) {
     mOwnedBuffer    = std::string();
     mBufferView     = mOwnedBuffer;
     mReadPointer    = 0;
     mHasOverflowed  = false;
-    mIsLittleEndian = true;
+    mIsLittleEndian = isLittleEndian;
 }
 
 BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian) {

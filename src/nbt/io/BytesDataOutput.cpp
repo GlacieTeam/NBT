@@ -2,7 +2,9 @@
 
 namespace bedrock_protocol {
 
-BytesDataOutput::BytesDataOutput() : BytesDataInput({}, true), mBuffer(mOwnedBuffer) {}
+BytesDataOutput::BytesDataOutput(bool isLittleEndian)
+: BytesDataInput({}, true, isLittleEndian),
+  mBuffer(mOwnedBuffer) {}
 
 BytesDataOutput::BytesDataOutput(std::string& buffer, bool copyBuffer, bool isLittleEndian)
 : BytesDataInput(buffer, copyBuffer, isLittleEndian),

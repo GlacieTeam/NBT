@@ -19,7 +19,7 @@ protected:
     bool             mIsLittleEndian;
 
 public:
-    explicit BytesDataInput();
+    explicit BytesDataInput(bool isLittleEndian = true);
     explicit BytesDataInput(std::string_view buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
     bool getBytes(void* target, size_t num);

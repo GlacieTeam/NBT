@@ -117,10 +117,10 @@ public:
 
 public:
     static CompoundTag fromNetworkNbt(std::string_view binaryData);
-    static CompoundTag fromBinaryNbt(std::string_view binaryData);
+    static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
 
     std::string toNetworkNbt() const;
-    std::string toBinaryNbt() const;
+    std::string toBinaryNbt(bool isLittleEndian = true) const;
 };
 
 } // namespace bedrock_protocol

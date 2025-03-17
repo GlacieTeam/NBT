@@ -335,15 +335,15 @@ void CompoundTag::deserialize(BytesDataInput& stream) {
     load(stream);
 }
 
-CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData) {
-    BytesDataInput stream(binaryData, false);
+CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) {
+    BytesDataInput stream(binaryData, false, isLittleEndian);
     CompoundTag    result;
     result.deserialize(stream);
     return result;
 }
 
-std::string CompoundTag::toBinaryNbt() const {
-    BytesDataOutput stream;
+std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const {
+    BytesDataOutput stream(isLittleEndian);
     serialize(stream);
     return stream.getAndReleaseData();
 }

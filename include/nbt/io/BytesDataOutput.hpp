@@ -7,7 +7,7 @@ protected:
     std::string& mBuffer;
 
 public:
-    explicit BytesDataOutput();
+    explicit BytesDataOutput(bool isLittleEndian = true);
     explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
     std::string getAndReleaseData();
