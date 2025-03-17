@@ -2,22 +2,35 @@
 
 namespace bedrock_protocol {
 
-BytesDataInput::BytesDataInput() {
-    mOwnedBuffer   = std::string();
-    mBufferView    = mOwnedBuffer;
-    mReadPointer   = 0;
-    mHasOverflowed = false;
+template <typename T>
+void byteswap(T& v) {
+    union {
+        T             value;
+        unsigned char bytes[sizeof(T)];
+    };
+    value = v;
+    std::reverse(bytes, bytes + sizeof(T));
+    v = value;
 }
 
-BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer) {
+BytesDataInput::BytesDataInput() {
+    mOwnedBuffer    = std::string();
+    mBufferView     = mOwnedBuffer;
+    mReadPointer    = 0;
+    mHasOverflowed  = false;
+    mIsLittleEndian = true;
+}
+
+BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian) {
     if (copyBuffer) {
         mOwnedBuffer = buffer;
         mBufferView  = mOwnedBuffer;
     } else {
         mBufferView = buffer;
     }
-    mReadPointer   = 0;
-    mHasOverflowed = false;
+    mReadPointer    = 0;
+    mHasOverflowed  = false;
+    mIsLittleEndian = isLittleEndian;
 }
 
 bool BytesDataInput::getBytes(void* target, size_t num) {
@@ -60,12 +73,14 @@ std::string BytesDataInput::getLongString() {
 float BytesDataInput::getFloat() {
     float result;
     getBytes(&result, sizeof(float));
+    if (!mIsLittleEndian) byteswap(result);
     return result;
 }
 
 double BytesDataInput::getDouble() {
     double result;
     getBytes(&result, sizeof(double));
+    if (!mIsLittleEndian) byteswap(result);
     return result;
 }
 
@@ -78,18 +93,21 @@ uint8_t BytesDataInput::getByte() {
 int16_t BytesDataInput::getShort() {
     int16_t result;
     getBytes(&result, sizeof(int16_t));
+    if (!mIsLittleEndian) byteswap(result);
     return result;
 }
 
 int BytesDataInput::getInt() {
     int result;
     getBytes(&result, sizeof(int));
+    if (!mIsLittleEndian) byteswap(result);
     return result;
 }
 
 int64_t BytesDataInput::getInt64() {
     int64_t result;
     getBytes(&result, sizeof(int64_t));
+    if (!mIsLittleEndian) byteswap(result);
     return result;
 }
 

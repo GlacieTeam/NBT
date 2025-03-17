@@ -8,7 +8,7 @@ protected:
 
 public:
     explicit BytesDataOutput();
-    explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false);
+    explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
     std::string getAndReleaseData();
 

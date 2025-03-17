@@ -4,8 +4,8 @@ namespace bedrock_protocol {
 
 BytesDataOutput::BytesDataOutput() : BytesDataInput({}, true), mBuffer(mOwnedBuffer) {}
 
-BytesDataOutput::BytesDataOutput(std::string& buffer, bool copyBuffer)
-: BytesDataInput(buffer, copyBuffer),
+BytesDataOutput::BytesDataOutput(std::string& buffer, bool copyBuffer, bool isLittleEndian)
+: BytesDataInput(buffer, copyBuffer, isLittleEndian),
   mBuffer(buffer) {}
 
 std::string BytesDataOutput::getAndReleaseData() { return std::move(mBuffer); }
@@ -22,16 +22,31 @@ void BytesDataOutput::writeLongString(std::string_view value) {
     writeBytes(value.data(), value.size());
 }
 
-void BytesDataOutput::writeFloat(float value) { writeBytes(&value, sizeof(float)); }
+void BytesDataOutput::writeFloat(float value) {
+    if (!mIsLittleEndian) byteswap(value);
+    writeBytes(&value, sizeof(float));
+}
 
-void BytesDataOutput::writeDouble(double value) { writeBytes(&value, sizeof(double)); }
+void BytesDataOutput::writeDouble(double value) {
+    if (!mIsLittleEndian) byteswap(value);
+    writeBytes(&value, sizeof(double));
+}
 
 void BytesDataOutput::writeByte(uint8_t value) { writeBytes(&value, sizeof(uint8_t)); }
 
-void BytesDataOutput::writeShort(int16_t value) { writeBytes(&value, sizeof(int16_t)); }
+void BytesDataOutput::writeShort(int16_t value) {
+    if (!mIsLittleEndian) byteswap(value);
+    writeBytes(&value, sizeof(int16_t));
+}
 
-void BytesDataOutput::writeInt(int value) { writeBytes(&value, sizeof(int)); }
+void BytesDataOutput::writeInt(int value) {
+    if (!mIsLittleEndian) byteswap(value);
+    writeBytes(&value, sizeof(int));
+}
 
-void BytesDataOutput::writeInt64(int64_t value) { writeBytes(&value, sizeof(int64_t)); }
+void BytesDataOutput::writeInt64(int64_t value) {
+    if (!mIsLittleEndian) byteswap(value);
+    writeBytes(&value, sizeof(int64_t));
+}
 
 } // namespace bedrock_protocol
