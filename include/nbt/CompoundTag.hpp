@@ -50,8 +50,7 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] CompoundTagVariant&       operator[](std::string_view index);
-    [[nodiscard]] CompoundTagVariant const& operator[](std::string_view index) const;
+    [[nodiscard]] CompoundTagVariant& operator[](std::string_view index);
 
     [[nodiscard]] CompoundTagVariant&       at(std::string_view index);
     [[nodiscard]] CompoundTagVariant const& at(std::string_view index) const;

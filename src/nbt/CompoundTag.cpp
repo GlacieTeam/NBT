@@ -373,13 +373,10 @@ std::string CompoundTag::toNetworkNbt() const {
     return stream.getAndReleaseData();
 }
 
-CompoundTagVariant&       CompoundTag::at(std::string_view index) { return operator[](index); }
-CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return operator[](index); }
+CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap.at(std::string(index)); }
+CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return mTagMap.at(std::string(index)); }
 
-CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return mTagMap.at(std::string(index)); }
-CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const {
-    return mTagMap.at(std::string(index));
-}
+CompoundTagVariant& CompoundTag::operator[](std::string_view index) { return mTagMap[std::string(index)]; }
 
 size_t CompoundTag::size() const { return mTagMap.size(); }
 
