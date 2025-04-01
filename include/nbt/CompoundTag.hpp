@@ -132,7 +132,7 @@ public:
 
     [[nodiscard]] size_t size() const;
 
-    [[nodiscard]] bool remove(std::string const&);
+    bool remove(std::string const&);
 
     std::unique_ptr<CompoundTag> clone() const;
 

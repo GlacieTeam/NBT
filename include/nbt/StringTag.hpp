@@ -4,7 +4,7 @@
 namespace bedrock_protocol {
 
 class StringTag : public Tag {
-public:
+protected:
     std::string mData;
 
 public:
