@@ -44,6 +44,16 @@ public:
     static std::unique_ptr<Tag> newTag(Type type);
 
     bool operator==(Tag const& other) const;
+
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] T& as() {
+        return *(T*)this;
+    }
+
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] T const& as() const {
+        return *(T*)this;
+    }
 };
 
 } // namespace bedrock_protocol

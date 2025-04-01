@@ -10,7 +10,7 @@ end
 
 target("NBT")
     set_kind("static")
-    set_languages("cxx23")
+    set_languages("c++20")
     set_symbols("debug")   
     set_exceptions("none")
     add_includedirs("include")
