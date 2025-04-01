@@ -15,12 +15,12 @@ protected:
     size_t           mReadPointer;
     bool             mHasOverflowed;
     std::string      mOwnedBuffer;
-    std::string_view mBufferView;
+    std::string_view  mBufferView;
     bool             mIsLittleEndian;
 
 public:
     explicit BytesDataInput(bool isLittleEndian = true);
-    explicit BytesDataInput(std::string_view buffer, bool copyBuffer = false, bool isLittleEndian = true);
+    explicit BytesDataInput(std::string_view  buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
     bool getBytes(void* target, size_t num);
 

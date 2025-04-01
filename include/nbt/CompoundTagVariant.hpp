@@ -388,7 +388,7 @@ public:
     [[nodiscard]] operator std::string const&() const { return as<StringTag>().data(); }
     [[nodiscard]] operator std::string&() { return as<StringTag>().data(); }
     [[nodiscard]] operator std::string&&() && { return std::move(as<StringTag>().data()); }
-    [[nodiscard]] operator std::string_view() const { return as<StringTag>().data(); }
+    [[nodiscard]] operator std::string_view() const { return as<StringTag>().view(); }
 
     [[nodiscard]] operator std::vector<uint8_t> const&() const { return as<ByteArrayTag>().data(); }
     [[nodiscard]] operator std::vector<uint8_t>&() { return as<ByteArrayTag>().data(); }

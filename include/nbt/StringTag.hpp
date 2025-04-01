@@ -9,7 +9,7 @@ protected:
 
 public:
     StringTag() = default;
-    StringTag(std::string const& data);
+    StringTag(std::string_view data);
 
     Type getType() const override;
 
@@ -30,6 +30,7 @@ public:
 public:
     std::string&       data();
     std::string const& data() const;
+    std::string_view   view() const;
 };
 
 } // namespace bedrock_protocol

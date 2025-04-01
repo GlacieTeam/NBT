@@ -30,7 +30,9 @@ std::size_t CompoundTag::hash() const {
 
 std::unique_ptr<CompoundTag> CompoundTag::clone() const {
     auto new_tag = std::make_unique<CompoundTag>();
-    for (const auto& [key, value] : mTagMap) { new_tag->mTagMap[key].emplace(std::move(*value.get()->copy())); }
+    for (const auto& [key, value] : mTagMap) {
+        new_tag->mTagMap[std::string(key)].emplace(std::move(*value.get()->copy()));
+    }
     return new_tag;
 }
 
@@ -86,222 +88,226 @@ void CompoundTag::load(ReadOnlyBinaryStream& stream) {
     } while (type != Tag::Type::End);
 }
 
-void CompoundTag::put(std::string const& key, Tag&& tag) { mTagMap[key].emplace(std::forward<Tag>(tag)); }
+void CompoundTag::put(std::string_view key, Tag&& tag) { mTagMap[std::string(key)].emplace(std::forward<Tag>(tag)); }
 
-void CompoundTag::put(std::string const& key, std::unique_ptr<Tag> tag) {
-    if (tag) { mTagMap[key].emplace(std::move(*tag)); }
+void CompoundTag::put(std::string_view key, std::unique_ptr<Tag> tag) {
+    if (tag) { mTagMap[std::string(key)].emplace(std::move(*tag)); }
 }
 
-void CompoundTag::putByte(std::string const& key, uint8_t value) { mTagMap[key].emplace(ByteTag(value)); }
+void CompoundTag::putByte(std::string_view key, uint8_t value) { mTagMap[std::string(key)].emplace(ByteTag(value)); }
 
-void CompoundTag::putShort(std::string const& key, int16_t value) { mTagMap[key].emplace(ShortTag(value)); }
+void CompoundTag::putShort(std::string_view key, int16_t value) { mTagMap[std::string(key)].emplace(ShortTag(value)); }
 
-void CompoundTag::putInt(std::string const& key, int32_t value) { mTagMap[key].emplace(IntTag(value)); }
+void CompoundTag::putInt(std::string_view key, int32_t value) { mTagMap[std::string(key)].emplace(IntTag(value)); }
 
-void CompoundTag::putInt64(std::string const& key, int64_t value) { mTagMap[key].emplace(Int64Tag(value)); }
+void CompoundTag::putInt64(std::string_view key, int64_t value) { mTagMap[std::string(key)].emplace(Int64Tag(value)); }
 
-void CompoundTag::putFloat(std::string const& key, float value) { mTagMap[key].emplace(FloatTag(value)); }
+void CompoundTag::putFloat(std::string_view key, float value) { mTagMap[std::string(key)].emplace(FloatTag(value)); }
 
-void CompoundTag::putDouble(std::string const& key, double value) { mTagMap[key].emplace(DoubleTag(value)); }
+void CompoundTag::putDouble(std::string_view key, double value) { mTagMap[std::string(key)].emplace(DoubleTag(value)); }
 
-void CompoundTag::putString(std::string const& key, std::string const& value) {
-    mTagMap[key].emplace(StringTag(value));
+void CompoundTag::putString(std::string_view key, std::string_view value) {
+    mTagMap[std::string(key)].emplace(StringTag(value));
 }
 
-void CompoundTag::putByteArray(std::string const& key, std::vector<uint8_t> const& value) {
-    mTagMap[key].emplace(ByteArrayTag(value));
+void CompoundTag::putByteArray(std::string_view key, std::vector<uint8_t> const& value) {
+    mTagMap[std::string(key)].emplace(ByteArrayTag(value));
 }
 
-void CompoundTag::putIntArray(std::string const& key, std::vector<int> const& value) {
-    mTagMap[key].emplace(IntArrayTag(value));
+void CompoundTag::putIntArray(std::string_view key, std::vector<int> const& value) {
+    mTagMap[std::string(key)].emplace(IntArrayTag(value));
 }
 
-void CompoundTag::putCompound(std::string const& key, CompoundTag&& value) { mTagMap[key].emplace(std::move(value)); }
-
-void CompoundTag::putCompound(std::string const& key, std::unique_ptr<CompoundTag> value) {
-    if (value) { mTagMap[key].emplace(std::move(*value)); }
+void CompoundTag::putCompound(std::string_view key, CompoundTag&& value) {
+    mTagMap[std::string(key)].emplace(std::move(value));
 }
 
-void CompoundTag::putList(std::string const& key, ListTag&& value) { mTagMap[key].emplace(std::move(value)); }
-
-void CompoundTag::putList(std::string const& key, std::unique_ptr<ListTag> value) {
-    if (value) { mTagMap[key].emplace(std::move(*value)); }
+void CompoundTag::putCompound(std::string_view key, std::unique_ptr<CompoundTag> value) {
+    if (value) { mTagMap[std::string(key)].emplace(std::move(*value)); }
 }
 
-const Tag* CompoundTag::get(std::string const& key) const {
-    if (mTagMap.contains(key)) { return mTagMap.at(key).get(); }
+void CompoundTag::putList(std::string_view key, ListTag&& value) {
+    mTagMap[std::string(key)].emplace(std::move(value));
+}
+
+void CompoundTag::putList(std::string_view key, std::unique_ptr<ListTag> value) {
+    if (value) { mTagMap[std::string(key)].emplace(std::move(*value)); }
+}
+
+const Tag* CompoundTag::get(std::string_view key) const {
+    if (mTagMap.contains(key)) { return mTagMap.at(std::string(key)).get(); }
     return nullptr;
 }
 
-Tag* CompoundTag::get(std::string const& key) {
-    if (mTagMap.contains(key)) { return mTagMap.at(key).get(); }
+Tag* CompoundTag::get(std::string_view key) {
+    if (mTagMap.contains(key)) { return mTagMap.at(std::string(key)).get(); }
     return nullptr;
 }
 
-const ByteTag* CompoundTag::getByte(std::string const& key) const {
+const ByteTag* CompoundTag::getByte(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Byte) { return static_cast<const ByteTag*>(tag); }
     }
     return nullptr;
 }
 
-ByteTag* CompoundTag::getByte(std::string const& key) {
+ByteTag* CompoundTag::getByte(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Byte) { return static_cast<ByteTag*>(tag); }
     }
     return nullptr;
 }
 
-const ShortTag* CompoundTag::getShort(std::string const& key) const {
+const ShortTag* CompoundTag::getShort(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Short) { return static_cast<const ShortTag*>(tag); }
     }
     return nullptr;
 }
 
-ShortTag* CompoundTag::getShort(std::string const& key) {
+ShortTag* CompoundTag::getShort(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Short) { return static_cast<ShortTag*>(tag); }
     }
     return nullptr;
 }
 
-const IntTag* CompoundTag::getInt(std::string const& key) const {
+const IntTag* CompoundTag::getInt(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Int) { return static_cast<const IntTag*>(tag); }
     }
     return nullptr;
 }
 
-IntTag* CompoundTag::getInt(std::string const& key) {
+IntTag* CompoundTag::getInt(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Int) { return static_cast<IntTag*>(tag); }
     }
     return nullptr;
 }
 
-const Int64Tag* CompoundTag::getInt64(std::string const& key) const {
+const Int64Tag* CompoundTag::getInt64(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Int64) { return static_cast<const Int64Tag*>(tag); }
     }
     return nullptr;
 }
 
-Int64Tag* CompoundTag::getInt64(std::string const& key) {
+Int64Tag* CompoundTag::getInt64(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Int64) { return static_cast<Int64Tag*>(tag); }
     }
     return nullptr;
 }
 
-const FloatTag* CompoundTag::getFloat(std::string const& key) const {
+const FloatTag* CompoundTag::getFloat(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Float) { return static_cast<const FloatTag*>(tag); }
     }
     return nullptr;
 }
 
-FloatTag* CompoundTag::getFloat(std::string const& key) {
+FloatTag* CompoundTag::getFloat(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Float) { return static_cast<FloatTag*>(tag); }
     }
     return nullptr;
 }
 
-const DoubleTag* CompoundTag::getDouble(std::string const& key) const {
+const DoubleTag* CompoundTag::getDouble(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::Double) { return static_cast<const DoubleTag*>(tag); }
     }
     return nullptr;
 }
 
-DoubleTag* CompoundTag::getDouble(std::string const& key) {
+DoubleTag* CompoundTag::getDouble(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Double) { return static_cast<DoubleTag*>(tag); }
     }
     return nullptr;
 }
 
-const StringTag* CompoundTag::getString(std::string const& key) const {
+const StringTag* CompoundTag::getString(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::String) { return static_cast<const StringTag*>(tag); }
     }
     return nullptr;
 }
 
-StringTag* CompoundTag::getString(std::string const& key) {
+StringTag* CompoundTag::getString(std::string_view key) {
     if (auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::String) { return static_cast<StringTag*>(tag); }
     }
     return nullptr;
 }
 
-const ByteArrayTag* CompoundTag::getByteArray(std::string const& key) const {
+const ByteArrayTag* CompoundTag::getByteArray(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::ByteArray) { return static_cast<const ByteArrayTag*>(tag); }
     }
     return nullptr;
 }
 
-ByteArrayTag* CompoundTag::getByteArray(std::string const& key) {
+ByteArrayTag* CompoundTag::getByteArray(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::ByteArray) { return static_cast<ByteArrayTag*>(tag); }
     }
     return nullptr;
 }
 
-const IntArrayTag* CompoundTag::getIntArray(std::string const& key) const {
+const IntArrayTag* CompoundTag::getIntArray(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Tag::Type::IntArray) { return static_cast<const IntArrayTag*>(tag); }
     }
     return nullptr;
 }
 
-IntArrayTag* CompoundTag::getIntArray(std::string const& key) {
+IntArrayTag* CompoundTag::getIntArray(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::IntArray) { return static_cast<IntArrayTag*>(tag); }
     }
     return nullptr;
 }
 
-const CompoundTag* CompoundTag::getCompound(std::string const& key) const {
+const CompoundTag* CompoundTag::getCompound(std::string_view key) const {
     if (const auto* tag = get(key); tag) {
         if (tag->getType() == Type::Compound) { return static_cast<const CompoundTag*>(tag); }
     }
     return nullptr;
 }
 
-CompoundTag* CompoundTag::getCompound(std::string const& key) {
+CompoundTag* CompoundTag::getCompound(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Compound) { return static_cast<CompoundTag*>(tag); }
     }
     return nullptr;
 }
 
-const ListTag* CompoundTag::getList(std::string const& key) const {
+const ListTag* CompoundTag::getList(std::string_view key) const {
     if (const auto* tag = get(key); tag) {
         if (tag->getType() == Type::List) { return static_cast<const ListTag*>(tag); }
     }
     return nullptr;
 }
 
-ListTag* CompoundTag::getList(std::string const& key) {
+ListTag* CompoundTag::getList(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::List) { return static_cast<ListTag*>(tag); }
     }
     return nullptr;
 }
 
-bool CompoundTag::contains(std::string const& key) const { return get(key) != nullptr; }
+bool CompoundTag::contains(std::string_view key) const { return get(key) != nullptr; }
 
-bool CompoundTag::contains(std::string const& key, Tag::Type type) const {
+bool CompoundTag::contains(std::string_view key, Tag::Type type) const {
     if (const auto* tag = get(key); tag) { return tag->getType() == type; }
     return false;
 }
 
 bool CompoundTag::isEmpty() const { return mTagMap.empty(); }
 
-bool CompoundTag::remove(std::string const& name) {
+bool CompoundTag::remove(std::string_view name) {
     auto it = mTagMap.find(name);
     if (it == mTagMap.end()) { return false; }
     mTagMap.erase(it);
@@ -373,10 +379,14 @@ std::string CompoundTag::toNetworkNbt() const {
     return stream.getAndReleaseData();
 }
 
-CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap.at(std::string(index)); }
-CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return mTagMap.at(std::string(index)); }
+CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap[std::string(index)]; }
+CompoundTagVariant const& CompoundTag::at(std::string_view index) const {
+    if (contains(index)) { return mTagMap.at(std::string(index)); }
+    throw std::out_of_range("invalid nbt key");
+}
 
-CompoundTagVariant& CompoundTag::operator[](std::string_view index) { return mTagMap[std::string(index)]; }
+CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return at(index); }
+CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const { return at(index); }
 
 size_t CompoundTag::size() const { return mTagMap.size(); }
 

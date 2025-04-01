@@ -14,9 +14,9 @@ public:
 
     void writeBytes(const void* origin, size_t num);
 
-    void writeString(std::string_view value);
+    void writeString(std::string_view  value);
 
-    void writeLongString(std::string_view value);
+    void writeLongString(std::string_view  value);
 
     void writeFloat(float value);
 

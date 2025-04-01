@@ -2,7 +2,7 @@
 
 namespace bedrock_protocol {
 
-StringTag::StringTag(std::string const& data) : mData(data) {}
+StringTag::StringTag(std::string_view data) : mData(data) {}
 
 Tag::Type StringTag::getType() const { return Tag::Type::String; }
 
@@ -24,5 +24,6 @@ void StringTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getString();
 
 std::string&       StringTag::data() { return mData; }
 std::string const& StringTag::data() const { return mData; }
+std::string_view   StringTag::view() const { return mData; }
 
 } // namespace bedrock_protocol
