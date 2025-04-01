@@ -5,20 +5,23 @@
 namespace bedrock_protocol {
 
 class ByteArrayTag : public Tag {
-public:
+protected:
     std::vector<uint8_t> mData;
 
 public:
-    ByteArrayTag() = default;
-    ByteArrayTag(std::vector<uint8_t> const& data);
+    [[nodiscard]] constexpr ByteArrayTag() = default;
 
-    Type getType() const override;
+    [[nodiscard]] constexpr ByteArrayTag(std::vector<uint8_t> arr) : mData(std::move(arr)) {}
 
-    bool equals(Tag const& other) const override;
+    [[nodiscard]] constexpr ByteArrayTag(std::initializer_list<uint8_t> val) : mData(val) {}
 
-    std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] Type getType() const override;
 
-    std::size_t hash() const override;
+    [[nodiscard]] bool equals(Tag const& other) const override;
+
+    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
+
+    [[nodiscard]] std::size_t hash() const override;
 
     void write(BytesDataOutput& stream) const override;
 
@@ -27,6 +30,12 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+public:
+    std::vector<uint8_t>&       data();
+    std::vector<uint8_t> const& data() const;
+
+    size_t size() const;
 };
 
 } // namespace bedrock_protocol

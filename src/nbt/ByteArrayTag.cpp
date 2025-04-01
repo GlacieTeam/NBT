@@ -2,8 +2,6 @@
 
 namespace bedrock_protocol {
 
-ByteArrayTag::ByteArrayTag(std::vector<uint8_t> const& data) : mData(data) {}
-
 Tag::Type ByteArrayTag::getType() const { return Tag::Type::ByteArray; }
 
 bool ByteArrayTag::equals(const Tag& other) const {
@@ -41,5 +39,10 @@ void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
     for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getByte()); }
 }
+
+std::vector<uint8_t>&       ByteArrayTag::data() { return mData; }
+std::vector<uint8_t> const& ByteArrayTag::data() const { return mData; }
+
+size_t ByteArrayTag::size() const { return mData.size(); }
 
 } // namespace bedrock_protocol

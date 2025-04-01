@@ -69,4 +69,35 @@ void ListTag::load(ReadOnlyBinaryStream& stream) {
     }
 }
 
+void ListTag::add(std::unique_ptr<Tag>&& tag) {
+    if (mData.empty()) { mType = tag->getType(); }
+    mData.push_back(std::move(tag));
+}
+
+void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> func) {
+    if (mType == Tag::Type::Compound) {
+        for (auto& nbt : mData) { func(nbt); }
+    }
+}
+
+size_t ListTag::size() const { return mData.size(); }
+
+Tag&       ListTag::operator[](size_t index) { return mData[index].as<Tag>(); }
+Tag const& ListTag::operator[](size_t index) const { return mData[index].as<Tag>(); }
+
+ListTag::iterator ListTag::begin() noexcept { return mData.begin(); }
+ListTag::iterator ListTag::end() noexcept { return mData.end(); }
+
+ListTag::reverse_iterator ListTag::rbegin() noexcept { return mData.rbegin(); }
+ListTag::reverse_iterator ListTag::rend() noexcept { return mData.rend(); }
+
+ListTag::const_iterator ListTag::begin() const noexcept { return cbegin(); }
+ListTag::const_iterator ListTag::end() const noexcept { return cend(); }
+
+ListTag::const_iterator ListTag::cbegin() const noexcept { return mData.cbegin(); }
+ListTag::const_iterator ListTag::cend() const noexcept { return mData.cend(); }
+
+ListTag::const_reverse_iterator ListTag::crbegin() const noexcept { return mData.crbegin(); }
+ListTag::const_reverse_iterator ListTag::crend() const noexcept { return mData.crend(); }
+
 } // namespace bedrock_protocol

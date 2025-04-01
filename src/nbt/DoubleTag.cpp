@@ -22,4 +22,7 @@ void DoubleTag::write(BinaryStream& stream) const { stream.writeDouble(mData); }
 
 void DoubleTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getDouble(); }
 
+double&       DoubleTag::data() { return mData; }
+double const& DoubleTag::data() const { return mData; }
+
 } // namespace bedrock_protocol

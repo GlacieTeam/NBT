@@ -4,7 +4,7 @@
 namespace bedrock_protocol {
 
 class DoubleTag : public Tag {
-public:
+protected:
     double mData;
 
 public:
@@ -26,6 +26,9 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    double&       data();
+    double const& data() const;
 };
 
 } // namespace bedrock_protocol

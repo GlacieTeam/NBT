@@ -22,4 +22,7 @@ void FloatTag::write(BinaryStream& stream) const { stream.writeFloat(mData); }
 
 void FloatTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getFloat(); }
 
+float&       FloatTag::data() { return mData; }
+float const& FloatTag::data() const { return mData; }
+
 } // namespace bedrock_protocol

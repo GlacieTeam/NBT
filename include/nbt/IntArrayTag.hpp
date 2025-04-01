@@ -5,7 +5,7 @@
 namespace bedrock_protocol {
 
 class IntArrayTag : public Tag {
-public:
+protected:
     std::vector<int> mData;
 
 public:
@@ -27,6 +27,11 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    std::vector<int>&       data();
+    std::vector<int> const& data() const;
+
+    size_t size() const;
 };
 
 } // namespace bedrock_protocol

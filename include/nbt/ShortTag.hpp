@@ -4,7 +4,7 @@
 namespace bedrock_protocol {
 
 class ShortTag : public Tag {
-public:
+protected:
     short mData;
 
 public:
@@ -26,6 +26,9 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    short&       data();
+    short const& data() const;
 };
 
 } // namespace bedrock_protocol

@@ -26,6 +26,10 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+public:
+    std::string&       data();
+    std::string const& data() const;
 };
 
 } // namespace bedrock_protocol

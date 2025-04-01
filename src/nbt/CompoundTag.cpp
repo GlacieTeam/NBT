@@ -18,9 +18,10 @@ bool CompoundTag::equals(Tag const& other) const {
 std::unique_ptr<Tag> CompoundTag::copy() const { return clone(); }
 
 std::size_t CompoundTag::hash() const {
-    int hash      = 0x811c9dc5;
-    int fnv_prime = 0x01000193;
-    for (unsigned char byte : toBinaryNbt()) {
+    size_t hash      = 0x811c9dc5;
+    size_t fnv_prime = 0x01000193;
+    auto   binary    = toBinaryNbt();
+    for (uint8_t byte : binary) {
         hash ^= byte;
         hash  = hash * fnv_prime;
     }
@@ -307,9 +308,20 @@ bool CompoundTag::remove(std::string const& name) {
     return true;
 }
 
-CompoundTag::TagMap::const_iterator CompoundTag::begin() const { return mTagMap.begin(); }
+CompoundTag::iterator CompoundTag::begin() noexcept { return mTagMap.begin(); }
+CompoundTag::iterator CompoundTag::end() noexcept { return mTagMap.end(); }
 
-CompoundTag::TagMap::const_iterator CompoundTag::end() const { return mTagMap.end(); }
+CompoundTag::const_iterator CompoundTag::begin() const noexcept { return cbegin(); }
+CompoundTag::const_iterator CompoundTag::end() const noexcept { return cend(); }
+
+CompoundTag::reverse_iterator CompoundTag::rbegin() noexcept { return mTagMap.rbegin(); }
+CompoundTag::reverse_iterator CompoundTag::rend() noexcept { return mTagMap.rend(); }
+
+CompoundTag::const_iterator CompoundTag::cbegin() const noexcept { return mTagMap.cbegin(); }
+CompoundTag::const_iterator CompoundTag::cend() const noexcept { return mTagMap.cend(); }
+
+CompoundTag::const_reverse_iterator CompoundTag::crbegin() const noexcept { return mTagMap.crbegin(); }
+CompoundTag::const_reverse_iterator CompoundTag::crend() const noexcept { return mTagMap.crend(); }
 
 void CompoundTag::serialize(BinaryStream& stream) const {
     stream.writeByte((uint8_t)Tag::Type::Compound);
@@ -360,5 +372,15 @@ std::string CompoundTag::toNetworkNbt() const {
     serialize(stream);
     return stream.getAndReleaseData();
 }
+
+CompoundTagVariant&       CompoundTag::at(std::string_view index) { return operator[](index); }
+CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return operator[](index); }
+
+CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return mTagMap.at(std::string(index)); }
+CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const {
+    return mTagMap.at(std::string(index));
+}
+
+size_t CompoundTag::size() const { return mTagMap.size(); }
 
 } // namespace bedrock_protocol

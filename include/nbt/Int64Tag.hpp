@@ -4,7 +4,7 @@
 namespace bedrock_protocol {
 
 class Int64Tag : public Tag {
-public:
+protected:
     int64_t mData;
 
 public:
@@ -26,6 +26,9 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    int64_t&       data();
+    int64_t const& data() const;
 };
 
 } // namespace bedrock_protocol

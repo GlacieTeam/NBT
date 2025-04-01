@@ -4,7 +4,7 @@
 namespace bedrock_protocol {
 
 class FloatTag : public Tag {
-public:
+protected:
     float mData;
 
 public:
@@ -26,6 +26,9 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    float&       data();
+    float const& data() const;
 };
 
 } // namespace bedrock_protocol

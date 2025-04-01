@@ -22,4 +22,7 @@ void StringTag::write(BinaryStream& stream) const { stream.writeString(mData); }
 
 void StringTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getString(); }
 
+std::string&       StringTag::data() { return mData; }
+std::string const& StringTag::data() const { return mData; }
+
 } // namespace bedrock_protocol

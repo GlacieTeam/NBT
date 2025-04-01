@@ -22,4 +22,7 @@ void ByteTag::write(BinaryStream& stream) const { stream.writeByte(mData); }
 
 void ByteTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getByte(); }
 
+uint8_t&       ByteTag::data() { return mData; }
+uint8_t const& ByteTag::data() const { return mData; }
+
 } // namespace bedrock_protocol

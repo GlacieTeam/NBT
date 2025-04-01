@@ -42,4 +42,9 @@ void IntArrayTag::load(ReadOnlyBinaryStream& stream) {
     for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getVarInt()); }
 }
 
+std::vector<int>&       IntArrayTag::data() { return mData; }
+std::vector<int> const& IntArrayTag::data() const { return mData; }
+
+size_t IntArrayTag::size() const { return mData.size(); }
+
 } // namespace bedrock_protocol

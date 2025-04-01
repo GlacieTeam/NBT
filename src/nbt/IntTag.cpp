@@ -22,4 +22,7 @@ void IntTag::write(BinaryStream& stream) const { stream.writeVarInt(mData); }
 
 void IntTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getVarInt(); }
 
+int&       IntTag::data() { return mData; }
+int const& IntTag::data() const { return mData; }
+
 } // namespace bedrock_protocol
