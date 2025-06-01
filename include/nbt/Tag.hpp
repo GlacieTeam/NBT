@@ -1,5 +1,6 @@
 #pragma once
 #include <binarystream/BinaryStream.hpp>
+#include <memory>
 #include <nbt/io/BytesDataOutput.hpp>
 
 namespace bedrock_protocol {

@@ -51,16 +51,16 @@ public:
             Iterator res;
             switch (var.index()) {
             case Tag::Type::List:
-                res.iter.emplace<2>(var.as<ListTag>().begin());
+                res.iter.template emplace<2>(var.template as<ListTag>().begin());
                 break;
             case Tag::Type::Compound:
-                res.iter.emplace<1>(var.as<CompoundTag>().begin());
+                res.iter.template emplace<1>(var.template as<CompoundTag>().begin());
                 break;
             case Tag::Type::End:
-                res.iter.emplace<0>(std::addressof(var) + 1);
+                res.iter.template emplace<0>(std::addressof(var) + 1);
                 break;
             default:
-                res.iter.emplace<0>(std::addressof(var));
+                res.iter.template emplace<0>(std::addressof(var));
             }
             return res;
         }
@@ -69,13 +69,13 @@ public:
             Iterator res;
             switch (var.index()) {
             case Tag::Type::List:
-                res.iter.emplace<2>(var.as<ListTag>().end());
+                res.iter.template emplace<2>(var.template as<ListTag>().end());
                 break;
             case Tag::Type::Compound:
-                res.iter.emplace<1>(var.as<CompoundTag>().end());
+                res.iter.template emplace<1>(var.template as<CompoundTag>().end());
                 break;
             default:
-                res.iter.emplace<0>(std::addressof(var) + 1);
+                res.iter.template emplace<0>(std::addressof(var) + 1);
             }
             return res;
         }
@@ -200,11 +200,11 @@ public:
             mStorage = Int64Tag{integer};
         }
     }
-    [[nodiscard]] constexpr CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}
+    [[nodiscard]] CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}
 
-    [[nodiscard]] constexpr CompoundTagVariant(float f) : mStorage(FloatTag{f}) {}
+    [[nodiscard]] CompoundTagVariant(float f) : mStorage(FloatTag{f}) {}
 
-    [[nodiscard]] constexpr CompoundTagVariant(double d) : mStorage(DoubleTag{d}) {}
+    [[nodiscard]] CompoundTagVariant(double d) : mStorage(DoubleTag{d}) {}
 
     [[nodiscard]] constexpr CompoundTagVariant(std::string s) : mStorage(std::in_place_type<StringTag>, std::move(s)) {}
 

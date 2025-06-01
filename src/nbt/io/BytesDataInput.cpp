@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <nbt/io/BytesDataInput.hpp>
 
 namespace bedrock_protocol {
