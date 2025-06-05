@@ -13,7 +13,7 @@ public:
 
     template <std::integral T>
     constexpr ByteTag& operator=(T value) {
-        data = (uint8_t)value;
+        mData = (uint8_t)value;
         return *this;
     }
 
