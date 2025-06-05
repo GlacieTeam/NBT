@@ -1,22 +1,22 @@
 #pragma once
 #include <map>
-#include <nbt/ByteArrayTag.hpp>
-#include <nbt/ByteTag.hpp>
-#include <nbt/DoubleTag.hpp>
-#include <nbt/EndTag.hpp>
-#include <nbt/FloatTag.hpp>
-#include <nbt/Int64Tag.hpp>
-#include <nbt/IntArrayTag.hpp>
-#include <nbt/IntTag.hpp>
-#include <nbt/ListTag.hpp>
-#include <nbt/ShortTag.hpp>
-#include <nbt/StringTag.hpp>
 #include <nbt/Tag.hpp>
+#include <vector>
 
 namespace bedrock_protocol {
 
 class CompoundTagVariant;
-
+class EndTag;
+class ByteTag;
+class ShortTag;
+class IntTag;
+class Int64Tag;
+class FloatTag;
+class DoubleTag;
+class ByteArrayTag;
+class StringTag;
+class ListTag;
+class IntArrayTag;
 
 class CompoundTag : public Tag {
 public:
