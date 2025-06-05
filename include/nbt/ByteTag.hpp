@@ -19,7 +19,7 @@ public:
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const {
-        return (T)data;
+        return (T)mData;
     }
 
     [[nodiscard]] constexpr operator std::byte() const { return (std::byte)mData; }
