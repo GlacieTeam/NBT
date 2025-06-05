@@ -1,0 +1,48 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build on Windows (MSVC)
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+        
+    - name: Build NBT (Debug)
+      run: xmake config --mode=debug -v -y && xmake --all -v -y
+      
+    - name: Build NBT (Release)
+      run: xmake config --mode=release -v -y && xmake --all -v -y
+
+  build-linux:
+    name: Build on Linux (Clang)
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Clang
+      run: sudo apt-get update && sudo apt-get install -y clang
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang libc++-dev libc++abi-dev
+      
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+        
+    - name: Build NBT (Debug)
+      run: xmake config --mode=debug --toolchain=clang -v -y && xmake --all -v -y
+      
+    - name: Build NBT (Release)
+      run: xmake config --mode=release --toolchain=clang -v -y && xmake --all -v -y

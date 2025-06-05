@@ -342,8 +342,8 @@ void CompoundTag::serialize(BytesDataOutput& stream) const {
 }
 
 void CompoundTag::deserialize(ReadOnlyBinaryStream& stream) {
-    stream.getByte();
-    stream.getString();
+    (void)stream.getByte();
+    (void)stream.getString();
     load(stream);
 }
 
