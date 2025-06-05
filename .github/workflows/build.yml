@@ -1,4 +1,11 @@
 on:
+  push:
+    paths:
+      - .github/workflows/build.yml
+      - src/**
+      - include/**
+      - xmake.lua
+  pull_request:
   workflow_dispatch:
 
 jobs:
