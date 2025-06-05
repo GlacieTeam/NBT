@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <nbt/CompoundTagVariant.hpp>
 #include <nbt/Tag.hpp>
 #include <vector>
 
