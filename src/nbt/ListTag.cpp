@@ -3,9 +3,30 @@
 
 namespace bedrock_protocol {
 
-ListTag::ListTag(std::vector<CompoundTagVariant> const& data) : mData(std::move(data)) {
+ListTag::ListTag(std::vector<std::unique_ptr<Tag>>&& data) : mData(std::move(data)) {
     if (!mData.empty()) { mType = mData.front()->getType(); }
 }
+
+ListTag::ListTag(ListTag const& other) : mType(other.mType) {
+    for (const auto& data : other.mData) { mData.emplace_back(data.get()->copy()); }
+}
+
+ListTag::ListTag(ListTag&& other) = default;
+
+ListTag::ListTag(std::initializer_list<CompoundTagVariant> tags) : ListTag(std::vector<CompoundTagVariant>(tags)) {}
+
+ListTag::ListTag(std::vector<CompoundTagVariant> tags) {
+    for (auto& tag : tags) { mData.emplace_back(tag->copy()); }
+    if (!mData.empty()) { mType = mData.front()->getType(); }
+}
+
+ListTag& ListTag::operator=(ListTag const& other) {
+    mType = other.mType;
+    for (const auto& data : other.mData) { mData.emplace_back(data.get()->copy()); }
+    return *this;
+}
+
+ListTag& ListTag::operator=(ListTag&& other) = default;
 
 Tag::Type ListTag::getType() const { return Tag::Type::List; }
 
@@ -27,7 +48,7 @@ std::size_t ListTag::hash() const {
 std::unique_ptr<ListTag> ListTag::copyList() const {
     auto copy   = std::make_unique<ListTag>();
     copy->mType = mType;
-    for (const auto& data : mData) { copy->mData.push_back(data.get()->copy()); }
+    for (const auto& data : mData) { copy->mData.emplace_back(data.get()->copy()); }
     return copy;
 }
 
@@ -76,14 +97,14 @@ void ListTag::add(std::unique_ptr<Tag>&& tag) {
 
 void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> func) {
     if (mType == Tag::Type::Compound) {
-        for (auto& nbt : mData) { func(nbt); }
+        for (auto& tag : mData) { func(tag->as<CompoundTag>()); }
     }
 }
 
 size_t ListTag::size() const { return mData.size(); }
 
-Tag&       ListTag::operator[](size_t index) { return mData[index].as<Tag>(); }
-Tag const& ListTag::operator[](size_t index) const { return mData[index].as<Tag>(); }
+Tag&       ListTag::operator[](size_t index) { return *mData.at(index); }
+Tag const& ListTag::operator[](size_t index) const { return *mData.at(index); }
 
 ListTag::iterator ListTag::begin() noexcept { return mData.begin(); }
 ListTag::iterator ListTag::end() noexcept { return mData.end(); }

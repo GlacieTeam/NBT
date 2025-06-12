@@ -8,7 +8,7 @@ if is_plat("windows") and not has_config("vs_runtime") then
     set_runtimes("MD")
 end
 
-target("NetworkChunk")
+target("NBT")
     set_kind("static")
     set_languages("cxx20")
     set_exceptions("none")
@@ -19,6 +19,7 @@ target("NetworkChunk")
         set_symbols("debug")
     else
         set_optimize("aggressive")
+        set_strip("all")
     end
     
     if is_plat("windows") then
@@ -38,6 +39,8 @@ target("NetworkChunk")
             )
         end
     else
+        set_toolchains("clang")
+        add_cxxflags("-Wno-gnu-line-marker")
         add_cxflags(
             "-Wall",
             "-pedantic",

@@ -1,28 +1,33 @@
 #pragma once
 #include <functional>
-#include <nbt/CompoundTagVariant.hpp>
 #include <nbt/Tag.hpp>
 #include <vector>
 
 namespace bedrock_protocol {
 
-class CompoundTagVariant;
 class CompoundTag;
 
 class ListTag : public Tag {
 public:
-    std::vector<CompoundTagVariant> mData;
-    Type                            mType{Type::End};
+    std::vector<std::unique_ptr<Tag>> mData;
+    Type                              mType{Type::End};
 
 public:
-    using iterator               = std::vector<CompoundTagVariant>::iterator;
-    using const_iterator         = std::vector<CompoundTagVariant>::const_iterator;
-    using reverse_iterator       = std::vector<CompoundTagVariant>::reverse_iterator;
-    using const_reverse_iterator = std::vector<CompoundTagVariant>::const_reverse_iterator;
+    using iterator               = std::vector<std::unique_ptr<Tag>>::iterator;
+    using const_iterator         = std::vector<std::unique_ptr<Tag>>::const_iterator;
+    using reverse_iterator       = std::vector<std::unique_ptr<Tag>>::reverse_iterator;
+    using const_reverse_iterator = std::vector<std::unique_ptr<Tag>>::const_reverse_iterator;
 
 public:
     [[nodiscard]] ListTag() = default;
-    [[nodiscard]] ListTag(std::vector<CompoundTagVariant> const& data);
+    [[nodiscard]] ListTag(std::vector<std::unique_ptr<Tag>>&& data);
+    [[nodiscard]] ListTag(ListTag const& other);
+    [[nodiscard]] ListTag(ListTag&& other);
+    [[nodiscard]] ListTag(std::initializer_list<CompoundTagVariant> tags);
+    [[nodiscard]] ListTag(std::vector<CompoundTagVariant> tags);
+
+    ListTag& operator=(ListTag const& other);
+    ListTag& operator=(ListTag&& other);
 
     [[nodiscard]] Type getType() const override;
 
