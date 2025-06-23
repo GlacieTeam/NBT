@@ -14,12 +14,12 @@ std::string BytesDataOutput::getAndReleaseData() { return std::move(mBuffer); }
 
 void BytesDataOutput::writeBytes(const void* origin, size_t num) { mBuffer.append((const char*)origin, num); }
 
-void BytesDataOutput::writeString(std::string_view  value) {
+void BytesDataOutput::writeString(std::string_view value) {
     writeShort((int16_t)value.size());
     writeBytes(value.data(), value.size());
 }
 
-void BytesDataOutput::writeLongString(std::string_view  value) {
+void BytesDataOutput::writeLongString(std::string_view value) {
     writeInt((int)value.size());
     writeBytes(value.data(), value.size());
 }

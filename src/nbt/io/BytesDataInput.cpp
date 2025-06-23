@@ -3,17 +3,6 @@
 
 namespace bedrock_protocol {
 
-template <typename T>
-void byteswap(T& v) {
-    union {
-        T             value;
-        unsigned char bytes[sizeof(T)];
-    };
-    value = v;
-    std::reverse(bytes, bytes + sizeof(T));
-    v = value;
-}
-
 BytesDataInput::BytesDataInput(bool isLittleEndian) {
     mOwnedBuffer    = std::string();
     mBufferView     = mOwnedBuffer;
@@ -22,7 +11,7 @@ BytesDataInput::BytesDataInput(bool isLittleEndian) {
     mIsLittleEndian = isLittleEndian;
 }
 
-BytesDataInput::BytesDataInput(std::string_view  buffer, bool copyBuffer, bool isLittleEndian) {
+BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian) {
     if (copyBuffer) {
         mOwnedBuffer = buffer;
         mBufferView  = mOwnedBuffer;
