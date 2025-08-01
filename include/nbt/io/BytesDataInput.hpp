@@ -1,19 +1,7 @@
 #pragma once
-#include <cstdint>
-#include <iostream>
+#include <binarystream/ReadOnlyBinaryStream.hpp>
 
 namespace bedrock_protocol {
-
-template <typename T>
-void byteswap(T& v) {
-    union {
-        T             value;
-        unsigned char bytes[sizeof(T)];
-    };
-    value = v;
-    std::reverse(bytes, bytes + sizeof(T));
-    v = value;
-}
 
 class BytesDataOutput;
 

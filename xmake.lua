@@ -10,7 +10,7 @@ end
 
 target("NBT")
     set_kind("static")
-    set_languages("cxx20")
+    set_languages("c++23")
     set_exceptions("none")
     add_packages("binarystream")
     add_includedirs("include")

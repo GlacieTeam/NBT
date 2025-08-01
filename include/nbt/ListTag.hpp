@@ -6,6 +6,7 @@
 namespace bedrock_protocol {
 
 class CompoundTag;
+class CompoundTagVariant;
 
 class ListTag : public Tag {
 public:

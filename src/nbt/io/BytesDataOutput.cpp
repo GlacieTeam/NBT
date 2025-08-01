@@ -25,29 +25,29 @@ void BytesDataOutput::writeLongString(std::string_view value) {
 }
 
 void BytesDataOutput::writeFloat(float value) {
-    if (!mIsLittleEndian) byteswap(value);
+    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
     writeBytes(&value, sizeof(float));
 }
 
 void BytesDataOutput::writeDouble(double value) {
-    if (!mIsLittleEndian) byteswap(value);
+    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
     writeBytes(&value, sizeof(double));
 }
 
 void BytesDataOutput::writeByte(uint8_t value) { writeBytes(&value, sizeof(uint8_t)); }
 
 void BytesDataOutput::writeShort(int16_t value) {
-    if (!mIsLittleEndian) byteswap(value);
+    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
     writeBytes(&value, sizeof(int16_t));
 }
 
 void BytesDataOutput::writeInt(int value) {
-    if (!mIsLittleEndian) byteswap(value);
+    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
     writeBytes(&value, sizeof(int));
 }
 
 void BytesDataOutput::writeInt64(int64_t value) {
-    if (!mIsLittleEndian) byteswap(value);
+    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
     writeBytes(&value, sizeof(int64_t));
 }
 

@@ -20,7 +20,7 @@ void StringTag::load(BytesDataInput& stream) { mData = stream.getString(); }
 
 void StringTag::write(BinaryStream& stream) const { stream.writeString(mData); }
 
-void StringTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getString(); }
+void StringTag::load(ReadOnlyBinaryStream& stream) { stream.getString(mData); }
 
 std::string&       StringTag::data() { return mData; }
 std::string const& StringTag::data() const { return mData; }

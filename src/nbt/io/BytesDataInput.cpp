@@ -63,14 +63,14 @@ std::string BytesDataInput::getLongString() {
 float BytesDataInput::getFloat() {
     float result;
     getBytes(&result, sizeof(float));
-    if (!mIsLittleEndian) byteswap(result);
+    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
 double BytesDataInput::getDouble() {
     double result;
     getBytes(&result, sizeof(double));
-    if (!mIsLittleEndian) byteswap(result);
+    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
@@ -83,21 +83,21 @@ uint8_t BytesDataInput::getByte() {
 int16_t BytesDataInput::getShort() {
     int16_t result;
     getBytes(&result, sizeof(int16_t));
-    if (!mIsLittleEndian) byteswap(result);
+    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
 int BytesDataInput::getInt() {
     int result;
     getBytes(&result, sizeof(int));
-    if (!mIsLittleEndian) byteswap(result);
+    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
 int64_t BytesDataInput::getInt64() {
     int64_t result;
     getBytes(&result, sizeof(int64_t));
-    if (!mIsLittleEndian) byteswap(result);
+    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 

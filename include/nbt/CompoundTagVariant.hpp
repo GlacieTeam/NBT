@@ -12,16 +12,11 @@
 #include <nbt/ShortTag.hpp>
 #include <nbt/StringTag.hpp>
 #include <nbt/Tag.hpp>
+#include <stdexcept>
 #include <utility>
 #include <variant>
 
 namespace bedrock_protocol {
-
-#ifdef _WIN32
-#define UNREACHABLE __assume(false);
-#else
-#define UNREACHABLE __builtin_unreachable();
-#endif
 
 class CompoundTagVariant {
 public:
@@ -100,9 +95,9 @@ public:
             case 2:
                 return *std::get<2>(iter)->get();
             default:
-                UNREACHABLE
+                std::unreachable();
             }
-            UNREACHABLE
+            std::unreachable();
         }
 
         [[nodiscard]] pointer operator->() const noexcept { return std::addressof(**this); }
@@ -297,7 +292,7 @@ public:
         case Tag::Type::End:
             return 0;
         default:
-            UNREACHABLE
+            std::unreachable();
         }
     }
 
