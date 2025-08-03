@@ -15,7 +15,6 @@ end
 target("NBT")
     set_kind("static")
     set_languages("c++23")
-    set_exceptions("none")
     add_packages("binarystream")
     add_includedirs("include")
     add_files("src/**.cpp")
@@ -32,7 +31,7 @@ target("NBT")
             "UNICODE"
         )
         add_cxflags(
-            "/EHa",
+            "/EHsc",
             "/utf-8",
             "/W4"
         )
