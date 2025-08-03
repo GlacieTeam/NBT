@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <nbt/Tag.hpp>
 
@@ -31,13 +38,13 @@ public:
 
     [[nodiscard]] ByteTag operator-() const { return ByteTag{-mData}; }
 
-    Type getType() const override;
+    [[nodiscard]] Type getType() const override;
 
-    bool equals(Tag const& other) const override;
+    [[nodiscard]] bool equals(Tag const& other) const override;
 
-    std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
 
-    std::size_t hash() const override;
+    [[nodiscard]] std::size_t hash() const override;
 
     void write(BytesDataOutput& stream) const override;
 
@@ -47,8 +54,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    uint8_t&       data();
-    uint8_t const& data() const;
+    [[nodiscard]] uint8_t&       data();
+    [[nodiscard]] uint8_t const& data() const;
 };
 
 } // namespace bedrock_protocol

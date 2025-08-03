@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <nbt/Tag.hpp>
 #include <vector>
@@ -9,16 +16,16 @@ protected:
     std::vector<int> mData;
 
 public:
-    IntArrayTag() = default;
-    IntArrayTag(std::vector<int> const& data);
+    [[nodiscard]] IntArrayTag() = default;
+    [[nodiscard]] IntArrayTag(std::vector<int> const& data);
 
-    Type getType() const override;
+    [[nodiscard]] Type getType() const override;
 
-    bool equals(Tag const& other) const override;
+    [[nodiscard]] bool equals(Tag const& other) const override;
 
-    std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
 
-    std::size_t hash() const override;
+    [[nodiscard]] std::size_t hash() const override;
 
     void write(BytesDataOutput& stream) const override;
 
@@ -28,10 +35,10 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    std::vector<int>&       data();
-    std::vector<int> const& data() const;
+    [[nodiscard]] std::vector<int>&       data();
+    [[nodiscard]] std::vector<int> const& data() const;
 
-    size_t size() const;
+    [[nodiscard]] size_t size() const;
 };
 
 } // namespace bedrock_protocol

@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <nbt/Tag.hpp>
 #include <vector>
@@ -32,10 +39,10 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    std::vector<uint8_t>&       data();
-    std::vector<uint8_t> const& data() const;
+    [[nodiscard]] std::vector<uint8_t>&       data();
+    [[nodiscard]] std::vector<uint8_t> const& data() const;
 
-    size_t size() const;
+    [[nodiscard]] size_t size() const;
 };
 
 } // namespace bedrock_protocol

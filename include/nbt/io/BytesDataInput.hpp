@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <binarystream/ReadOnlyBinaryStream.hpp>
 
@@ -16,26 +23,26 @@ protected:
     bool             mIsLittleEndian;
 
 public:
-    explicit BytesDataInput(bool isLittleEndian = true);
-    explicit BytesDataInput(std::string_view buffer, bool copyBuffer = false, bool isLittleEndian = true);
+    [[nodiscard]] explicit BytesDataInput(bool isLittleEndian = true);
+    [[nodiscard]] explicit BytesDataInput(std::string_view buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
     bool getBytes(void* target, size_t num);
 
-    std::string getString();
+    [[nodiscard]] std::string getString();
 
-    std::string getLongString();
+    [[nodiscard]] std::string getLongString();
 
-    float getFloat();
+    [[nodiscard]] float getFloat();
 
-    double getDouble();
+    [[nodiscard]] double getDouble();
 
-    uint8_t getByte();
+    [[nodiscard]] uint8_t getByte();
 
-    int16_t getShort();
+    [[nodiscard]] int16_t getShort();
 
-    int getInt();
+    [[nodiscard]] int getInt();
 
-    int64_t getInt64();
+    [[nodiscard]] int64_t getInt64();
 };
 
 } // namespace bedrock_protocol

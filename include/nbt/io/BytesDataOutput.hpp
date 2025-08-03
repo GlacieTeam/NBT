@@ -1,3 +1,11 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
+#pragma once
 #include <nbt/io/BytesDataInput.hpp>
 
 namespace bedrock_protocol {
@@ -7,10 +15,10 @@ protected:
     std::string& mBuffer;
 
 public:
-    explicit BytesDataOutput(bool isLittleEndian = true);
-    explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false, bool isLittleEndian = true);
+    [[nodiscard]] explicit BytesDataOutput(bool isLittleEndian = true);
+    [[nodiscard]] explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false, bool isLittleEndian = true);
 
-    std::string getAndReleaseData();
+    [[nodiscard]] std::string getAndReleaseData();
 
     void writeBytes(const void* origin, size_t num);
 

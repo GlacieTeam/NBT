@@ -2,10 +2,14 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("binarystream 1.1.4")
+add_requires("binarystream 2.0.0")
 
-if is_plat("windows") and not has_config("vs_runtime") then
-    set_runtimes("MD")
+if is_plat("windows") then
+    if not has_config("vs_runtime") then
+        set_runtimes("MD")
+    end
+else
+    set_toolchains("clang")
 end
 
 target("NBT")
@@ -39,7 +43,6 @@ target("NBT")
             )
         end
     else
-        set_toolchains("clang")
         add_cxxflags("-Wno-gnu-line-marker")
         add_cxflags(
             "-Wall",

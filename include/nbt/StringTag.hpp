@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <nbt/Tag.hpp>
 
@@ -8,16 +15,16 @@ protected:
     std::string mData;
 
 public:
-    StringTag() = default;
-    StringTag(std::string_view data);
+    [[nodiscard]] StringTag() = default;
+    [[nodiscard]] StringTag(std::string_view data);
 
-    Type getType() const override;
+    [[nodiscard]] Type getType() const override;
 
-    bool equals(Tag const& other) const override;
+    [[nodiscard]] bool equals(Tag const& other) const override;
 
-    std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
 
-    std::size_t hash() const override;
+    [[nodiscard]] std::size_t hash() const override;
 
     void write(BytesDataOutput& stream) const override;
 
@@ -28,9 +35,9 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    std::string&       data();
-    std::string const& data() const;
-    std::string_view   view() const;
+    [[nodiscard]] std::string&       data();
+    [[nodiscard]] std::string const& data() const;
+    [[nodiscard]] std::string_view   view() const;
 };
 
 } // namespace bedrock_protocol

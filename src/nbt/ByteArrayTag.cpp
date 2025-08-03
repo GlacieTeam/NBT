@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #include <nbt/ByteArrayTag.hpp>
 
 namespace bedrock_protocol {
@@ -32,12 +39,12 @@ void ByteArrayTag::load(BytesDataInput& stream) {
 
 void ByteArrayTag::write(BinaryStream& stream) const {
     stream.writeVarInt((int)mData.size());
-    for (auto& data : mData) { stream.writeByte(data); }
+    for (auto& data : mData) { stream.writeUnsignedChar(data); }
 }
 
 void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
-    for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getByte()); }
+    for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getUnsignedChar()); }
 }
 
 std::vector<uint8_t>&       ByteArrayTag::data() { return mData; }

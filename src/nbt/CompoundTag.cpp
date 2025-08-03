@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #include <algorithm>
 #include <nbt/ByteArrayTag.hpp>
 #include <nbt/ByteTag.hpp>
@@ -76,20 +83,20 @@ void CompoundTag::load(BytesDataInput& stream) {
 void CompoundTag::write(BinaryStream& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
-        stream.writeByte((uint8_t)type);
+        stream.writeUnsignedChar((uint8_t)type);
         if (type != Tag::Type::End) {
             stream.writeString(key);
             tag->write(stream);
         }
     }
-    stream.writeByte((uint8_t)Type::End);
+    stream.writeUnsignedChar((uint8_t)Type::End);
 }
 
 void CompoundTag::load(ReadOnlyBinaryStream& stream) {
     mTagMap.clear();
     auto type = Tag::Type::End;
     do {
-        type = Tag::Type(stream.getByte());
+        type = Tag::Type(stream.getUnsignedChar());
         if (type != Tag::Type::End) {
             auto key = stream.getString();
             auto tag = Tag::newTag(type);
@@ -341,7 +348,7 @@ CompoundTag::const_reverse_iterator CompoundTag::crbegin() const noexcept { retu
 CompoundTag::const_reverse_iterator CompoundTag::crend() const noexcept { return mTagMap.crend(); }
 
 void CompoundTag::serialize(BinaryStream& stream) const {
-    stream.writeByte((uint8_t)Tag::Type::Compound);
+    stream.writeUnsignedChar((uint8_t)Tag::Type::Compound);
     stream.writeString("");
     write(stream);
 }
@@ -359,8 +366,8 @@ void CompoundTag::deserialize(ReadOnlyBinaryStream& stream) {
 }
 
 void CompoundTag::deserialize(BytesDataInput& stream) {
-    stream.getByte();
-    stream.getString();
+    (void)stream.getByte();
+    (void)stream.getString();
     load(stream);
 }
 

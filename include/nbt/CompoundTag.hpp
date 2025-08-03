@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <map>
 #include <nbt/Tag.hpp>
@@ -30,16 +37,16 @@ public:
     using const_reverse_iterator = TagMap::const_reverse_iterator;
 
 public:
-    CompoundTag() = default;
-    CompoundTag(std::initializer_list<TagMap::value_type> tagPairs) : mTagMap(tagPairs) {}
+    [[nodiscard]] CompoundTag() = default;
+    [[nodiscard]] CompoundTag(std::initializer_list<TagMap::value_type> tagPairs) : mTagMap(tagPairs) {}
 
-    Type getType() const override;
+    [[nodiscard]] Type getType() const override;
 
-    bool equals(Tag const& other) const override;
+    [[nodiscard]] bool equals(Tag const& other) const override;
 
-    std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
 
-    std::size_t hash() const override;
+    [[nodiscard]] std::size_t hash() const override;
 
     void write(BytesDataOutput& stream) const override;
 
@@ -132,9 +139,9 @@ public:
 
     [[nodiscard]] size_t size() const;
 
-    bool remove(std::string_view index);
+    [[nodiscard]] bool remove(std::string_view index);
 
-    std::unique_ptr<CompoundTag> clone() const;
+    [[nodiscard]] std::unique_ptr<CompoundTag> clone() const;
 
 
 public:
@@ -145,11 +152,11 @@ public:
     void deserialize(BytesDataInput& stream);
 
 public:
-    static CompoundTag fromNetworkNbt(std::string_view binaryData);
-    static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
+    [[nodiscard]] static CompoundTag fromNetworkNbt(std::string_view binaryData);
+    [[nodiscard]] static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
 
-    std::string toNetworkNbt() const;
-    std::string toBinaryNbt(bool isLittleEndian = true) const;
+    [[nodiscard]] std::string toNetworkNbt() const;
+    [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const;
 };
 
 } // namespace bedrock_protocol

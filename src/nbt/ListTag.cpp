@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #include <nbt/CompoundTagVariant.hpp>
 #include <nbt/ListTag.hpp>
 
@@ -72,13 +79,13 @@ void ListTag::load(BytesDataInput& stream) {
 }
 
 void ListTag::write(BinaryStream& stream) const {
-    stream.writeByte((uint8_t)mType);
+    stream.writeUnsignedChar((uint8_t)mType);
     stream.writeVarInt((int)mData.size());
     for (const auto& data : mData) { data->write(stream); }
 }
 
 void ListTag::load(ReadOnlyBinaryStream& stream) {
-    mType     = Tag::Type(stream.getByte());
+    mType     = Tag::Type(stream.getUnsignedChar());
     auto size = stream.getVarInt();
     mData.clear();
     for (int i = 0; i < size; ++i) {

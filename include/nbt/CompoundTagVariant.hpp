@@ -1,3 +1,10 @@
+// Copyright © 2025 GlacieTeam. All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 #include <nbt/ByteArrayTag.hpp>
 #include <nbt/ByteTag.hpp>
@@ -53,7 +60,7 @@ public:
             std::variant<CompoundTagVariant*, CompoundTag::iterator, ListTag::iterator>>
             iter;
 
-        static Iterator makeBegin(auto& var) noexcept {
+        [[nodiscard]] static Iterator makeBegin(auto& var) noexcept {
             Iterator res;
             switch (var.index()) {
             case Tag::Type::List:
@@ -71,7 +78,7 @@ public:
             return res;
         }
 
-        static Iterator makeEnd(auto& var) noexcept {
+        [[nodiscard]] static Iterator makeEnd(auto& var) noexcept {
             Iterator res;
             switch (var.index()) {
             case Tag::Type::List:
@@ -418,11 +425,11 @@ public:
     [[nodiscard]] operator ListTag&() { return as<ListTag>(); }
     [[nodiscard]] operator ListTag&&() && { return std::move(as<ListTag>()); }
 
-    static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
+    [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
         return CompoundTagVariant{std::in_place_type<CompoundTag>, init};
     }
 
-    static CompoundTagVariant array(std::initializer_list<CompoundTagVariant> init = {}) {
+    [[nodiscard]] static CompoundTagVariant array(std::initializer_list<CompoundTagVariant> init = {}) {
         return CompoundTagVariant{std::in_place_type<ListTag>, init};
     }
 };

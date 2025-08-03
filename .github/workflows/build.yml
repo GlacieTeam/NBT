@@ -49,7 +49,7 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
         
     - name: Build NBT (Debug)
-      run: xmake config --mode=debug --toolchain=clang -v -y && xmake --all -v -y
+      run: xmake config --mode=debug -v -y && xmake --all -v -y
       
     - name: Build NBT (Release)
-      run: xmake config --mode=release --toolchain=clang -v -y && xmake --all -v -y
+      run: xmake config --mode=release -v -y && xmake --all -v -y
