@@ -9,7 +9,9 @@
 
 namespace bedrock_protocol {
 
-StringTag::StringTag(std::string_view data) : mData(data) {}
+StringTag::StringTag(std::string_view str) : mData(str) {}
+
+StringTag::StringTag(std::string str) : mData(std::move(str)) {}
 
 Tag::Type StringTag::getType() const { return Tag::Type::String; }
 

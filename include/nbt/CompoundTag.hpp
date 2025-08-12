@@ -139,7 +139,7 @@ public:
 
     [[nodiscard]] size_t size() const;
 
-    [[nodiscard]] bool remove(std::string_view index);
+    bool remove(std::string_view index);
 
     [[nodiscard]] std::unique_ptr<CompoundTag> clone() const;
 

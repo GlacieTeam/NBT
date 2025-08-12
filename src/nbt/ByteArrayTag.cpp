@@ -9,6 +9,12 @@
 
 namespace bedrock_protocol {
 
+ByteArrayTag::ByteArrayTag(std::vector<uint8_t> arr) : mData(std::move(arr)) {}
+
+ByteArrayTag::ByteArrayTag(std::initializer_list<uint8_t> val) : mData(val) {}
+
+ByteArrayTag::operator std::vector<uint8_t>() { return mData; }
+
 Tag::Type ByteArrayTag::getType() const { return Tag::Type::ByteArray; }
 
 bool ByteArrayTag::equals(const Tag& other) const {

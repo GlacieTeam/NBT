@@ -16,7 +16,10 @@ protected:
 
 public:
     [[nodiscard]] StringTag() = default;
-    [[nodiscard]] StringTag(std::string_view data);
+    [[nodiscard]] StringTag(std::string_view str);
+    [[nodiscard]] StringTag(std::string str);
+    template <size_t N>
+    [[nodiscard]] constexpr StringTag(char const (&str)[N]) : mData(str) {}
 
     [[nodiscard]] Type getType() const override;
 

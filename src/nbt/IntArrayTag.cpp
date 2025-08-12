@@ -9,7 +9,11 @@
 
 namespace bedrock_protocol {
 
-IntArrayTag::IntArrayTag(std::vector<int> const& data) : mData(data) {}
+IntArrayTag::IntArrayTag(std::vector<int> arr) : mData(std::move(arr)) {}
+
+IntArrayTag::IntArrayTag(std::initializer_list<int> val) : mData(val) {}
+
+IntArrayTag::operator std::vector<int>() { return mData; }
 
 Tag::Type IntArrayTag::getType() const { return Tag::Type::IntArray; }
 

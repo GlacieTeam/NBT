@@ -16,11 +16,12 @@ protected:
     std::vector<uint8_t> mData;
 
 public:
-    [[nodiscard]] constexpr ByteArrayTag() = default;
+    [[nodiscard]] ByteArrayTag() = default;
 
-    [[nodiscard]] constexpr ByteArrayTag(std::vector<uint8_t> arr) : mData(std::move(arr)) {}
+    [[nodiscard]] ByteArrayTag(std::vector<uint8_t> arr);
+    [[nodiscard]] ByteArrayTag(std::initializer_list<uint8_t> val);
 
-    [[nodiscard]] constexpr ByteArrayTag(std::initializer_list<uint8_t> val) : mData(val) {}
+    [[nodiscard]] operator std::vector<uint8_t>();
 
     [[nodiscard]] Type getType() const override;
 

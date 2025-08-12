@@ -25,10 +25,10 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
         
     - name: Build NBT (Debug)
-      run: xmake config --mode=debug -v -y && xmake --all -v -y
+      run: xmake config --mode=debug -y && xmake --all -y
       
     - name: Build NBT (Release)
-      run: xmake config --mode=release -v -y && xmake --all -v -y
+      run: xmake config --mode=release -y && xmake --all -y
 
   build-linux:
     name: Build on Linux (Clang)
@@ -49,7 +49,7 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
         
     - name: Build NBT (Debug)
-      run: xmake config --mode=debug -v -y && xmake --all -v -y
+      run: xmake config --mode=debug -y && xmake --all -y
       
     - name: Build NBT (Release)
-      run: xmake config --mode=release -v -y && xmake --all -v -y
+      run: xmake config --mode=release -y && xmake --all -y

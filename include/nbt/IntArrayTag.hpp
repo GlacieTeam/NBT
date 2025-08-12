@@ -17,7 +17,11 @@ protected:
 
 public:
     [[nodiscard]] IntArrayTag() = default;
-    [[nodiscard]] IntArrayTag(std::vector<int> const& data);
+
+    [[nodiscard]] IntArrayTag(std::vector<int> arr);
+    [[nodiscard]] IntArrayTag(std::initializer_list<int> val);
+
+    [[nodiscard]] operator std::vector<int>();
 
     [[nodiscard]] Type getType() const override;
 
