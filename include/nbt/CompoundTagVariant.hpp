@@ -204,13 +204,13 @@ public:
     [[nodiscard]] constexpr CompoundTagVariant(T integer) {
         constexpr size_t size = sizeof(T);
         if constexpr (size == 1) {
-            mStorage = ByteTag{static_cast<uint8_t>(integer)};
+            mStorage = ByteTag{integer};
         } else if constexpr (size == 2) {
-            mStorage = ShortTag{static_cast<short>(integer)};
+            mStorage = ShortTag{integer};
         } else if constexpr (size == 4) {
-            mStorage = IntTag{static_cast<int>(integer)};
+            mStorage = IntTag{integer};
         } else {
-            mStorage = Int64Tag{static_cast<int64_t>(integer)};
+            mStorage = Int64Tag{integer};
         }
     }
     [[nodiscard]] CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}

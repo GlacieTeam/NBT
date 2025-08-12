@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-IntTag::IntTag(int data) : mData(data) {}
-
 Tag::Type IntTag::getType() const { return Tag::Type::Int; }
 
 bool IntTag::equals(const Tag& other) const {

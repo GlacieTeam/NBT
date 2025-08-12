@@ -12,31 +12,30 @@ namespace bedrock_protocol {
 
 class ByteTag : public Tag {
 protected:
-    uint8_t mData;
+    uint8_t mData{0};
 
 public:
-    [[nodiscard]] ByteTag() = default;
-    [[nodiscard]] ByteTag(uint8_t data);
+    [[nodiscard]] constexpr ByteTag() = default;
+
+    template <std::integral T>
+    [[nodiscard]] constexpr explicit ByteTag(T value) : mData(static_cast<uint8_t>(value)) {}
+
+    [[nodiscard]] constexpr explicit ByteTag(std::byte byte) : mData(std::to_integer<uint8_t>(byte)) {}
 
     template <std::integral T>
     constexpr ByteTag& operator=(T value) {
-        mData = (uint8_t)value;
+        mData = static_cast<uint8_t>(value);
         return *this;
     }
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const {
-        return (T)mData;
+        return static_cast<T>(mData);
     }
 
-    [[nodiscard]] constexpr operator std::byte() const { return (std::byte)mData; }
+    [[nodiscard]] constexpr operator std::byte() const { return static_cast<std::byte>(mData); }
 
-    template <std::integral T>
-    [[nodiscard]] constexpr explicit ByteTag(T value = 0) : mData((uint8_t)value) {}
-
-    [[nodiscard]] constexpr explicit ByteTag(std::byte b) : mData(std::to_integer<uint8_t>(b)) {}
-
-    [[nodiscard]] ByteTag operator-() const { return ByteTag{-mData}; }
+    [[nodiscard]] ByteTag operator+() const { return ByteTag{+mData}; }
 
     [[nodiscard]] Type getType() const override;
 

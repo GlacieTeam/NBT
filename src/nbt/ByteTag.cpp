@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-ByteTag::ByteTag(uint8_t data) : mData(data) {}
-
 Tag::Type ByteTag::getType() const { return Tag::Type::Byte; }
 
 bool ByteTag::equals(const Tag& other) const {

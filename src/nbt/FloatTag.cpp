@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-FloatTag::FloatTag(float data) : mData(data) {}
-
 Tag::Type FloatTag::getType() const { return Tag::Type::Float; }
 
 bool FloatTag::equals(const Tag& other) const {

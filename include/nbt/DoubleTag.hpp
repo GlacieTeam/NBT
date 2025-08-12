@@ -12,11 +12,19 @@ namespace bedrock_protocol {
 
 class DoubleTag : public Tag {
 protected:
-    double mData;
+    double mData{0};
 
 public:
-    [[nodiscard]] DoubleTag() = default;
-    [[nodiscard]] DoubleTag(double data);
+    [[nodiscard]] constexpr DoubleTag() = default;
+
+    [[nodiscard]] constexpr explicit DoubleTag(double value) noexcept : mData(value) {}
+
+    constexpr DoubleTag& operator=(double value) noexcept {
+        mData = value;
+        return *this;
+    }
+
+    [[nodiscard]] constexpr operator double() const noexcept { return mData; }
 
     [[nodiscard]] Type getType() const override;
 

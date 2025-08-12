@@ -12,11 +12,26 @@ namespace bedrock_protocol {
 
 class IntTag : public Tag {
 protected:
-    int mData;
+    int mData{0};
 
 public:
-    [[nodiscard]] IntTag() = default;
-    [[nodiscard]] IntTag(int data);
+    [[nodiscard]] constexpr IntTag() = default;
+
+    template <std::integral T>
+    [[nodiscard]] constexpr explicit IntTag(T value) noexcept : mData(static_cast<int>(value)) {}
+
+    template <std::integral T>
+    constexpr IntTag& operator=(int value) noexcept {
+        mData = static_cast<int>(value);
+        return *this;
+    }
+
+    template <std::integral T>
+    [[nodiscard]] constexpr operator T() const noexcept {
+        return static_cast<T>(mData);
+    }
+
+    [[nodiscard]] IntTag operator+() const noexcept { return IntTag{+mData}; }
 
     [[nodiscard]] Type getType() const override;
 

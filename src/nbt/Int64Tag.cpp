@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-Int64Tag::Int64Tag(int64_t data) : mData(data) {}
-
 Tag::Type Int64Tag::getType() const { return Tag::Type::Int64; }
 
 bool Int64Tag::equals(const Tag& other) const {

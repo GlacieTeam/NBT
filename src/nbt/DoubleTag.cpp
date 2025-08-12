@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-DoubleTag::DoubleTag(double data) : mData(data) {}
-
 Tag::Type DoubleTag::getType() const { return Tag::Type::Double; }
 
 bool DoubleTag::equals(const Tag& other) const {

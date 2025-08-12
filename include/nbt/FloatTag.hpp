@@ -12,11 +12,19 @@ namespace bedrock_protocol {
 
 class FloatTag : public Tag {
 protected:
-    float mData;
+    float mData{0};
 
 public:
-    [[nodiscard]] FloatTag() = default;
-    [[nodiscard]] FloatTag(float data);
+    [[nodiscard]] constexpr FloatTag() = default;
+
+    [[nodiscard]] constexpr explicit FloatTag(float value) noexcept : mData(value) {}
+
+    constexpr FloatTag& operator=(float value) noexcept {
+        mData = value;
+        return *this;
+    }
+
+    constexpr operator float() const noexcept { return mData; }
 
     [[nodiscard]] Type getType() const override;
 

@@ -42,7 +42,6 @@ target("NBT")
             )
         end
     else
-        add_cxxflags("-Wno-gnu-line-marker")
         add_cxflags(
             "-Wall",
             "-pedantic",

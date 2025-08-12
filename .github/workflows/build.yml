@@ -11,7 +11,7 @@ on:
 jobs:
   build-windows:
     name: Build on Windows (MSVC)
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
 
   build-linux:
     name: Build on Linux (Clang)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4

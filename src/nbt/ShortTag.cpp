@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-ShortTag::ShortTag(short data) : mData(data) {}
-
 Tag::Type ShortTag::getType() const { return Tag::Type::Short; }
 
 bool ShortTag::equals(const Tag& other) const {
