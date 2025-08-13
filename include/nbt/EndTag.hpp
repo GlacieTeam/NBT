@@ -14,7 +14,7 @@ class EndTag : public Tag {
 public:
     [[nodiscard]] EndTag() = default;
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::End; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

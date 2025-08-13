@@ -362,7 +362,7 @@ public:
         as<ListTag>().add(std::move(val).toUnique());
     }
 
-    template <class T>
+    template <typename T>
     [[nodiscard]] constexpr operator T() const {
         if (is_number()) {
             return std::visit(
@@ -381,53 +381,36 @@ public:
     }
 
     template <std::integral T>
-    [[nodiscard]] constexpr operator T() const {
+    [[nodiscard]] constexpr operator T() const noexcept {
         constexpr size_t size = sizeof(T);
         if constexpr (size == 1) {
-            return as<ByteTag>().storage();
+            return static_cast<T>(as<ByteTag>().storage());
         } else if constexpr (size == 2) {
-            return as<ShortTag>().storage();
+            return static_cast<T>(as<ShortTag>().storage());
         } else if constexpr (size == 4) {
-            return as<IntTag>().storage();
+            return static_cast<T>(as<IntTag>().storage());
         } else {
-            return as<Int64Tag>().storage();
+            return static_cast<T>(as<Int64Tag>().storage());
         }
     }
 
-    template <std::integral T>
-    [[nodiscard]] constexpr operator T&() {
-        constexpr size_t size = sizeof(T);
-        if constexpr (size == 1) {
-            return as<ByteTag>().storage();
-        } else if constexpr (size == 2) {
-            return as<ShortTag>().storage();
-        } else if constexpr (size == 4) {
-            return as<IntTag>().storage();
-        } else {
-            return as<Int64Tag>().storage();
-        }
-    }
+    [[nodiscard]] constexpr operator float() const noexcept { return as<FloatTag>().storage(); }
+    [[nodiscard]] constexpr operator double() const noexcept { return as<DoubleTag>().storage(); }
 
-    [[nodiscard]] constexpr operator float() const { return as<FloatTag>().storage(); }
-    [[nodiscard]] constexpr operator float&() { return as<FloatTag>().storage(); }
+    [[nodiscard]] operator std::string const&() const noexcept { return as<StringTag>().storage(); }
+    [[nodiscard]] operator std::string&() noexcept { return as<StringTag>().storage(); }
 
-    [[nodiscard]] constexpr operator double() const { return as<DoubleTag>().storage(); }
-    [[nodiscard]] constexpr operator double&() { return as<DoubleTag>().storage(); }
+    [[nodiscard]] operator std::vector<uint8_t> const&() const noexcept { return as<ByteArrayTag>().storage(); }
+    [[nodiscard]] operator std::vector<uint8_t>&() noexcept { return as<ByteArrayTag>().storage(); }
 
-    [[nodiscard]] operator std::string const&() const { return as<StringTag>().storage(); }
-    [[nodiscard]] operator std::string&() { return as<StringTag>().storage(); }
+    [[nodiscard]] operator std::vector<int> const&() const noexcept { return as<IntArrayTag>().storage(); }
+    [[nodiscard]] operator std::vector<int>&() noexcept { return as<IntArrayTag>().storage(); }
 
-    [[nodiscard]] operator std::vector<uint8_t> const&() const { return as<ByteArrayTag>().storage(); }
-    [[nodiscard]] operator std::vector<uint8_t>&() { return as<ByteArrayTag>().storage(); }
+    [[nodiscard]] operator CompoundTag const&() const noexcept { return as<CompoundTag>(); }
+    [[nodiscard]] operator CompoundTag&() noexcept { return as<CompoundTag>(); }
 
-    [[nodiscard]] operator std::vector<int> const&() const { return as<IntArrayTag>().storage(); }
-    [[nodiscard]] operator std::vector<int>&() { return as<IntArrayTag>().storage(); }
-
-    [[nodiscard]] operator CompoundTag const&() const { return as<CompoundTag>(); }
-    [[nodiscard]] operator CompoundTag&() { return as<CompoundTag>(); }
-
-    [[nodiscard]] operator ListTag const&() const { return as<ListTag>(); }
-    [[nodiscard]] operator ListTag&() { return as<ListTag>(); }
+    [[nodiscard]] operator ListTag const&() const noexcept { return as<ListTag>(); }
+    [[nodiscard]] operator ListTag&() noexcept { return as<ListTag>(); }
 
     [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
         return CompoundTagVariant{std::in_place_type<CompoundTag>, init};
