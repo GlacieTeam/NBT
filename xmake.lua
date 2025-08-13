@@ -2,7 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("binarystream 2.0.0")
+add_requires("binarystream 2.1.0")
 
 if is_plat("windows") then
     if not has_config("vs_runtime") then
