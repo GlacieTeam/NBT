@@ -8,26 +8,21 @@
 #include <nbt/DoubleTag.hpp>
 
 namespace bedrock_protocol {
-
-Tag::Type DoubleTag::getType() const { return Tag::Type::Double; }
-
+    
 bool DoubleTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::Double) && (mData == static_cast<const DoubleTag&>(other).mData);
+    return (other.getType() == Tag::Type::Double) && (mStorage == static_cast<const DoubleTag&>(other).mStorage);
 }
 
-std::unique_ptr<Tag> DoubleTag::copy() const { return std::make_unique<DoubleTag>(mData); }
+std::unique_ptr<Tag> DoubleTag::copy() const { return std::make_unique<DoubleTag>(mStorage); }
 
-std::size_t DoubleTag::hash() const { return std::hash<double>{}(mData); }
+std::size_t DoubleTag::hash() const { return std::hash<double>{}(mStorage); }
 
-void DoubleTag::write(BytesDataOutput& stream) const { stream.writeDouble(mData); }
+void DoubleTag::write(BytesDataOutput& stream) const { stream.writeDouble(mStorage); }
 
-void DoubleTag::load(BytesDataInput& stream) { mData = stream.getDouble(); }
+void DoubleTag::load(BytesDataInput& stream) { mStorage = stream.getDouble(); }
 
-void DoubleTag::write(BinaryStream& stream) const { stream.writeDouble(mData); }
+void DoubleTag::write(BinaryStream& stream) const { stream.writeDouble(mStorage); }
 
-void DoubleTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getDouble(); }
-
-double&       DoubleTag::data() { return mData; }
-double const& DoubleTag::data() const { return mData; }
+void DoubleTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getDouble(); }
 
 } // namespace bedrock_protocol

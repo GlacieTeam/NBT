@@ -12,28 +12,28 @@ namespace bedrock_protocol {
 
 class ShortTag : public Tag {
 protected:
-    short mData{0};
+    short mStorage{0};
 
 public:
     [[nodiscard]] constexpr ShortTag() = default;
 
     template <std::integral T>
-    [[nodiscard]] constexpr explicit ShortTag(T value) noexcept : mData(static_cast<short>(value)) {}
+    [[nodiscard]] constexpr explicit ShortTag(T value) noexcept : mStorage(static_cast<short>(value)) {}
 
     template <std::integral T>
     constexpr ShortTag& operator=(T value) noexcept {
-        mData = static_cast<short>(value);
+        mStorage = static_cast<short>(value);
         return *this;
     }
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const noexcept {
-        return static_cast<T>(mData);
+        return static_cast<T>(mStorage);
     }
 
-    [[nodiscard]] ShortTag operator+() const noexcept { return ShortTag{+mData}; }
+    [[nodiscard]] ShortTag operator+() const noexcept { return ShortTag{+mStorage}; }
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Short; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -49,8 +49,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] short&       data();
-    [[nodiscard]] short const& data() const;
+    [[nodiscard]] constexpr short&       storage() { return mStorage; }
+    [[nodiscard]] constexpr short const& storage() const { return mStorage; }
 };
 
 } // namespace bedrock_protocol

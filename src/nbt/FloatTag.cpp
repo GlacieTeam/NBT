@@ -9,25 +9,20 @@
 
 namespace bedrock_protocol {
 
-Tag::Type FloatTag::getType() const { return Tag::Type::Float; }
-
 bool FloatTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::Float) && (mData == static_cast<const FloatTag&>(other).mData);
+    return (other.getType() == Tag::Type::Float) && (mStorage == static_cast<const FloatTag&>(other).mStorage);
 }
 
-std::unique_ptr<Tag> FloatTag::copy() const { return std::make_unique<FloatTag>(mData); }
+std::unique_ptr<Tag> FloatTag::copy() const { return std::make_unique<FloatTag>(mStorage); }
 
-std::size_t FloatTag::hash() const { return std::hash<float>{}(mData); }
+std::size_t FloatTag::hash() const { return std::hash<float>{}(mStorage); }
 
-void FloatTag::write(BytesDataOutput& stream) const { stream.writeFloat(mData); }
+void FloatTag::write(BytesDataOutput& stream) const { stream.writeFloat(mStorage); }
 
-void FloatTag::load(BytesDataInput& stream) { mData = stream.getFloat(); }
+void FloatTag::load(BytesDataInput& stream) { mStorage = stream.getFloat(); }
 
-void FloatTag::write(BinaryStream& stream) const { stream.writeFloat(mData); }
+void FloatTag::write(BinaryStream& stream) const { stream.writeFloat(mStorage); }
 
-void FloatTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getFloat(); }
-
-float&       FloatTag::data() { return mData; }
-float const& FloatTag::data() const { return mData; }
+void FloatTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getFloat(); }
 
 } // namespace bedrock_protocol

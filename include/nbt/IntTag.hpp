@@ -12,28 +12,28 @@ namespace bedrock_protocol {
 
 class IntTag : public Tag {
 protected:
-    int mData{0};
+    int mStorage{0};
 
 public:
     [[nodiscard]] constexpr IntTag() = default;
 
     template <std::integral T>
-    [[nodiscard]] constexpr explicit IntTag(T value) noexcept : mData(static_cast<int>(value)) {}
+    [[nodiscard]] constexpr explicit IntTag(T value) noexcept : mStorage(static_cast<int>(value)) {}
 
     template <std::integral T>
     constexpr IntTag& operator=(int value) noexcept {
-        mData = static_cast<int>(value);
+        mStorage = static_cast<int>(value);
         return *this;
     }
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const noexcept {
-        return static_cast<T>(mData);
+        return static_cast<T>(mStorage);
     }
 
-    [[nodiscard]] IntTag operator+() const noexcept { return IntTag{+mData}; }
+    [[nodiscard]] IntTag operator+() const noexcept { return IntTag{+mStorage}; }
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Int; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -49,8 +49,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] int&       data();
-    [[nodiscard]] int const& data() const;
+    [[nodiscard]] constexpr int&       storage() { return mStorage; }
+    [[nodiscard]] constexpr int const& storage() const { return mStorage; }
 };
 
 } // namespace bedrock_protocol

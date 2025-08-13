@@ -12,28 +12,28 @@ namespace bedrock_protocol {
 
 class Int64Tag : public Tag {
 protected:
-    int64_t mData{0};
+    int64_t mStorage{0};
 
 public:
     [[nodiscard]] constexpr Int64Tag() = default;
 
     template <std::integral T>
-    [[nodiscard]] constexpr explicit Int64Tag(T value) noexcept : mData(static_cast<int64_t>(value)) {}
+    [[nodiscard]] constexpr explicit Int64Tag(T value) noexcept : mStorage(static_cast<int64_t>(value)) {}
 
     template <std::integral T>
     constexpr Int64Tag& operator=(int64_t value) noexcept {
-        mData = static_cast<int64_t>(value);
+        mStorage = static_cast<int64_t>(value);
         return *this;
     }
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const noexcept {
-        return static_cast<int64_t>(mData);
+        return static_cast<int64_t>(mStorage);
     }
 
-    [[nodiscard]] Int64Tag operator+() const noexcept { return Int64Tag{+mData}; }
+    [[nodiscard]] Int64Tag operator+() const noexcept { return Int64Tag{+mStorage}; }
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Int64; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -49,8 +49,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] int64_t&       data();
-    [[nodiscard]] int64_t const& data() const;
+    [[nodiscard]] constexpr int64_t&       storage() { return mStorage; }
+    [[nodiscard]] constexpr int64_t const& storage() const { return mStorage; }
 };
 
 } // namespace bedrock_protocol

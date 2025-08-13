@@ -28,6 +28,8 @@ class IntArrayTag;
 class CompoundTag : public Tag {
 public:
     using TagMap = std::map<std::string, CompoundTagVariant, std::less<>>;
+
+private:
     TagMap mTagMap;
 
 public:
@@ -40,7 +42,7 @@ public:
     [[nodiscard]] CompoundTag() = default;
     [[nodiscard]] CompoundTag(std::initializer_list<TagMap::value_type> tagPairs) : mTagMap(tagPairs) {}
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Compound; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -55,6 +57,9 @@ public:
     void write(BinaryStream& stream) const override;
 
     void load(ReadOnlyBinaryStream& stream) override;
+
+    [[nodiscard]] TagMap&       items();
+    [[nodiscard]] TagMap const& items() const;
 
 public:
     [[nodiscard]] CompoundTagVariant&       operator[](std::string_view index);

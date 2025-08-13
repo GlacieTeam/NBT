@@ -12,16 +12,16 @@ namespace bedrock_protocol {
 
 class StringTag : public Tag {
 protected:
-    std::string mData;
+    std::string mStorage;
 
 public:
     [[nodiscard]] StringTag() = default;
     [[nodiscard]] StringTag(std::string_view str);
     [[nodiscard]] StringTag(std::string str);
     template <size_t N>
-    [[nodiscard]] constexpr StringTag(char const (&str)[N]) : mData(str) {}
+    [[nodiscard]] constexpr StringTag(char const (&str)[N]) : mStorage(str) {}
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::String; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -38,8 +38,8 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] std::string&       data();
-    [[nodiscard]] std::string const& data() const;
+    [[nodiscard]] std::string&       storage();
+    [[nodiscard]] std::string const& storage() const;
     [[nodiscard]] std::string_view   view() const;
 };
 

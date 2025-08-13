@@ -9,23 +9,22 @@
 
 namespace bedrock_protocol {
 
-ByteArrayTag::ByteArrayTag(std::vector<uint8_t> arr) : mData(std::move(arr)) {}
+ByteArrayTag::ByteArrayTag(std::vector<uint8_t> arr) : mStorage(std::move(arr)) {}
 
-ByteArrayTag::ByteArrayTag(std::initializer_list<uint8_t> val) : mData(val) {}
+ByteArrayTag::ByteArrayTag(std::initializer_list<uint8_t> val) : mStorage(val) {}
 
-ByteArrayTag::operator std::vector<uint8_t>() { return mData; }
-
-Tag::Type ByteArrayTag::getType() const { return Tag::Type::ByteArray; }
+ByteArrayTag::operator std::vector<uint8_t> const&() const { return mStorage; }
+ByteArrayTag::operator std::vector<uint8_t>&() { return mStorage; }
 
 bool ByteArrayTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::ByteArray) && (mData == static_cast<const ByteArrayTag&>(other).mData);
+    return (other.getType() == Tag::Type::ByteArray) && (mStorage == static_cast<const ByteArrayTag&>(other).mStorage);
 }
 
-std::unique_ptr<Tag> ByteArrayTag::copy() const { return std::make_unique<ByteArrayTag>(mData); }
+std::unique_ptr<Tag> ByteArrayTag::copy() const { return std::make_unique<ByteArrayTag>(mStorage); }
 
 std::size_t ByteArrayTag::hash() const {
     std::size_t hash = 0;
-    for (uint8_t value : mData) {
+    for (uint8_t value : mStorage) {
         std::size_t element_hash  = std::hash<uint8_t>{}(value);
         hash                     ^= element_hash + 0x9e3779b9 + (hash << 6) + (hash >> 2);
     }
@@ -33,29 +32,29 @@ std::size_t ByteArrayTag::hash() const {
 }
 
 void ByteArrayTag::write(BytesDataOutput& stream) const {
-    stream.writeInt((int)mData.size());
-    stream.writeBytes(mData.data(), mData.size());
+    stream.writeInt((int)mStorage.size());
+    stream.writeBytes(mStorage.data(), mStorage.size());
 }
 
 void ByteArrayTag::load(BytesDataInput& stream) {
     auto size = stream.getInt();
-    mData.resize(size);
-    stream.getBytes(mData.data(), size);
+    mStorage.resize(size);
+    stream.getBytes(mStorage.data(), size);
 }
 
 void ByteArrayTag::write(BinaryStream& stream) const {
-    stream.writeVarInt((int)mData.size());
-    for (auto& data : mData) { stream.writeUnsignedChar(data); }
+    stream.writeVarInt((int)mStorage.size());
+    for (auto& data : mStorage) { stream.writeUnsignedChar(data); }
 }
 
 void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
-    for (auto i = 0; i < size; i++) { mData.emplace_back(stream.getUnsignedChar()); }
+    for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getUnsignedChar()); }
 }
 
-std::vector<uint8_t>&       ByteArrayTag::data() { return mData; }
-std::vector<uint8_t> const& ByteArrayTag::data() const { return mData; }
+std::vector<uint8_t>&       ByteArrayTag::storage() { return mStorage; }
+std::vector<uint8_t> const& ByteArrayTag::storage() const { return mStorage; }
 
-size_t ByteArrayTag::size() const { return mData.size(); }
+size_t ByteArrayTag::size() const { return mStorage.size(); }
 
 } // namespace bedrock_protocol

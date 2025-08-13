@@ -22,8 +22,6 @@
 
 namespace bedrock_protocol {
 
-Tag::Type CompoundTag::getType() const { return Tag::Type::Compound; }
-
 bool CompoundTag::equals(Tag const& other) const {
     if (other.getType() != Tag::Type::Compound) { return false; }
     const auto& other_tag = static_cast<const CompoundTag&>(other);
@@ -346,6 +344,9 @@ CompoundTag::const_iterator CompoundTag::cend() const noexcept { return mTagMap.
 
 CompoundTag::const_reverse_iterator CompoundTag::crbegin() const noexcept { return mTagMap.crbegin(); }
 CompoundTag::const_reverse_iterator CompoundTag::crend() const noexcept { return mTagMap.crend(); }
+
+CompoundTag::TagMap&       CompoundTag::items() { return mTagMap; }
+CompoundTag::TagMap const& CompoundTag::items() const { return mTagMap; }
 
 void CompoundTag::serialize(BinaryStream& stream) const {
     stream.writeUnsignedChar((uint8_t)Tag::Type::Compound);

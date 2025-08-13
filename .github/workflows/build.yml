@@ -37,11 +37,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Install Clang
-      run: sudo apt-get update && sudo apt-get install -y clang
-
-    - name: Install Dependencies
+    - name: Setup Clang
       run: |
+        sudo apt-get update && sudo apt-get install -y clang
         sudo apt-get update
         sudo apt-get install -y clang libc++-dev libc++abi-dev
       

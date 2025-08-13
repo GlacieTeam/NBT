@@ -16,8 +16,7 @@ class CompoundTag;
 class CompoundTagVariant;
 
 class ListTag : public Tag {
-public:
-    std::vector<std::unique_ptr<Tag>> mData;
+    std::vector<std::unique_ptr<Tag>> mStorage;
     Type                              mType{Type::End};
 
 public:
@@ -37,7 +36,7 @@ public:
     ListTag& operator=(ListTag const& other);
     ListTag& operator=(ListTag&& other);
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::List; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

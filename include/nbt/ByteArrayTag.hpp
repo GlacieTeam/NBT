@@ -13,7 +13,7 @@ namespace bedrock_protocol {
 
 class ByteArrayTag : public Tag {
 protected:
-    std::vector<uint8_t> mData;
+    std::vector<uint8_t> mStorage;
 
 public:
     [[nodiscard]] ByteArrayTag() = default;
@@ -21,9 +21,10 @@ public:
     [[nodiscard]] ByteArrayTag(std::vector<uint8_t> arr);
     [[nodiscard]] ByteArrayTag(std::initializer_list<uint8_t> val);
 
-    [[nodiscard]] operator std::vector<uint8_t>();
+    [[nodiscard]] operator std::vector<uint8_t> const&() const;
+    [[nodiscard]] operator std::vector<uint8_t>&();
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::ByteArray; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -40,8 +41,8 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] std::vector<uint8_t>&       data();
-    [[nodiscard]] std::vector<uint8_t> const& data() const;
+    [[nodiscard]] std::vector<uint8_t>&       storage();
+    [[nodiscard]] std::vector<uint8_t> const& storage() const;
 
     [[nodiscard]] size_t size() const;
 };

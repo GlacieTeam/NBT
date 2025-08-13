@@ -9,8 +9,6 @@
 
 namespace bedrock_protocol {
 
-Tag::Type EndTag::getType() const { return Tag::Type::End; }
-
 bool EndTag::equals(const Tag& other) const { return other.getType() == Tag::Type::End; }
 
 std::unique_ptr<Tag> EndTag::copy() const { return std::make_unique<EndTag>(); }

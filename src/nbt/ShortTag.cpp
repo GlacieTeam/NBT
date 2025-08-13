@@ -9,25 +9,20 @@
 
 namespace bedrock_protocol {
 
-Tag::Type ShortTag::getType() const { return Tag::Type::Short; }
-
 bool ShortTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::Short) && (mData == static_cast<const ShortTag&>(other).mData);
+    return (other.getType() == Tag::Type::Short) && (mStorage == static_cast<const ShortTag&>(other).mStorage);
 }
 
-std::unique_ptr<Tag> ShortTag::copy() const { return std::make_unique<ShortTag>(mData); }
+std::unique_ptr<Tag> ShortTag::copy() const { return std::make_unique<ShortTag>(mStorage); }
 
-std::size_t ShortTag::hash() const { return mData; }
+std::size_t ShortTag::hash() const { return mStorage; }
 
-void ShortTag::write(BytesDataOutput& stream) const { stream.writeShort(mData); }
+void ShortTag::write(BytesDataOutput& stream) const { stream.writeShort(mStorage); }
 
-void ShortTag::load(BytesDataInput& stream) { mData = stream.getShort(); }
+void ShortTag::load(BytesDataInput& stream) { mStorage = stream.getShort(); }
 
-void ShortTag::write(BinaryStream& stream) const { stream.writeSignedShort(mData); }
+void ShortTag::write(BinaryStream& stream) const { stream.writeSignedShort(mStorage); }
 
-void ShortTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getSignedShort(); }
-
-short&       ShortTag::data() { return mData; }
-short const& ShortTag::data() const { return mData; }
+void ShortTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getSignedShort(); }
 
 } // namespace bedrock_protocol

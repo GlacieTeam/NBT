@@ -12,21 +12,21 @@ namespace bedrock_protocol {
 
 class FloatTag : public Tag {
 protected:
-    float mData{0};
+    float mStorage{0};
 
 public:
     [[nodiscard]] constexpr FloatTag() = default;
 
-    [[nodiscard]] constexpr explicit FloatTag(float value) noexcept : mData(value) {}
+    [[nodiscard]] constexpr explicit FloatTag(float value) noexcept : mStorage(value) {}
 
     constexpr FloatTag& operator=(float value) noexcept {
-        mData = value;
+        mStorage = value;
         return *this;
     }
 
-    constexpr operator float() const noexcept { return mData; }
+    constexpr operator float() const noexcept { return mStorage; }
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Float; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -42,8 +42,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] float&       data();
-    [[nodiscard]] float const& data() const;
+    [[nodiscard]] constexpr float&       storage() { return mStorage; }
+    [[nodiscard]] constexpr float const& storage() const { return mStorage; }
 };
 
 } // namespace bedrock_protocol

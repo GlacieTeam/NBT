@@ -9,25 +9,20 @@
 
 namespace bedrock_protocol {
 
-Tag::Type ByteTag::getType() const { return Tag::Type::Byte; }
-
 bool ByteTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::Byte) && (mData == static_cast<const ByteTag&>(other).mData);
+    return (other.getType() == Tag::Type::Byte) && (mStorage == static_cast<const ByteTag&>(other).mStorage);
 }
 
-std::unique_ptr<Tag> ByteTag::copy() const { return std::make_unique<ByteTag>(mData); }
+std::unique_ptr<Tag> ByteTag::copy() const { return std::make_unique<ByteTag>(mStorage); }
 
-std::size_t ByteTag::hash() const { return mData; }
+std::size_t ByteTag::hash() const { return mStorage; }
 
-void ByteTag::write(BytesDataOutput& stream) const { stream.writeByte(mData); }
+void ByteTag::write(BytesDataOutput& stream) const { stream.writeByte(mStorage); }
 
-void ByteTag::load(BytesDataInput& stream) { mData = stream.getByte(); }
+void ByteTag::load(BytesDataInput& stream) { mStorage = stream.getByte(); }
 
-void ByteTag::write(BinaryStream& stream) const { stream.writeUnsignedChar(mData); }
+void ByteTag::write(BinaryStream& stream) const { stream.writeUnsignedChar(mStorage); }
 
-void ByteTag::load(ReadOnlyBinaryStream& stream) { mData = stream.getUnsignedChar(); }
-
-uint8_t&       ByteTag::data() { return mData; }
-uint8_t const& ByteTag::data() const { return mData; }
+void ByteTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getUnsignedChar(); }
 
 } // namespace bedrock_protocol

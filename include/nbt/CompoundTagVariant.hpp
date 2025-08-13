@@ -265,8 +265,8 @@ public:
     }
     [[nodiscard]] constexpr bool is_structured() const noexcept { return is_array() || is_object(); }
 
-    [[nodiscard]] CompoundTag::TagMap const& items() const { return as<CompoundTag>().mTagMap; }
-    [[nodiscard]] CompoundTag::TagMap&       items() { return as<CompoundTag>().mTagMap; }
+    [[nodiscard]] CompoundTag::TagMap const& items() const { return as<CompoundTag>().items(); }
+    [[nodiscard]] CompoundTag::TagMap&       items() { return as<CompoundTag>().items(); }
 
     [[nodiscard]] bool contains(std::string_view key) const noexcept {
         if (is_object()) { return as<CompoundTag>().contains(std::string(key)); }
@@ -380,50 +380,54 @@ public:
         }
     }
 
-    [[nodiscard]] operator uint8_t const&() const { return as<ByteTag>().data(); }
-    [[nodiscard]] operator uint8_t&() { return as<ByteTag>().data(); }
-    [[nodiscard]] operator uint8_t&&() && { return std::move(as<ByteTag>().data()); }
+    template <std::integral T>
+    [[nodiscard]] constexpr operator T() const {
+        constexpr size_t size = sizeof(T);
+        if constexpr (size == 1) {
+            return as<ByteTag>().storage();
+        } else if constexpr (size == 2) {
+            return as<ShortTag>().storage();
+        } else if constexpr (size == 4) {
+            return as<IntTag>().storage();
+        } else {
+            return as<Int64Tag>().storage();
+        }
+    }
 
-    [[nodiscard]] operator short const&() const { return as<ShortTag>().data(); }
-    [[nodiscard]] operator short&() { return as<ShortTag>().data(); }
-    [[nodiscard]] operator short&&() && { return std::move(as<ShortTag>().data()); }
+    template <std::integral T>
+    [[nodiscard]] constexpr operator T&() {
+        constexpr size_t size = sizeof(T);
+        if constexpr (size == 1) {
+            return as<ByteTag>().storage();
+        } else if constexpr (size == 2) {
+            return as<ShortTag>().storage();
+        } else if constexpr (size == 4) {
+            return as<IntTag>().storage();
+        } else {
+            return as<Int64Tag>().storage();
+        }
+    }
 
-    [[nodiscard]] operator int const&() const { return as<IntTag>().data(); }
-    [[nodiscard]] operator int&() { return as<IntTag>().data(); }
-    [[nodiscard]] operator int&&() && { return std::move(as<IntTag>().data()); }
+    [[nodiscard]] constexpr operator float() const { return as<FloatTag>().storage(); }
+    [[nodiscard]] constexpr operator float&() { return as<FloatTag>().storage(); }
 
-    [[nodiscard]] operator int64_t const&() const { return as<Int64Tag>().data(); }
-    [[nodiscard]] operator int64_t&() { return as<Int64Tag>().data(); }
-    [[nodiscard]] operator int64_t&&() && { return std::move(as<Int64Tag>().data()); }
+    [[nodiscard]] constexpr operator double() const { return as<DoubleTag>().storage(); }
+    [[nodiscard]] constexpr operator double&() { return as<DoubleTag>().storage(); }
 
-    [[nodiscard]] operator float const&() const { return as<FloatTag>().data(); }
-    [[nodiscard]] operator float&() { return as<FloatTag>().data(); }
-    [[nodiscard]] operator float&&() && { return std::move(as<FloatTag>().data()); }
+    [[nodiscard]] operator std::string const&() const { return as<StringTag>().storage(); }
+    [[nodiscard]] operator std::string&() { return as<StringTag>().storage(); }
 
-    [[nodiscard]] operator double const&() const { return as<DoubleTag>().data(); }
-    [[nodiscard]] operator double&() { return as<DoubleTag>().data(); }
-    [[nodiscard]] operator double&&() && { return std::move(as<DoubleTag>().data()); }
+    [[nodiscard]] operator std::vector<uint8_t> const&() const { return as<ByteArrayTag>().storage(); }
+    [[nodiscard]] operator std::vector<uint8_t>&() { return as<ByteArrayTag>().storage(); }
 
-    [[nodiscard]] operator std::string const&() const { return as<StringTag>().data(); }
-    [[nodiscard]] operator std::string&() { return as<StringTag>().data(); }
-    [[nodiscard]] operator std::string&&() && { return std::move(as<StringTag>().data()); }
-    [[nodiscard]] operator std::string_view() const { return as<StringTag>().view(); }
-
-    [[nodiscard]] operator std::vector<uint8_t> const&() const { return as<ByteArrayTag>().data(); }
-    [[nodiscard]] operator std::vector<uint8_t>&() { return as<ByteArrayTag>().data(); }
-    [[nodiscard]] operator std::vector<uint8_t>&&() && { return std::move(as<ByteArrayTag>().data()); }
-
-    [[nodiscard]] operator std::vector<int> const&() const { return as<IntArrayTag>().data(); }
-    [[nodiscard]] operator std::vector<int>&() { return as<IntArrayTag>().data(); }
-    [[nodiscard]] operator std::vector<int>&&() && { return std::move(as<IntArrayTag>().data()); }
+    [[nodiscard]] operator std::vector<int> const&() const { return as<IntArrayTag>().storage(); }
+    [[nodiscard]] operator std::vector<int>&() { return as<IntArrayTag>().storage(); }
 
     [[nodiscard]] operator CompoundTag const&() const { return as<CompoundTag>(); }
     [[nodiscard]] operator CompoundTag&() { return as<CompoundTag>(); }
-    [[nodiscard]] operator CompoundTag&&() && { return std::move(as<CompoundTag>()); }
 
     [[nodiscard]] operator ListTag const&() const { return as<ListTag>(); }
     [[nodiscard]] operator ListTag&() { return as<ListTag>(); }
-    [[nodiscard]] operator ListTag&&() && { return std::move(as<ListTag>()); }
 
     [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
         return CompoundTagVariant{std::in_place_type<CompoundTag>, init};

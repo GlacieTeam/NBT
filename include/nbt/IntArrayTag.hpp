@@ -13,7 +13,7 @@ namespace bedrock_protocol {
 
 class IntArrayTag : public Tag {
 protected:
-    std::vector<int> mData;
+    std::vector<int> mStorage;
 
 public:
     [[nodiscard]] IntArrayTag() = default;
@@ -21,9 +21,10 @@ public:
     [[nodiscard]] IntArrayTag(std::vector<int> arr);
     [[nodiscard]] IntArrayTag(std::initializer_list<int> val);
 
-    [[nodiscard]] operator std::vector<int>();
+    [[nodiscard]] operator std::vector<int> const&() const;
+    [[nodiscard]] operator std::vector<int>&();
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::IntArray; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -39,8 +40,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] std::vector<int>&       data();
-    [[nodiscard]] std::vector<int> const& data() const;
+    [[nodiscard]] std::vector<int>&       storage();
+    [[nodiscard]] std::vector<int> const& storage() const;
 
     [[nodiscard]] size_t size() const;
 };

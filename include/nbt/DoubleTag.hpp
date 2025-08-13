@@ -12,21 +12,21 @@ namespace bedrock_protocol {
 
 class DoubleTag : public Tag {
 protected:
-    double mData{0};
+    double mStorage{0};
 
 public:
     [[nodiscard]] constexpr DoubleTag() = default;
 
-    [[nodiscard]] constexpr explicit DoubleTag(double value) noexcept : mData(value) {}
+    [[nodiscard]] constexpr explicit DoubleTag(double value) noexcept : mStorage(value) {}
 
     constexpr DoubleTag& operator=(double value) noexcept {
-        mData = value;
+        mStorage = value;
         return *this;
     }
 
-    [[nodiscard]] constexpr operator double() const noexcept { return mData; }
+    [[nodiscard]] constexpr operator double() const noexcept { return mStorage; }
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] constexpr Type getType() const override { return Type::Double; }
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -42,8 +42,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] double&       data();
-    [[nodiscard]] double const& data() const;
+    [[nodiscard]] constexpr double&       storage() { return mStorage; }
+    [[nodiscard]] constexpr double const& storage() const { return mStorage; }
 };
 
 } // namespace bedrock_protocol
