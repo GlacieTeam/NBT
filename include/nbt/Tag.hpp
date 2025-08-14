@@ -8,6 +8,7 @@
 #pragma once
 #include <binarystream/BinaryStream.hpp>
 #include <memory>
+#include <nbt/SnbtFormat.hpp>
 #include <nbt/io/BytesDataOutput.hpp>
 
 namespace bedrock_protocol {
@@ -49,9 +50,9 @@ public:
     virtual void load(ReadOnlyBinaryStream& stream) = 0;
 
 public:
-    [[nodiscard]] static std::unique_ptr<Tag> newTag(Type type);
-
     [[nodiscard]] bool operator==(Tag const& other) const;
+
+    [[nodiscard]] std::string toSnbt(SnbtFormat snbtFormat = SnbtFormat::Jsonify, uint8_t indent = 4) const noexcept;
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr T& as() noexcept {
@@ -72,6 +73,9 @@ public:
     [[nodiscard]] constexpr operator T const&() const noexcept {
         return as<T const&>();
     }
+
+public:
+    [[nodiscard]] static std::unique_ptr<Tag> newTag(Type type);
 };
 
 } // namespace bedrock_protocol

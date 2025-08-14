@@ -8,6 +8,7 @@
 #include "nbt/Tag.hpp"
 #include "nbt/CompoundTag.hpp"
 #include "nbt/CompoundTagVariant.hpp"
+#include "nbt/detail/SnbtSerializer.hpp"
 
 namespace bedrock_protocol {
 
@@ -41,5 +42,34 @@ std::unique_ptr<Tag> Tag::newTag(Type type) {
 }
 
 bool Tag::operator==(Tag const& other) const { return equals(other); }
+
+std::string Tag::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
+    switch (getType()) {
+    case Type::Byte:
+        return detail::TypedToSnbt(as<ByteTag>(), indent, snbtFormat);
+    case Type::Short:
+        return detail::TypedToSnbt(as<ShortTag>(), indent, snbtFormat);
+    case Type::Int:
+        return detail::TypedToSnbt(as<IntTag>(), indent, snbtFormat);
+    case Type::Int64:
+        return detail::TypedToSnbt(as<Int64Tag>(), indent, snbtFormat);
+    case Type::Float:
+        return detail::TypedToSnbt(as<FloatTag>(), indent, snbtFormat);
+    case Type::Double:
+        return detail::TypedToSnbt(as<DoubleTag>(), indent, snbtFormat);
+    case Type::ByteArray:
+        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, snbtFormat);
+    case Type::String:
+        return detail::TypedToSnbt(as<StringTag>(), indent, snbtFormat);
+    case Type::List:
+        return detail::TypedToSnbt(as<ListTag>(), indent, snbtFormat);
+    case Type::Compound:
+        return detail::TypedToSnbt(as<CompoundTag>(), indent, snbtFormat);
+    case Type::IntArray:
+        return detail::TypedToSnbt(as<IntArrayTag>(), indent, snbtFormat);
+    default:
+        return detail::TypedToSnbt(as<EndTag>(), indent, snbtFormat);
+    }
+}
 
 } // namespace bedrock_protocol

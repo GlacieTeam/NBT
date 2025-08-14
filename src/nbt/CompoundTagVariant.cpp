@@ -5,8 +5,9 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include "nbt/CompoundTag.hpp"
 #include "nbt/CompoundTagVariant.hpp"
+#include "nbt/CompoundTag.hpp"
+#include "nbt/detail/SnbtSerializer.hpp"
 
 namespace bedrock_protocol {
 
@@ -60,5 +61,9 @@ const Tag& CompoundTagVariant::operator*() const { return *get(); }
 Tag& CompoundTagVariant::operator*() { return *get(); }
 
 bool CompoundTagVariant::operator==(CompoundTagVariant const& other) const { return get()->equals(*other.get()); }
+
+std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
+    return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat); }, mStorage);
+}
 
 } // namespace bedrock_protocol

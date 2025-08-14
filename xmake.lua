@@ -3,6 +3,7 @@ add_rules("mode.debug", "mode.release")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
 add_requires("binarystream 2.1.0")
+add_requires("nlohmann_json")
 
 if is_plat("windows") then
     if not has_config("vs_runtime") then
@@ -15,8 +16,14 @@ end
 target("NBT")
     set_kind("static")
     set_languages("c++23")
-    add_packages("binarystream")
-    add_includedirs("include")
+    add_packages(
+        "binarystream",
+        "nlohmann_json"
+    )
+    add_includedirs(
+        "include",
+        "src"
+    )
     add_files("src/**.cpp")
     if is_mode("debug") then
         set_symbols("debug")

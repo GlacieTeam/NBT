@@ -5,10 +5,9 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include <algorithm>
+#include "nbt/CompoundTag.hpp"
 #include "nbt/ByteArrayTag.hpp"
 #include "nbt/ByteTag.hpp"
-#include "nbt/CompoundTag.hpp"
 #include "nbt/CompoundTagVariant.hpp"
 #include "nbt/DoubleTag.hpp"
 #include "nbt/EndTag.hpp"
@@ -19,6 +18,7 @@
 #include "nbt/ListTag.hpp"
 #include "nbt/ShortTag.hpp"
 #include "nbt/StringTag.hpp"
+#include <algorithm>
 
 namespace bedrock_protocol {
 
@@ -325,7 +325,7 @@ bool CompoundTag::isEmpty() const { return mTagMap.empty(); }
 
 bool CompoundTag::remove(std::string_view index) {
     if (mTagMap.contains(index)) {
-        mTagMap.erase(index);
+        mTagMap.erase(std::string(index));
         return true;
     }
     return false;
@@ -334,7 +334,7 @@ bool CompoundTag::remove(std::string_view index) {
 bool CompoundTag::rename(std::string_view index, std::string_view newName) {
     if (contains(index)) {
         mTagMap[std::string(newName)] = mTagMap.at(std::string(index));
-        mTagMap.erase(index);
+        remove(index);
         return true;
     }
     return false;
