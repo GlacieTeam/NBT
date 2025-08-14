@@ -9,22 +9,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef NBT_EXPORT
 #ifdef _WIN32
-#ifdef NBT_EXPORT
-#define NBTAPI __declspec(dllexport)
+#define NBT_API __declspec(dllexport)
 #else
-#ifdef NBT_DLL
-#define NBTAPI __declspec(dllimport)
-#else
-#define NBTAPI
-#endif
+#define NBT_API __attribute__((visibility("default"), used))
 #endif
 #else
-#ifdef NBT_EXPORT
-#define NBTAPI __attribute__((visibility("default"), used))
-#else
-#define NBTAPI
-#endif
+#define NBT_API
 #endif
 
 #ifdef __cplusplus
@@ -48,6 +40,11 @@ enum TagType {
 
 // Any Tag
 TagType nbt_any_tag_get_type(void* handle);
+bool    nbt_any_tag_equals(void* handle, void* other);
+void    nbt_any_tag_copy(void* handle);
+void    nbt_any_tag_hash(void* handle);
+void    nbt_any_tag_write(void* handle, void* stream);
+void    nbt_any_tag_load(void* handle, void* stream);
 void    nbt_any_tag_destroy(void* handle);
 
 // EndTag
@@ -97,12 +94,12 @@ void*  nbt_list_tag_create();
 size_t nbt_list_tag_size(void* handle);
 void   nbt_list_tag_push_tag(void* handle, void* tag);
 void   nbt_list_tag_remove_tag(void* handle, size_t index);
-void*  nbt_list_tag_get_tag(void* handle);
+void*  nbt_list_tag_get_tag(void* handle, size_t index);
 
 // CompoundTag
 void* nbt_compound_tag_create();
 
-
+// IntArrayTag
 
 
 void* nbt_int_tag_create(const int* data, size_t size);

@@ -16,18 +16,22 @@ class CompoundTag;
 class CompoundTagVariant;
 
 class ListTag : public Tag {
-    std::vector<std::unique_ptr<Tag>> mStorage;
-    Type                              mType{Type::End};
+public:
+    using TagList = std::vector<std::unique_ptr<Tag>>;
+
+private:
+    TagList mStorage;
+    Type    mType{Type::End};
 
 public:
-    using iterator               = std::vector<std::unique_ptr<Tag>>::iterator;
-    using const_iterator         = std::vector<std::unique_ptr<Tag>>::const_iterator;
-    using reverse_iterator       = std::vector<std::unique_ptr<Tag>>::reverse_iterator;
-    using const_reverse_iterator = std::vector<std::unique_ptr<Tag>>::const_reverse_iterator;
+    using iterator               = TagList::iterator;
+    using const_iterator         = TagList::const_iterator;
+    using reverse_iterator       = TagList::reverse_iterator;
+    using const_reverse_iterator = TagList::const_reverse_iterator;
 
 public:
     [[nodiscard]] ListTag() = default;
-    [[nodiscard]] ListTag(std::vector<std::unique_ptr<Tag>>&& data);
+    [[nodiscard]] ListTag(TagList&& data);
     [[nodiscard]] ListTag(ListTag const& other);
     [[nodiscard]] ListTag(ListTag&& other);
     [[nodiscard]] ListTag(std::initializer_list<CompoundTagVariant> tags);
@@ -57,12 +61,26 @@ public:
 
     [[nodiscard]] size_t size() const;
 
-    void add(std::unique_ptr<Tag>&& tag);
+    void push_back(std::unique_ptr<Tag>&& tag);
+    void push_back(Tag const& tag);
+    void push_back(CompoundTagVariant val);
+
+    void reserve(size_t size);
+
+    bool remove(size_t index);
+    bool remove(size_t startIndex, size_t endIndex);
+    void clear();
+
+    [[nodiscard]] TagList&       storage();
+    [[nodiscard]] TagList const& storage() const;
 
     void forEachCompoundTag(std::function<void(CompoundTag const& tag)> func);
 
-    [[nodiscard]] Tag&       operator[](size_t index);
-    [[nodiscard]] Tag const& operator[](size_t index) const;
+    [[nodiscard]] Tag&       operator[](size_t index) noexcept;
+    [[nodiscard]] Tag const& operator[](size_t index) const noexcept;
+
+    [[nodiscard]] Tag&       at(size_t index);
+    [[nodiscard]] Tag const& at(size_t index) const;
 
     [[nodiscard]] iterator begin() noexcept;
     [[nodiscard]] iterator end() noexcept;
@@ -78,6 +96,9 @@ public:
 
     [[nodiscard]] const_reverse_iterator crbegin() const noexcept;
     [[nodiscard]] const_reverse_iterator crend() const noexcept;
+
+    iterator erase(const_iterator where) noexcept;
+    iterator erase(const_iterator first, const_iterator last) noexcept;
 };
 
 } // namespace bedrock_protocol

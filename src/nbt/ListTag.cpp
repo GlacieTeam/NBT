@@ -10,7 +10,7 @@
 
 namespace bedrock_protocol {
 
-ListTag::ListTag(std::vector<std::unique_ptr<Tag>>&& data) : mStorage(std::move(data)) {
+ListTag::ListTag(TagList&& data) : mStorage(std::move(data)) {
     if (!mStorage.empty()) { mType = mStorage.front()->getType(); }
 }
 
@@ -95,10 +95,36 @@ void ListTag::load(ReadOnlyBinaryStream& stream) {
     }
 }
 
-void ListTag::add(std::unique_ptr<Tag>&& tag) {
+void ListTag::push_back(std::unique_ptr<Tag>&& tag) {
     if (mStorage.empty()) { mType = tag->getType(); }
     mStorage.push_back(std::move(tag));
 }
+
+void ListTag::push_back(Tag const& tag) {
+    if (mStorage.empty()) { mType = tag.getType(); }
+    mStorage.push_back(tag.copy());
+}
+
+void ListTag::push_back(CompoundTagVariant val) { push_back(std::move(val).toUnique()); }
+
+void ListTag::reserve(size_t size) { mStorage.reserve(size); }
+
+bool ListTag::remove(size_t index) {
+    if (index < mStorage.size()) { mStorage.erase(mStorage.begin() + index); }
+    return false;
+}
+
+bool ListTag::remove(size_t startIndex, size_t endIndex) {
+    if (startIndex < endIndex && endIndex < mStorage.size()) {
+        mStorage.erase(mStorage.begin() + startIndex, mStorage.begin() + endIndex);
+    }
+    return false;
+}
+
+void ListTag::clear() { mStorage.clear(); }
+
+ListTag::TagList&       ListTag::storage() { return mStorage; }
+ListTag::TagList const& ListTag::storage() const { return mStorage; }
 
 void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> func) {
     if (mType == Tag::Type::Compound) {
@@ -108,8 +134,11 @@ void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> fun
 
 size_t ListTag::size() const { return mStorage.size(); }
 
-Tag&       ListTag::operator[](size_t index) { return *mStorage.at(index); }
-Tag const& ListTag::operator[](size_t index) const { return *mStorage.at(index); }
+Tag&       ListTag::operator[](size_t index) noexcept { return *mStorage[index]; }
+Tag const& ListTag::operator[](size_t index) const noexcept { return *mStorage[index]; }
+
+Tag&       ListTag::at(size_t index) { return *mStorage.at(index); }
+Tag const& ListTag::at(size_t index) const { return *mStorage.at(index); }
 
 ListTag::iterator ListTag::begin() noexcept { return mStorage.begin(); }
 ListTag::iterator ListTag::end() noexcept { return mStorage.end(); }
@@ -125,5 +154,10 @@ ListTag::const_iterator ListTag::cend() const noexcept { return mStorage.cend();
 
 ListTag::const_reverse_iterator ListTag::crbegin() const noexcept { return mStorage.crbegin(); }
 ListTag::const_reverse_iterator ListTag::crend() const noexcept { return mStorage.crend(); }
+
+ListTag::iterator ListTag::erase(const_iterator where) noexcept { return mStorage.erase(where); }
+ListTag::iterator ListTag::erase(const_iterator first, const_iterator last) noexcept {
+    return mStorage.erase(first, last);
+}
 
 } // namespace bedrock_protocol

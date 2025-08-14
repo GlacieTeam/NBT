@@ -83,6 +83,9 @@ public:
     [[nodiscard]] const_reverse_iterator crbegin() const noexcept;
     [[nodiscard]] const_reverse_iterator crend() const noexcept;
 
+    iterator erase(const_iterator where) noexcept;
+    iterator erase(const_iterator first, const_iterator last) noexcept;
+
 public:
     void put(std::string_view key, Tag&& tag);
     void put(std::string_view key, std::unique_ptr<Tag> tag);
@@ -145,9 +148,10 @@ public:
     [[nodiscard]] size_t size() const;
 
     bool remove(std::string_view index);
+    bool rename(std::string_view index, std::string_view newName);
+    void clear();
 
     [[nodiscard]] std::unique_ptr<CompoundTag> clone() const;
-
 
 public:
     void serialize(BinaryStream& stream) const;

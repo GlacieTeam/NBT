@@ -356,10 +356,31 @@ public:
         );
     }
 
+    bool remove(std::string_view index) {
+        if (is_object()) { as<CompoundTag>().remove(index); }
+        throw std::runtime_error("tag not hold an object");
+    }
+
+    bool remove(size_t index) {
+        if (is_object()) { as<ListTag>().remove(index); }
+        throw std::runtime_error("tag not hold an array");
+    }
+
+    bool rename(std::string_view index, std::string_view newName) {
+        if (is_object()) { as<CompoundTag>().rename(index, newName); }
+        throw std::runtime_error("tag not hold an object");
+    }
+
     void push_back(CompoundTagVariant val) {
         if (is_null()) { mStorage = ListTag{}; }
         if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
-        as<ListTag>().add(std::move(val).toUnique());
+        as<ListTag>().push_back(std::move(val).toUnique());
+    }
+
+    void push_back(Tag const& val) {
+        if (is_null()) { mStorage = ListTag{}; }
+        if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
+        as<ListTag>().push_back(val);
     }
 
     template <typename T>

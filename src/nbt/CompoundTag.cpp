@@ -323,12 +323,24 @@ bool CompoundTag::contains(std::string_view key, Tag::Type type) const {
 
 bool CompoundTag::isEmpty() const { return mTagMap.empty(); }
 
-bool CompoundTag::remove(std::string_view name) {
-    auto it = mTagMap.find(name);
-    if (it == mTagMap.end()) { return false; }
-    mTagMap.erase(it);
-    return true;
+bool CompoundTag::remove(std::string_view index) {
+    if (mTagMap.contains(index)) {
+        mTagMap.erase(index);
+        return true;
+    }
+    return false;
 }
+
+bool CompoundTag::rename(std::string_view index, std::string_view newName) {
+    if (contains(index)) {
+        mTagMap[std::string(newName)] = mTagMap.at(std::string(index));
+        mTagMap.erase(index);
+        return true;
+    }
+    return false;
+}
+
+void CompoundTag::clear() { mTagMap.clear(); }
 
 CompoundTag::iterator CompoundTag::begin() noexcept { return mTagMap.begin(); }
 CompoundTag::iterator CompoundTag::end() noexcept { return mTagMap.end(); }
@@ -344,6 +356,11 @@ CompoundTag::const_iterator CompoundTag::cend() const noexcept { return mTagMap.
 
 CompoundTag::const_reverse_iterator CompoundTag::crbegin() const noexcept { return mTagMap.crbegin(); }
 CompoundTag::const_reverse_iterator CompoundTag::crend() const noexcept { return mTagMap.crend(); }
+
+CompoundTag::iterator CompoundTag::erase(const_iterator where) noexcept { return mTagMap.erase(where); }
+CompoundTag::iterator CompoundTag::erase(const_iterator first, const_iterator last) noexcept {
+    return mTagMap.erase(first, last);
+}
 
 CompoundTag::TagMap&       CompoundTag::items() { return mTagMap; }
 CompoundTag::TagMap const& CompoundTag::items() const { return mTagMap; }
@@ -398,14 +415,13 @@ std::string CompoundTag::toNetworkNbt() const {
     return stream.getAndReleaseData();
 }
 
-CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap[std::string(index)]; }
-CompoundTagVariant const& CompoundTag::at(std::string_view index) const {
-    if (contains(index)) { return mTagMap.at(std::string(index)); }
-    throw std::out_of_range("invalid nbt key");
-}
+CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap.at(std::string(index)); }
+CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return mTagMap.at(std::string(index)); }
 
-CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return at(index); }
-CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const { return at(index); }
+CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return mTagMap[std::string(index)]; }
+CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const {
+    return mTagMap.at(std::string(index));
+}
 
 size_t CompoundTag::size() const { return mTagMap.size(); }
 
