@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include <nbt/io/BytesDataOutput.hpp>
+#include "nbt/io/BytesDataOutput.hpp"
 
 namespace bedrock_protocol {
 

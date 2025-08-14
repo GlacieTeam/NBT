@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include <nbt/ByteArrayTag.hpp>
+#include "nbt/ByteArrayTag.hpp"
 
 namespace bedrock_protocol {
 

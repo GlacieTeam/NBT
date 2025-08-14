@@ -6,19 +6,19 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include <algorithm>
-#include <nbt/ByteArrayTag.hpp>
-#include <nbt/ByteTag.hpp>
-#include <nbt/CompoundTag.hpp>
-#include <nbt/CompoundTagVariant.hpp>
-#include <nbt/DoubleTag.hpp>
-#include <nbt/EndTag.hpp>
-#include <nbt/FloatTag.hpp>
-#include <nbt/Int64Tag.hpp>
-#include <nbt/IntArrayTag.hpp>
-#include <nbt/IntTag.hpp>
-#include <nbt/ListTag.hpp>
-#include <nbt/ShortTag.hpp>
-#include <nbt/StringTag.hpp>
+#include "nbt/ByteArrayTag.hpp"
+#include "nbt/ByteTag.hpp"
+#include "nbt/CompoundTag.hpp"
+#include "nbt/CompoundTagVariant.hpp"
+#include "nbt/DoubleTag.hpp"
+#include "nbt/EndTag.hpp"
+#include "nbt/FloatTag.hpp"
+#include "nbt/Int64Tag.hpp"
+#include "nbt/IntArrayTag.hpp"
+#include "nbt/IntTag.hpp"
+#include "nbt/ListTag.hpp"
+#include "nbt/ShortTag.hpp"
+#include "nbt/StringTag.hpp"
 
 namespace bedrock_protocol {
 

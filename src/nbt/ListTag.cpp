@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include <nbt/CompoundTagVariant.hpp>
-#include <nbt/ListTag.hpp>
+#include "nbt/CompoundTagVariant.hpp"
+#include "nbt/ListTag.hpp"
 
 namespace bedrock_protocol {
 
