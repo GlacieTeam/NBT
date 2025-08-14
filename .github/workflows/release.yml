@@ -1,0 +1,89 @@
+on:
+  release:
+    types:
+      - published
+  
+jobs:
+  build-windows:
+    name: Build on Windows (MSVC)
+    runs-on: windows-2022
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      
+    - name: Build NBT Static (Release)
+      run: xmake config --mode=release --kind=static && xmake --all
+
+    - name: Build NBT Shared (Release)
+      run: xmake config --mode=release --kind=shared && xmake --all
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-windows-x86_64-${{ github.sha }}
+        path: |
+          bin/
+
+  build-linux:
+    name: Build on Linux (Clang)
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Clang
+      run: |
+        sudo apt-get update && sudo apt-get install -y clang
+        sudo apt-get update
+        sudo apt-get install -y clang libc++-dev libc++abi-dev
+      
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      
+    - name: Build NBT Static (Release)
+      run: xmake config --mode=release --kind=static && xmake --all
+
+    - name: Build NBT Shared (Release)
+      run:  xmake config --mode=release --kind=shared && xmake --all
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-linux-x86_64-${{ github.sha }}
+        path: |
+          bin/
+
+  upload-to-release:
+    name: Publish Release
+    needs:
+      - build-windows
+      - build-linux
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: NBT-windows-x86_64-${{ github.sha }}
+          path: artifact
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: NBT-linux-x86_64-${{ github.sha }}
+          path: artifact
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifact/NBT.dll
+            artifact/libNBT.so

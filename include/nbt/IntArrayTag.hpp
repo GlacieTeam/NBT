@@ -18,7 +18,7 @@ protected:
 public:
     [[nodiscard]] IntArrayTag() = default;
 
-    [[nodiscard]] IntArrayTag(std::vector<int> arr);
+    [[nodiscard]] IntArrayTag(std::vector<int> const& arr);
     [[nodiscard]] IntArrayTag(std::initializer_list<int> val);
 
     [[nodiscard]] operator std::vector<int> const&() const;
@@ -44,6 +44,22 @@ public:
     [[nodiscard]] std::vector<int> const& storage() const;
 
     [[nodiscard]] size_t size() const;
+
+    void reserve(size_t size);
+
+    bool remove(size_t index);
+    bool remove(size_t startIndex, size_t endIndex);
+    void clear();
+
+    [[nodiscard]] int&       operator[](size_t index) noexcept;
+    [[nodiscard]] int const& operator[](size_t index) const noexcept;
+
+    [[nodiscard]] int&       at(size_t index);
+    [[nodiscard]] int const& at(size_t index) const;
+
+    void push_back(int val);
+
+    IntArrayTag& operator=(std::vector<int> const& value);
 };
 
 } // namespace bedrock_protocol

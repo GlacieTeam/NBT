@@ -21,7 +21,7 @@ public:
     [[nodiscard]] constexpr explicit IntTag(T value) noexcept : mStorage(static_cast<int>(value)) {}
 
     template <std::integral T>
-    constexpr IntTag& operator=(int value) noexcept {
+    constexpr IntTag& operator=(T value) noexcept {
         mStorage = static_cast<int>(value);
         return *this;
     }

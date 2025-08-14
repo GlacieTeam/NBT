@@ -23,6 +23,12 @@
 extern "C" {
 #endif
 
+struct nbtio_buffer {
+    uint8_t* data;
+    size_t   size;
+};
+NBT_API void nbtio_buffer_destroy(nbtio_buffer* buffer);
+
 enum TagType {
     Tag_End       = 0,
     Tag_Byte      = 1,
@@ -38,72 +44,97 @@ enum TagType {
     Tag_IntArray  = 11,
 };
 
+enum Snbt_Format {
+    Minimize        = 0,
+    PrettyFilePrint = 1,
+    ArrayLineFeed   = 2,
+    AlwaysLineFeed  = 3,
+    ForceAscii      = 4,
+    ForceQuote      = 8,
+    CommentMarks    = 16,
+    Jsonify         = 24,
+};
+
 // Any Tag
-TagType nbt_any_tag_get_type(void* handle);
-bool    nbt_any_tag_equals(void* handle, void* other);
-void    nbt_any_tag_copy(void* handle);
-void    nbt_any_tag_hash(void* handle);
-void    nbt_any_tag_write(void* handle, void* stream);
-void    nbt_any_tag_load(void* handle, void* stream);
-void    nbt_any_tag_destroy(void* handle);
+NBT_API TagType nbt_any_tag_get_type(void* handle);
+NBT_API bool    nbt_any_tag_equals(void* handle, void* other);
+NBT_API void*   nbt_any_tag_copy(void* handle);
+NBT_API size_t  nbt_any_tag_hash(void* handle);
+NBT_API void    nbt_any_tag_write(void* handle, void* stream);
+NBT_API void    nbt_any_tag_load(void* handle, void* stream);
+NBT_API void    nbt_any_tag_destroy(void* handle);
 
 // EndTag
-void* nbt_end_tag_create();
+NBT_API void* nbt_end_tag_create();
 
 // ByteTag
-void*   nbt_byte_tag_create(uint8_t value);
-void    nbt_byte_tag_set_value(void* handle, uint8_t value);
-uint8_t nbt_byte_tag_get_value(void* handle);
+NBT_API void*   nbt_byte_tag_create(uint8_t value);
+NBT_API void    nbt_byte_tag_set_value(void* handle, uint8_t value);
+NBT_API uint8_t nbt_byte_tag_get_value(void* handle);
 
 // ShortTag
-void* nbt_short_tag_create(short value);
-void  nbt_short_tag_set_value(void* handle, short value);
-short nbt_short_tag_get_value(void* handle);
+NBT_API void* nbt_short_tag_create(short value);
+NBT_API void  nbt_short_tag_set_value(void* handle, short value);
+NBT_API short nbt_short_tag_get_value(void* handle);
 
 // IntTag
-void* nbt_int_tag_create(int value);
-void  nbt_int_tag_set_value(void* handle, int value);
-int   nbt_int_tag_get_value(void* handle);
+NBT_API void* nbt_int_tag_create(int value);
+NBT_API void  nbt_int_tag_set_value(void* handle, int value);
+NBT_API int   nbt_int_tag_get_value(void* handle);
 
 // Int64Tag
-void*   nbt_int64_tag_create(int64_t value);
-void    nbt_int64_tag_set_value(void* handle, int64_t value);
-int64_t nbt_int64_tag_get_value(void* handle);
+NBT_API void*   nbt_int64_tag_create(int64_t value);
+NBT_API void    nbt_int64_tag_set_value(void* handle, int64_t value);
+NBT_API int64_t nbt_int64_tag_get_value(void* handle);
 
 // FloatTag
-void* nbt_float_tag_create(float value);
-void  nbt_float_tag_set_value(void* handle, float value);
-float nbt_float_tag_get_value(void* handle);
+NBT_API void* nbt_float_tag_create(float value);
+NBT_API void  nbt_float_tag_set_value(void* handle, float value);
+NBT_API float nbt_float_tag_get_value(void* handle);
 
 // DoubleTag
-void*  nbt_double_tag_create(double value);
-void   nbt_double_tag_set_value(void* handle, double value);
-double nbt_double_tag_get_value(void* handle);
+NBT_API void*  nbt_double_tag_create(double value);
+NBT_API void   nbt_double_tag_set_value(void* handle, double value);
+NBT_API double nbt_double_tag_get_value(void* handle);
 
 // ByteArrayTag
-void* nbt_byte_array_tag_create(const uint8_t* data, size_t size);
+NBT_API void*        nbt_byte_array_tag_create(const uint8_t* data, size_t size);
+NBT_API void         nbt_byte_array_tag_set_value(void* handle, const uint8_t* data, size_t size);
+NBT_API nbtio_buffer nbt_byte_array_tag_get_value(void* handle);
 
 // StringTag
-void*  nbt_string_tag_create(const char* data, size_t size);
-void   nbt_string_tag_set_value(void* handle, const char* data, size_t size);
-char*  nbt_string_tag_get_data(void* handle);
-size_t nbt_string_tag_get_size(void* handle);
+NBT_API void*        nbt_string_tag_create(const char* data, size_t size);
+NBT_API void         nbt_string_tag_set_value(void* handle, const char* data, size_t size);
+NBT_API nbtio_buffer nbt_string_tag_get(void* handle);
 
 // ListTag
-void*  nbt_list_tag_create();
-size_t nbt_list_tag_size(void* handle);
-void   nbt_list_tag_push_tag(void* handle, void* tag);
-void   nbt_list_tag_remove_tag(void* handle, size_t index);
-void*  nbt_list_tag_get_tag(void* handle, size_t index);
+NBT_API void*  nbt_list_tag_create();
+NBT_API size_t nbt_list_tag_size(void* handle);
+NBT_API void   nbt_list_tag_add_tag(void* handle, void* tag);
+NBT_API void*  nbt_list_tag_get_tag(void* handle, size_t index);
+NBT_API bool   nbt_list_tag_remove_tag(void* handle, size_t index);
 
 // CompoundTag
-void* nbt_compound_tag_create();
+NBT_API void*  nbt_compound_tag_create();
+NBT_API size_t nbt_compound_tag_size(void* handle);
+NBT_API void   nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_size, void* tag);
+NBT_API void*  nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size);
+NBT_API bool   nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size);
+
+NBT_API nbtio_buffer nbt_compound_to_binary_nbt(void* handle, bool little_endian);
+NBT_API nbtio_buffer nbt_compound_to_network_nbt(void* handle);
+NBT_API nbtio_buffer nbt_compound_to_snbt(void* handle, Snbt_Format format, uint8_t indent);
+
+NBT_API void* nbt_compound_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian);
+NBT_API void* nbt_compound_from_network_nbt(const uint8_t* data, size_t size);
+NBT_API void* nbt_compound_from_snbt(const uint8_t* data, size_t size);
 
 // IntArrayTag
-
-
-void* nbt_int_tag_create(const int* data, size_t size);
-
+NBT_API void*  nbt_int_array_tag_create();
+NBT_API size_t nbt_int_array_tag_size(void* handle);
+NBT_API void   nbt_int_array_tag_add_value(void* handle, int value);
+NBT_API int    nbt_int_array_tag_get_value(void* handle, size_t index);
+NBT_API bool   nbt_int_array_tag_remove_value(void* handle, size_t index);
 
 #ifdef __cplusplus
 }

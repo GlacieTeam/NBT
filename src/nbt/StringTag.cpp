@@ -13,6 +13,8 @@ StringTag::StringTag(std::string_view str) : mStorage(str) {}
 
 StringTag::StringTag(std::string str) : mStorage(std::move(str)) {}
 
+StringTag::StringTag(const char* data, size_t size) : mStorage(data, size) {}
+
 bool StringTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::String) && (mStorage == static_cast<const StringTag&>(other).mStorage);
 }
@@ -32,5 +34,8 @@ void StringTag::load(ReadOnlyBinaryStream& stream) { stream.getString(mStorage);
 std::string&       StringTag::storage() { return mStorage; }
 std::string const& StringTag::storage() const { return mStorage; }
 std::string_view   StringTag::view() const { return mStorage; }
+
+StringTag::operator std::string const&() const { return mStorage; }
+StringTag::operator std::string&() { return mStorage; }
 
 } // namespace bedrock_protocol

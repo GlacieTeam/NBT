@@ -9,7 +9,7 @@
 
 namespace bedrock_protocol {
 
-IntArrayTag::IntArrayTag(std::vector<int> arr) : mStorage(std::move(arr)) {}
+IntArrayTag::IntArrayTag(std::vector<int> const& arr) : mStorage(std::move(arr)) {}
 
 IntArrayTag::IntArrayTag(std::initializer_list<int> val) : mStorage(val) {}
 
@@ -56,5 +56,38 @@ std::vector<int>&       IntArrayTag::storage() { return mStorage; }
 std::vector<int> const& IntArrayTag::storage() const { return mStorage; }
 
 size_t IntArrayTag::size() const { return mStorage.size(); }
+
+void IntArrayTag::reserve(size_t size) { mStorage.reserve(size); }
+
+bool IntArrayTag::remove(size_t index) {
+    if (index < mStorage.size()) {
+        mStorage.erase(mStorage.begin() + index);
+        return true;
+    }
+    return false;
+}
+
+bool IntArrayTag::remove(size_t startIndex, size_t endIndex) {
+    if (startIndex < endIndex && endIndex < mStorage.size()) {
+        mStorage.erase(mStorage.begin() + startIndex, mStorage.begin() + endIndex);
+        return true;
+    }
+    return false;
+}
+
+void IntArrayTag::clear() { mStorage.clear(); }
+
+int&       IntArrayTag::operator[](size_t index) noexcept { return mStorage[index]; }
+int const& IntArrayTag::operator[](size_t index) const noexcept { return mStorage[index]; }
+
+int&       IntArrayTag::at(size_t index) { return mStorage.at(index); }
+int const& IntArrayTag::at(size_t index) const { return mStorage.at(index); }
+
+void IntArrayTag::push_back(int val) { mStorage.push_back(val); }
+
+IntArrayTag& IntArrayTag::operator=(std::vector<int> const& value) {
+    mStorage = value;
+    return *this;
+}
 
 } // namespace bedrock_protocol

@@ -9,12 +9,29 @@
 
 namespace bedrock_protocol {
 
-ByteArrayTag::ByteArrayTag(std::vector<uint8_t> arr) : mStorage(std::move(arr)) {}
+ByteArrayTag::ByteArrayTag(std::vector<uint8_t> const& arr) : mStorage(arr) {}
+
+ByteArrayTag::ByteArrayTag(std::vector<std::byte> const& arr)
+: mStorage(reinterpret_cast<uint8_t const*>(arr.data()), reinterpret_cast<uint8_t const*>(arr.data() + arr.size())) {}
 
 ByteArrayTag::ByteArrayTag(std::initializer_list<uint8_t> val) : mStorage(val) {}
 
+ByteArrayTag::ByteArrayTag(std::initializer_list<std::byte> val)
+: mStorage(reinterpret_cast<uint8_t const*>(val.begin()), reinterpret_cast<uint8_t const*>(val.end())) {}
+
+ByteArrayTag::ByteArrayTag(uint8_t const* data, size_t size) : mStorage(data, data + size) {}
+
+ByteArrayTag::ByteArrayTag(std::byte const* data, size_t size)
+: mStorage(reinterpret_cast<uint8_t const*>(data), reinterpret_cast<uint8_t const*>(data) + size) {}
+
 ByteArrayTag::operator std::vector<uint8_t> const&() const { return mStorage; }
 ByteArrayTag::operator std::vector<uint8_t>&() { return mStorage; }
+ByteArrayTag::operator std::vector<std::byte>() const {
+    return {
+        reinterpret_cast<std::byte const*>(mStorage.data()),
+        reinterpret_cast<std::byte const*>(mStorage.data() + mStorage.size())
+    };
+}
 
 bool ByteArrayTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::ByteArray) && (mStorage == static_cast<const ByteArrayTag&>(other).mStorage);
@@ -56,5 +73,52 @@ std::vector<uint8_t>&       ByteArrayTag::storage() { return mStorage; }
 std::vector<uint8_t> const& ByteArrayTag::storage() const { return mStorage; }
 
 size_t ByteArrayTag::size() const { return mStorage.size(); }
+
+void ByteArrayTag::reserve(size_t size) { mStorage.reserve(size); }
+
+bool ByteArrayTag::remove(size_t index) {
+    if (index < mStorage.size()) {
+        mStorage.erase(mStorage.begin() + index);
+        return true;
+    }
+    return false;
+}
+
+bool ByteArrayTag::remove(size_t startIndex, size_t endIndex) {
+    if (startIndex < endIndex && endIndex < mStorage.size()) {
+        mStorage.erase(mStorage.begin() + startIndex, mStorage.begin() + endIndex);
+        return true;
+    }
+    return false;
+}
+
+void ByteArrayTag::clear() { mStorage.clear(); }
+
+uint8_t&       ByteArrayTag::operator[](size_t index) noexcept { return mStorage[index]; }
+uint8_t const& ByteArrayTag::operator[](size_t index) const noexcept { return mStorage[index]; }
+
+uint8_t&       ByteArrayTag::at(size_t index) { return mStorage.at(index); }
+uint8_t const& ByteArrayTag::at(size_t index) const { return mStorage.at(index); }
+
+void ByteArrayTag::push_back(uint8_t val) { mStorage.push_back(val); }
+void ByteArrayTag::push_back(std::byte val) { mStorage.push_back(static_cast<uint8_t>(val)); }
+
+ByteArrayTag& ByteArrayTag::operator=(std::vector<uint8_t> const value) {
+    mStorage = value;
+    return *this;
+}
+ByteArrayTag& ByteArrayTag::operator=(std::vector<std::byte> const value) {
+    mStorage.assign(
+        reinterpret_cast<uint8_t const*>(value.data()),
+        reinterpret_cast<uint8_t const*>(value.data() + value.size())
+    );
+    return *this;
+}
+
+void ByteArrayTag::reinit(uint8_t const* data, size_t size) { mStorage.assign(data, data + size); }
+
+void ByteArrayTag::reinit(std::byte const* data, size_t size) {
+    mStorage.assign(reinterpret_cast<uint8_t const*>(data), reinterpret_cast<uint8_t const*>(data) + size);
+}
 
 } // namespace bedrock_protocol

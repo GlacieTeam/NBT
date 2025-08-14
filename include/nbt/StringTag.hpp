@@ -18,8 +18,13 @@ public:
     [[nodiscard]] StringTag() = default;
     [[nodiscard]] StringTag(std::string_view str);
     [[nodiscard]] StringTag(std::string str);
+    [[nodiscard]] StringTag(const char* data, size_t size);
+
     template <size_t N>
     [[nodiscard]] constexpr StringTag(char const (&str)[N]) : mStorage(str) {}
+
+    [[nodiscard]] operator std::string const&() const;
+    [[nodiscard]] operator std::string&();
 
     [[nodiscard]] constexpr Type getType() const override { return Type::String; }
 

@@ -8,6 +8,7 @@
 #pragma once
 #include <map>
 #include <nbt/Tag.hpp>
+#include <optional>
 #include <vector>
 
 namespace bedrock_protocol {

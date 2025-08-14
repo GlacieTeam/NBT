@@ -18,11 +18,16 @@ protected:
 public:
     [[nodiscard]] ByteArrayTag() = default;
 
-    [[nodiscard]] ByteArrayTag(std::vector<uint8_t> arr);
+    [[nodiscard]] ByteArrayTag(std::vector<uint8_t> const& arr);
+    [[nodiscard]] ByteArrayTag(std::vector<std::byte> const& arr);
     [[nodiscard]] ByteArrayTag(std::initializer_list<uint8_t> val);
+    [[nodiscard]] ByteArrayTag(std::initializer_list<std::byte> val);
+    [[nodiscard]] ByteArrayTag(uint8_t const* data, size_t size);
+    [[nodiscard]] ByteArrayTag(std::byte const* data, size_t size);
 
     [[nodiscard]] operator std::vector<uint8_t> const&() const;
     [[nodiscard]] operator std::vector<uint8_t>&();
+    [[nodiscard]] operator std::vector<std::byte>() const;
 
     [[nodiscard]] constexpr Type getType() const override { return Type::ByteArray; }
 
@@ -45,6 +50,27 @@ public:
     [[nodiscard]] std::vector<uint8_t> const& storage() const;
 
     [[nodiscard]] size_t size() const;
+
+    void reserve(size_t size);
+
+    bool remove(size_t index);
+    bool remove(size_t startIndex, size_t endIndex);
+    void clear();
+
+    [[nodiscard]] uint8_t&       operator[](size_t index) noexcept;
+    [[nodiscard]] uint8_t const& operator[](size_t index) const noexcept;
+
+    [[nodiscard]] uint8_t&       at(size_t index);
+    [[nodiscard]] uint8_t const& at(size_t index) const;
+
+    void push_back(uint8_t val);
+    void push_back(std::byte val);
+
+    ByteArrayTag& operator=(std::vector<uint8_t> const value);
+    ByteArrayTag& operator=(std::vector<std::byte> const value);
+
+    void reinit(uint8_t const* data, size_t size);
+    void reinit(std::byte const* data, size_t size);
 };
 
 } // namespace bedrock_protocol
