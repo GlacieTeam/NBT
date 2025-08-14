@@ -34,7 +34,7 @@ jobs:
 
   build-linux:
     name: Build on Linux (Clang)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
