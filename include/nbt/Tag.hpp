@@ -55,6 +55,8 @@ public:
     [[nodiscard]] std::string
     toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
+    [[nodiscard]] std::string toJson(uint8_t indent = 4) const noexcept;
+
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr T& as() noexcept {
         return static_cast<T&>(*this);

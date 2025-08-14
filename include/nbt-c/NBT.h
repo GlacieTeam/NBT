@@ -127,6 +127,7 @@ NBT_API void   nbt_compound_tag_clear(void* handle);
 NBT_API nbtio_buffer nbt_compound_to_binary_nbt(void* handle, bool little_endian);
 NBT_API nbtio_buffer nbt_compound_to_network_nbt(void* handle);
 NBT_API nbtio_buffer nbt_compound_to_snbt(void* handle, Snbt_Format format, uint8_t indent);
+NBT_API nbtio_buffer nbt_compound_to_json(void* handle, uint8_t indent);
 
 NBT_API void* nbt_compound_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian);
 NBT_API void* nbt_compound_from_network_nbt(const uint8_t* data, size_t size);

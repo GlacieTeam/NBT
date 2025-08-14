@@ -9,6 +9,7 @@
 #include "nbt/CompoundTag.hpp"
 #include "nbt/detail/SnbtDeserializer.hpp"
 #include "nbt/detail/SnbtSerializer.hpp"
+#include <nlohmann/json.hpp>
 
 namespace bedrock_protocol {
 
@@ -65,6 +66,12 @@ bool CompoundTagVariant::operator==(CompoundTagVariant const& other) const { ret
 
 std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
     return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat); }, mStorage);
+}
+
+std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
+    try {
+        return nlohmann::ordered_json::parse(toSnbt(SnbtFormat::Jsonify), nullptr, true, true).dump(indent);
+    } catch (...) { return {}; }
 }
 
 std::optional<CompoundTagVariant>

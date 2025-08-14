@@ -330,6 +330,19 @@ nbtio_buffer nbt_compound_to_snbt(void* handle, Snbt_Format format, uint8_t inde
     return nbtio_buffer();
 }
 
+nbtio_buffer nbt_compound_to_json(void* handle, uint8_t indent) {
+    if (handle) {
+        std::string value = toTag(handle)->as<bedrock_protocol::CompoundTag>().toJson(indent);
+        uint8_t*    data  = new uint8_t[value.size()];
+        std::memcpy(data, value.data(), value.size());
+        nbtio_buffer result;
+        result.data = data;
+        result.size = value.size();
+        return result;
+    }
+    return nbtio_buffer();
+}
+
 void* nbt_compound_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
     auto             result = bedrock_protocol::CompoundTag::fromBinaryNbt(content, little_endian);
