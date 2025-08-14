@@ -139,7 +139,7 @@ NBT_API void   nbt_int_array_tag_add_value(void* handle, int value);
 NBT_API int    nbt_int_array_tag_get_value(void* handle, size_t index);
 NBT_API bool   nbt_int_array_tag_remove_value(void* handle, size_t index);
 NBT_API void   nbt_int_array_tag_clear(void* handle);
-NBT_API bool   nbt_int_array_tag_set_tag(void* handle, size_t index, void* tag);
+NBT_API bool   nbt_int_array_tag_set_value(void* handle, size_t index, void* tag);
 
 #ifdef __cplusplus
 }

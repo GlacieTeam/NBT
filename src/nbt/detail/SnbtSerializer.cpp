@@ -13,12 +13,24 @@
 #include "nbt/StringTag.hpp"
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
+#include <format>
 #include <nlohmann/json.hpp>
 
 namespace bedrock_protocol {
 
 namespace {
 static constexpr std::string_view BASE64_TAG = " /*BASE64*/";
+
+template <std::integral T>
+std::string toString(T value) {
+    return std::format("{}", value);
+}
+
+template <std::floating_point T>
+std::string toString(T value) {
+    if (std::round(value) == value) { return std::format("{:.1f}", value); }
+    return std::format("{}", value);
+}
 
 bool isMinimize(SnbtFormat format) {
     return !(
@@ -75,24 +87,24 @@ namespace detail {
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat) { return "null"; }
 
 std::string TypedToSnbt(ByteTag const& self, uint8_t, SnbtFormat format) {
-    return std::to_string(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*b*/" : "b");
+    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*b*/" : "b");
 }
 
 std::string TypedToSnbt(ShortTag const& self, uint8_t, SnbtFormat format) {
-    return std::to_string(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*s*/" : "s");
+    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*s*/" : "s");
 }
 
-std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat) { return std::to_string(self.storage()); }
+std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
 
 std::string TypedToSnbt(Int64Tag const& self, uint8_t, SnbtFormat format) {
-    return std::to_string(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*l*/" : "l");
+    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*l*/" : "l");
 }
 
 std::string TypedToSnbt(FloatTag const& self, uint8_t, SnbtFormat format) {
-    return std::to_string(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*f*/" : "f");
+    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*f*/" : "f");
 }
 
-std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat) { return std::to_string(self.storage()); }
+std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
 
 std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format) {
     std::string res = toDumpString(self.storage(), format, false);
@@ -197,7 +209,7 @@ std::string TypedToSnbt(ByteArrayTag const& self, uint8_t indent, SnbtFormat for
     for (auto& tag : self.storage()) {
         i--;
         if (isNewLine) { res += indentSpace; }
-        res += std::to_string(tag) + back;
+        res += toString(tag) + back;
 
         if (i > 0) {
             res += ',';
@@ -232,7 +244,7 @@ std::string TypedToSnbt(IntArrayTag const& self, uint8_t indent, SnbtFormat form
         i--;
         if (isNewLine) { res += indentSpace; }
 
-        res += std::to_string(tag);
+        res += toString(tag);
 
         if (i > 0) {
             res += ',';

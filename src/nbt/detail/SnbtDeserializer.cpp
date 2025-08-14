@@ -38,7 +38,6 @@ bool ignoreComment(std::string_view& s) noexcept {
                     continue;
                 }
             }
-
             default:
                 continue;
             }

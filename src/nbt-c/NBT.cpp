@@ -379,7 +379,7 @@ void nbt_int_array_tag_clear(void* handle) {
     if (handle) { return toTag(handle)->as<bedrock_protocol::ListTag>().clear(); }
 }
 
-bool nbt_int_array_tag_set_tag(void* handle, size_t index, void* tag) {
+bool nbt_int_array_tag_set_value(void* handle, size_t index, void* tag) {
     if (handle) {
         auto& intArrayTag = toTag(handle)->as<bedrock_protocol::ListTag>();
         if (index < intArrayTag.size()) { return intArrayTag.set(index, *toTag(tag)); }
