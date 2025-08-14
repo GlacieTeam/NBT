@@ -94,6 +94,7 @@ void nbt_any_tag_destroy(void* handle) {
         break;
     }
     default:
+        delete reinterpret_cast<bedrock_protocol::EndTag*>(handle);
         break;
     }
 }
