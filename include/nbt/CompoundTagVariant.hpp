@@ -162,13 +162,13 @@ public:
     Tag& emplace(Tag&& tag);
 
     template <std::derived_from<Tag> T>
-    [[nodiscard]] T& as() {
-        return *(T*)get();
+    [[nodiscard]] constexpr T& as() noexcept {
+        return static_cast<T&>(*get());
     }
 
     template <std::derived_from<Tag> T>
-    [[nodiscard]] T const& as() const {
-        return *(T*)get();
+    [[nodiscard]] constexpr T const& as() const noexcept {
+        return static_cast<T const&>(*get());
     }
 
     [[nodiscard]] const Tag* operator->() const;
@@ -363,54 +363,56 @@ public:
     }
 
     template <typename T>
+        requires std::is_arithmetic_v<T>
     [[nodiscard]] constexpr operator T() const {
-        if (is_number()) {
-            return std::visit(
-                [](auto& val) -> T {
-                    if constexpr (std::is_convertible_v<std::decay_t<decltype(val)>, T>) {
-                        return (T)val;
-                    } else {
-                        return {};
-                    }
-                },
-                mStorage
-            );
-        } else {
-            throw std::runtime_error("tag not hold an number");
-        }
+        return std::visit(
+            [](auto& val) -> T {
+                if constexpr (std::is_convertible_v<std::decay_t<decltype(val)>, T>) {
+                    return static_cast<T>(val);
+                } else {
+                    throw std::runtime_error("tag can not convert to a number");
+                }
+            },
+            mStorage
+        );
     }
 
-    template <std::integral T>
-    [[nodiscard]] constexpr operator T() const noexcept {
-        constexpr size_t size = sizeof(T);
-        if constexpr (size == 1) {
-            return static_cast<T>(as<ByteTag>().storage());
-        } else if constexpr (size == 2) {
-            return static_cast<T>(as<ShortTag>().storage());
-        } else if constexpr (size == 4) {
-            return static_cast<T>(as<IntTag>().storage());
-        } else {
-            return static_cast<T>(as<Int64Tag>().storage());
-        }
+    [[nodiscard]] operator std::string const&() const {
+        if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
+        return as<StringTag>().storage();
+    }
+    [[nodiscard]] operator std::string&() {
+        if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
+        return as<StringTag>().storage();
     }
 
-    [[nodiscard]] constexpr operator float() const noexcept { return as<FloatTag>().storage(); }
-    [[nodiscard]] constexpr operator double() const noexcept { return as<DoubleTag>().storage(); }
+    [[nodiscard]] operator std::vector<uint8_t> const&() const {
+        if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+        return as<ByteArrayTag>().storage();
+    }
+    [[nodiscard]] operator std::vector<uint8_t>&() {
+        if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+        return as<ByteArrayTag>().storage();
+    }
 
-    [[nodiscard]] operator std::string const&() const noexcept { return as<StringTag>().storage(); }
-    [[nodiscard]] operator std::string&() noexcept { return as<StringTag>().storage(); }
+    [[nodiscard]] operator std::vector<int> const&() const {
+        if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+        return as<IntArrayTag>().storage();
+    }
+    [[nodiscard]] operator std::vector<int>&() {
+        if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+        return as<IntArrayTag>().storage();
+    }
 
-    [[nodiscard]] operator std::vector<uint8_t> const&() const noexcept { return as<ByteArrayTag>().storage(); }
-    [[nodiscard]] operator std::vector<uint8_t>&() noexcept { return as<ByteArrayTag>().storage(); }
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] constexpr operator T&() noexcept {
+        return as<T&>();
+    }
 
-    [[nodiscard]] operator std::vector<int> const&() const noexcept { return as<IntArrayTag>().storage(); }
-    [[nodiscard]] operator std::vector<int>&() noexcept { return as<IntArrayTag>().storage(); }
-
-    [[nodiscard]] operator CompoundTag const&() const noexcept { return as<CompoundTag>(); }
-    [[nodiscard]] operator CompoundTag&() noexcept { return as<CompoundTag>(); }
-
-    [[nodiscard]] operator ListTag const&() const noexcept { return as<ListTag>(); }
-    [[nodiscard]] operator ListTag&() noexcept { return as<ListTag>(); }
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] constexpr operator T const&() const noexcept {
+        return as<T const&>();
+    }
 
     [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
         return CompoundTagVariant{std::in_place_type<CompoundTag>, init};

@@ -19,7 +19,9 @@ BytesDataOutput::BytesDataOutput(std::string& buffer, bool copyBuffer, bool isLi
 
 std::string BytesDataOutput::getAndReleaseData() { return std::move(mBuffer); }
 
-void BytesDataOutput::writeBytes(const void* origin, size_t num) { mBuffer.append((const char*)origin, num); }
+void BytesDataOutput::writeBytes(const void* origin, size_t num) {
+    mBuffer.append(reinterpret_cast<const char*>(origin), num);
+}
 
 void BytesDataOutput::writeString(std::string_view value) {
     writeShort((int16_t)value.size());

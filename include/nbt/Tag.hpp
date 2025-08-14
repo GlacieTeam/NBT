@@ -54,13 +54,23 @@ public:
     [[nodiscard]] bool operator==(Tag const& other) const;
 
     template <std::derived_from<Tag> T>
-    [[nodiscard]] T& as() {
-        return *(T*)this;
+    [[nodiscard]] constexpr T& as() noexcept {
+        return static_cast<T&>(*this);
     }
 
     template <std::derived_from<Tag> T>
-    [[nodiscard]] T const& as() const {
-        return *(T*)this;
+    [[nodiscard]] constexpr T const& as() const noexcept {
+        return static_cast<T const&>(*this);
+    }
+
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] constexpr operator T&() noexcept {
+        return as<T&>();
+    }
+
+    template <std::derived_from<Tag> T>
+    [[nodiscard]] constexpr operator T const&() const noexcept {
+        return as<T const&>();
     }
 };
 
