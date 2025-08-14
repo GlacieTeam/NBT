@@ -32,7 +32,7 @@ bool ignoreComment(std::string_view& s) noexcept {
                 switch (s[i]) {
                 case '/':
                     s.remove_prefix(std::min(i + 1, s.size()));
-                    return {};
+                    return true;
 
                 default:
                     continue;
@@ -53,13 +53,13 @@ bool ignoreComment(std::string_view& s) noexcept {
             case std::char_traits<char>::eof():
             case '\0':
                 s.remove_prefix(std::min(i, s.size()));
-                return {};
+                return false;
 
             default:
                 break;
             }
         }
-        return true;
+        break;
     }
     }
     return false;
@@ -89,7 +89,7 @@ char get(std::string_view& s) {
 }
 
 std::optional<long double> stold(std::string_view const& s, size_t& n) {
-    int&        errnoRef = errno; // Nonzero cost, pay it once
+    int&        errnoRef = errno;
     char const* ptr      = s.data();
     char*       eptr;
     errnoRef              = 0;
@@ -250,7 +250,7 @@ std::optional<std::string> parseString(std::string_view& s) {
             switch (get(s)) {
             case '\n':
             case '\r':
-                if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+                if (!skipWhitespace(s)) { return std::nullopt; }
                 break;
             case '\"': {
                 if (starts == '\"') {
@@ -352,7 +352,7 @@ template <class R, class T, class H, class F>
 std::optional<R> parseNumArray(std::string_view& s, F&& f) {
     T res;
     while (!s.empty()) {
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with(']')) {
             s.remove_prefix(1);
             return res;
@@ -366,7 +366,7 @@ std::optional<R> parseNumArray(std::string_view& s, F&& f) {
         } else {
             return std::nullopt;
         }
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         switch (s.front()) {
         case ']':
             s.remove_prefix(1);
@@ -432,7 +432,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
     }
     ListTag res{};
     while (!s.empty()) {
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with(']')) {
             s.remove_prefix(1);
             if (!res.empty()) res.getElementType() = res.storage().front()->getType();
@@ -442,7 +442,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         if (!value) { return std::nullopt; }
         res.push_back(std::move(*value).toUnique());
 
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         switch (s.front()) {
         case ']':
             s.remove_prefix(1);
@@ -460,21 +460,21 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
 
 std::optional<CompoundTagVariant> parseCompound(std::string_view& s) {
     get(s);
-    if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+    if (!skipWhitespace(s)) { return std::nullopt; }
     if (s.starts_with('}')) {
         s.remove_prefix(1);
         return CompoundTag{};
     }
     CompoundTag res;
     while (!s.empty()) {
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with('}')) {
             s.remove_prefix(1);
             return res;
         }
         auto key = parseString(s);
         if (!key) { return std::nullopt; }
-        if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+        if (!skipWhitespace(s)) { return std::nullopt; }
         auto p = get(s);
         if (p != ':' && p != '=') { return std::nullopt; }
         auto value = detail::parseSnbtValue(s);
@@ -549,10 +549,10 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
 }
 
 std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s) noexcept try {
-    if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+    if (!skipWhitespace(s)) { return std::nullopt; }
     auto res = parseSnbtValueNonSkip(s);
     if (!res) { return res; }
-    if (auto skipped = skipWhitespace(s); !skipped) { return std::nullopt; }
+    if (!skipWhitespace(s)) { return std::nullopt; }
     return res;
 } catch (...) { return std::nullopt; }
 
