@@ -39,7 +39,7 @@ constexpr size_t getDecodeLength(std::string_view in) {
     return ((6 * input_size) / 8) - count;
 }
 
-std::string encode(std::string_view str) {
+inline std::string encode(std::string_view str) {
     std::string result;
     result.reserve(getEncodeLength(str));
     int32_t i = 0;
@@ -57,7 +57,7 @@ std::string encode(std::string_view str) {
     return result;
 }
 
-std::string decode(std::string_view str) {
+inline std::string decode(std::string_view str) {
     size_t      input_size  = str.size();
     size_t      output_size = getDecodeLength(str);
     std::string out;

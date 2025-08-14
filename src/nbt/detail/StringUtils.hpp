@@ -11,7 +11,8 @@ constexpr std::string& replaceAll(std::string& str, std::string_view oldValue, s
     return str;
 }
 
-[[nodiscard]] std::string replaceAll(std::string const& str, std::string_view oldValue, std::string_view newValue) {
+[[nodiscard]] inline std::string
+replaceAll(std::string const& str, std::string_view oldValue, std::string_view newValue) {
     std::string ret = str;
     replaceAll(ret, oldValue, newValue);
     return ret;

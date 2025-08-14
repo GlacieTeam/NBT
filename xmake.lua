@@ -13,8 +13,14 @@ else
     set_toolchains("clang")
 end
 
+option("kind")
+    set_default("static")
+    set_values("static", "shared")
+    set_showmenu(true)
+option_end()
+
 target("NBT")
-    set_kind("static")
+    set_kind("$(kind)")
     set_languages("c++23")
     add_packages(
         "binarystream",
@@ -30,6 +36,9 @@ target("NBT")
     else
         set_optimize("aggressive")
         set_strip("all")
+    end
+    if is_config("kind", "shared") then
+        add_defines("NBT_EXPORT")
     end
     
     if is_plat("windows") then
@@ -63,4 +72,19 @@ target("NBT")
                 "-O3"
             )
         end
+        if is_config("kind", "shared") then
+            add_cxflags(
+                "-fvisibility=hidden",
+                "-fvisibility-inlines-hidden"
+            )
+            add_syslinks("c++")
+        end
+    end
+    if is_config("kind", "shared") then
+        after_build(function (target)
+            local output_dir = path.join(os.projectdir(), "bin")
+            os.mkdir(output_dir)
+            os.cp(target:targetfile(), path.join(output_dir, path.filename(target:targetfile())))
+            cprint("${bright green}[Shared Library]: ${reset}".. path.filename(target:targetfile()) .. " already generated to " .. output_dir)
+        end)
     end

@@ -20,10 +20,10 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
       
     - name: Build NBT Static (Release)
-      run: xmake config --mode=release --kind=static && xmake --all
+      run: xmake config --mode=release --kind=static -y && xmake --all -y
 
     - name: Build NBT Shared (Release)
-      run: xmake config --mode=release --kind=shared && xmake --all
+      run: xmake config --mode=release --kind=shared -y && xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -49,10 +49,10 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
       
     - name: Build NBT Static (Release)
-      run: xmake config --mode=release --kind=static && xmake --all
+      run: xmake config --mode=release --kind=static -y && xmake --all -y
 
     - name: Build NBT Shared (Release)
-      run:  xmake config --mode=release --kind=shared && xmake --all
+      run:  xmake config --mode=release --kind=shared -y && xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
