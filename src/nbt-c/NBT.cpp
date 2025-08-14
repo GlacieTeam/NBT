@@ -234,7 +234,7 @@ void nbt_list_tag_add_tag(void* handle, void* tag) {
 void* nbt_list_tag_get_tag(void* handle, size_t index) {
     if (handle) {
         auto& tag = toTag(handle)->as<bedrock_protocol::ListTag>();
-        if (index < tag.size()) { return &tag[index]; }
+        if (index < tag.size()) { return tag[index].copy().release(); }
     }
     return nullptr;
 }
@@ -273,7 +273,7 @@ void nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_siz
 void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size) {
     if (handle) {
         std::string key(key_data, key_size);
-        return toTag(handle)->as<bedrock_protocol::CompoundTag>().get(key);
+        return toTag(handle)->as<bedrock_protocol::CompoundTag>().get(key)->copy().release();
     }
     return nullptr;
 }
