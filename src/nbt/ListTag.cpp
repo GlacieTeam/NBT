@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include "nbt/CompoundTagVariant.hpp"
 #include "nbt/ListTag.hpp"
+#include "nbt/CompoundTagVariant.hpp"
 
 namespace bedrock_protocol {
 
@@ -133,6 +133,10 @@ void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> fun
 }
 
 size_t ListTag::size() const { return mStorage.size(); }
+bool   ListTag::empty() const { return mStorage.empty(); }
+
+Tag::Type const& ListTag::getElementType() const { return mType; }
+Tag::Type&       ListTag::getElementType() { return mType; }
 
 Tag&       ListTag::operator[](size_t index) noexcept { return *mStorage[index]; }
 Tag const& ListTag::operator[](size_t index) const noexcept { return *mStorage[index]; }

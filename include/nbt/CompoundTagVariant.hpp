@@ -19,6 +19,7 @@
 #include <nbt/ShortTag.hpp>
 #include <nbt/StringTag.hpp>
 #include <nbt/Tag.hpp>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 #include <variant>
@@ -445,6 +446,9 @@ public:
     [[nodiscard]] static CompoundTagVariant array(std::initializer_list<CompoundTagVariant> init = {}) {
         return CompoundTagVariant{std::in_place_type<ListTag>, init};
     }
+
+    [[nodiscard]] static std::optional<CompoundTagVariant>
+    parse(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
 
 } // namespace bedrock_protocol

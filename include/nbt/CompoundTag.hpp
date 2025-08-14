@@ -143,7 +143,7 @@ public:
     [[nodiscard]] bool contains(std::string_view key) const;
     [[nodiscard]] bool contains(std::string_view key, Type type) const;
 
-    [[nodiscard]] bool isEmpty() const;
+    [[nodiscard]] bool empty() const;
 
     [[nodiscard]] size_t size() const;
 
@@ -163,6 +163,9 @@ public:
 public:
     [[nodiscard]] static CompoundTag fromNetworkNbt(std::string_view binaryData);
     [[nodiscard]] static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
+
+    [[nodiscard]] static std::optional<CompoundTag>
+    fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 
     [[nodiscard]] std::string toNetworkNbt() const;
     [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const;

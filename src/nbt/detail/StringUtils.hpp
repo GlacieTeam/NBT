@@ -17,4 +17,14 @@ constexpr std::string& replaceAll(std::string& str, std::string_view oldValue, s
     return ret;
 }
 
+[[nodiscard]] constexpr size_t doHash(std::string_view x) {
+    size_t           hash  = 0xcbf29ce484222325;
+    constexpr size_t prime = 0x100000001b3;
+    for (char c : x) {
+        hash ^= c;
+        hash *= prime;
+    }
+    return hash;
+}
+
 } // namespace bedrock_protocol::string_utils

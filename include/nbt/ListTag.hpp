@@ -60,6 +60,10 @@ public:
     [[nodiscard]] std::unique_ptr<ListTag> copyList() const;
 
     [[nodiscard]] size_t size() const;
+    [[nodiscard]] bool   empty() const;
+
+    [[nodiscard]] Type const& getElementType() const;
+    [[nodiscard]] Type&       getElementType();
 
     void push_back(std::unique_ptr<Tag>&& tag);
     void push_back(Tag const& tag);

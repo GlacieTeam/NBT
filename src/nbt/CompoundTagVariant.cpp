@@ -7,6 +7,7 @@
 
 #include "nbt/CompoundTagVariant.hpp"
 #include "nbt/CompoundTag.hpp"
+#include "nbt/detail/SnbtDeserializer.hpp"
 #include "nbt/detail/SnbtSerializer.hpp"
 
 namespace bedrock_protocol {
@@ -64,6 +65,14 @@ bool CompoundTagVariant::operator==(CompoundTagVariant const& other) const { ret
 
 std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
     return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat); }, mStorage);
+}
+
+std::optional<CompoundTagVariant>
+CompoundTagVariant::parse(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
+    auto begin{snbt.begin()};
+    auto result = detail::parseSnbtValue(snbt);
+    if (parsedLength) { *parsedLength = snbt.begin() - begin; }
+    return result;
 }
 
 } // namespace bedrock_protocol

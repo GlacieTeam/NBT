@@ -321,7 +321,7 @@ bool CompoundTag::contains(std::string_view key, Tag::Type type) const {
     return false;
 }
 
-bool CompoundTag::isEmpty() const { return mTagMap.empty(); }
+bool CompoundTag::empty() const { return mTagMap.empty(); }
 
 bool CompoundTag::remove(std::string_view index) {
     if (mTagMap.contains(index)) {
@@ -424,5 +424,17 @@ CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const 
 }
 
 size_t CompoundTag::size() const { return mTagMap.size(); }
+
+std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
+    return CompoundTagVariant::parse(snbt, parsedLength)
+        .and_then([](CompoundTagVariant&& val) -> std::optional<CompoundTag> {
+            if (val.hold<CompoundTag>()) {
+                return std::move(val.as<CompoundTag>());
+            } else {
+                return std::nullopt;
+            }
+        });
+}
+
 
 } // namespace bedrock_protocol
