@@ -244,6 +244,18 @@ bool nbt_list_tag_remove_tag(void* handle, size_t index) {
     return toTag(handle)->as<bedrock_protocol::ListTag>().remove(index);
 }
 
+void nbt_list_tag_clear(void* handle) {
+    if (handle) { return toTag(handle)->as<bedrock_protocol::ListTag>().clear(); }
+}
+
+bool nbt_list_tag_set_tag(void* handle, size_t index, void* tag) {
+    if (handle) {
+        auto& listTag = toTag(handle)->as<bedrock_protocol::ListTag>();
+        if (index < listTag.size()) { return listTag.set(index, *toTag(tag)); }
+    }
+    return false;
+}
+
 // CompoundTag
 void* nbt_compound_tag_create() { return new bedrock_protocol::CompoundTag(); }
 
@@ -270,6 +282,10 @@ bool nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_
     if (!handle) { return false; }
     std::string key(key_data, key_size);
     return toTag(handle)->as<bedrock_protocol::CompoundTag>().remove(key);
+}
+
+void nbt_compound_tag_clear(void* handle) {
+    if (handle) { toTag(handle)->as<bedrock_protocol::CompoundTag>().clear(); }
 }
 
 nbtio_buffer nbt_compound_to_binary_nbt(void* handle, bool little_endian) {
@@ -357,5 +373,17 @@ int nbt_int_array_tag_get_value(void* handle, size_t index) {
 bool nbt_int_array_tag_remove_value(void* handle, size_t index) {
     if (!handle) { return false; }
     return toTag(handle)->as<bedrock_protocol::IntArrayTag>().remove(index);
+}
+
+void nbt_int_array_tag_clear(void* handle) {
+    if (handle) { return toTag(handle)->as<bedrock_protocol::ListTag>().clear(); }
+}
+
+bool nbt_int_array_tag_set_tag(void* handle, size_t index, void* tag) {
+    if (handle) {
+        auto& intArrayTag = toTag(handle)->as<bedrock_protocol::ListTag>();
+        if (index < intArrayTag.size()) { return intArrayTag.set(index, *toTag(tag)); }
+    }
+    return false;
 }
 }

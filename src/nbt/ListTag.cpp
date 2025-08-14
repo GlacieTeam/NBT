@@ -168,4 +168,12 @@ ListTag::iterator ListTag::erase(const_iterator first, const_iterator last) noex
     return mStorage.erase(first, last);
 }
 
+bool ListTag::set(size_t index, Tag const& tag) {
+    if (index < mStorage.size()) {
+        mStorage[index] = tag.copy();
+        return true;
+    }
+    return false;
+}
+
 } // namespace bedrock_protocol

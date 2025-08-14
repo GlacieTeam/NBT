@@ -52,7 +52,8 @@ public:
 public:
     [[nodiscard]] bool operator==(Tag const& other) const;
 
-    [[nodiscard]] std::string toSnbt(SnbtFormat snbtFormat = SnbtFormat::Jsonify, uint8_t indent = 4) const noexcept;
+    [[nodiscard]] std::string
+    toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr T& as() noexcept {

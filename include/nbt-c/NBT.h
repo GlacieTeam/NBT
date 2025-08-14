@@ -113,6 +113,8 @@ NBT_API size_t nbt_list_tag_size(void* handle);
 NBT_API void   nbt_list_tag_add_tag(void* handle, void* tag);
 NBT_API void*  nbt_list_tag_get_tag(void* handle, size_t index);
 NBT_API bool   nbt_list_tag_remove_tag(void* handle, size_t index);
+NBT_API void   nbt_list_tag_clear(void* handle);
+NBT_API bool   nbt_list_tag_set_tag(void* handle, size_t index, void* tag);
 
 // CompoundTag
 NBT_API void*  nbt_compound_tag_create();
@@ -120,6 +122,7 @@ NBT_API size_t nbt_compound_tag_size(void* handle);
 NBT_API void   nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_size, void* tag);
 NBT_API void*  nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size);
 NBT_API bool   nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size);
+NBT_API void   nbt_compound_tag_clear(void* handle);
 
 NBT_API nbtio_buffer nbt_compound_to_binary_nbt(void* handle, bool little_endian);
 NBT_API nbtio_buffer nbt_compound_to_network_nbt(void* handle);
@@ -135,6 +138,8 @@ NBT_API size_t nbt_int_array_tag_size(void* handle);
 NBT_API void   nbt_int_array_tag_add_value(void* handle, int value);
 NBT_API int    nbt_int_array_tag_get_value(void* handle, size_t index);
 NBT_API bool   nbt_int_array_tag_remove_value(void* handle, size_t index);
+NBT_API void   nbt_int_array_tag_clear(void* handle);
+NBT_API bool   nbt_int_array_tag_set_tag(void* handle, size_t index, void* tag);
 
 #ifdef __cplusplus
 }

@@ -436,7 +436,8 @@ public:
         return as<T const&>();
     }
 
-    [[nodiscard]] std::string toSnbt(SnbtFormat snbtFormat = SnbtFormat::Jsonify, uint8_t indent = 4) const noexcept;
+    [[nodiscard]] std::string
+    toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
 public:
     [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {

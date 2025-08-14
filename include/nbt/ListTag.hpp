@@ -103,6 +103,8 @@ public:
 
     iterator erase(const_iterator where) noexcept;
     iterator erase(const_iterator first, const_iterator last) noexcept;
+
+    bool set(size_t index, Tag const& tag);
 };
 
 } // namespace bedrock_protocol
