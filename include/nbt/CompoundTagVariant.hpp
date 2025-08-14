@@ -96,9 +96,9 @@ public:
         [[nodiscard]] reference operator*() const noexcept {
             switch (iter.index()) {
             case 0:
-                return std::get<0>(iter)->get();
+                return *std::get<0>(iter)->get();
             case 1:
-                return std::get<1>(iter)->second.get();
+                return *std::get<1>(iter)->second.get();
             case 2:
                 return *std::get<2>(iter)->get();
             default:
