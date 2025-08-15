@@ -24,10 +24,12 @@ public:
     [[nodiscard]] ByteArrayTag(std::initializer_list<std::byte> val);
     [[nodiscard]] ByteArrayTag(uint8_t const* data, size_t size);
     [[nodiscard]] ByteArrayTag(std::byte const* data, size_t size);
+    [[nodiscard]] ByteArrayTag(std::string_view binaryData);
 
     [[nodiscard]] operator std::vector<uint8_t> const&() const;
     [[nodiscard]] operator std::vector<uint8_t>&();
     [[nodiscard]] operator std::vector<std::byte>() const;
+    [[nodiscard]] operator std::string_view() const;
 
     [[nodiscard]] constexpr Type getType() const override { return Type::ByteArray; }
 
@@ -66,8 +68,9 @@ public:
     void push_back(uint8_t val);
     void push_back(std::byte val);
 
-    ByteArrayTag& operator=(std::vector<uint8_t> const value);
-    ByteArrayTag& operator=(std::vector<std::byte> const value);
+    ByteArrayTag& operator=(std::vector<uint8_t> const& value);
+    ByteArrayTag& operator=(std::vector<std::byte> const& value);
+    ByteArrayTag& operator=(std::string_view value);
 
     void reinit(uint8_t const* data, size_t size);
     void reinit(std::byte const* data, size_t size);

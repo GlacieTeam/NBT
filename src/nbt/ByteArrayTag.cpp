@@ -24,6 +24,12 @@ ByteArrayTag::ByteArrayTag(uint8_t const* data, size_t size) : mStorage(data, da
 ByteArrayTag::ByteArrayTag(std::byte const* data, size_t size)
 : mStorage(reinterpret_cast<uint8_t const*>(data), reinterpret_cast<uint8_t const*>(data) + size) {}
 
+ByteArrayTag::ByteArrayTag(std::string_view binaryData)
+: mStorage(
+      reinterpret_cast<uint8_t const*>(binaryData.data()),
+      reinterpret_cast<uint8_t const*>(binaryData.data() + binaryData.size())
+  ) {}
+
 ByteArrayTag::operator std::vector<uint8_t> const&() const { return mStorage; }
 ByteArrayTag::operator std::vector<uint8_t>&() { return mStorage; }
 ByteArrayTag::operator std::vector<std::byte>() const {
@@ -31,6 +37,9 @@ ByteArrayTag::operator std::vector<std::byte>() const {
         reinterpret_cast<std::byte const*>(mStorage.data()),
         reinterpret_cast<std::byte const*>(mStorage.data() + mStorage.size())
     };
+}
+ByteArrayTag::operator std::string_view() const {
+    return std::string_view(reinterpret_cast<char const*>(mStorage.data()), mStorage.size());
 }
 
 bool ByteArrayTag::equals(const Tag& other) const {
@@ -103,11 +112,18 @@ uint8_t const& ByteArrayTag::at(size_t index) const { return mStorage.at(index);
 void ByteArrayTag::push_back(uint8_t val) { mStorage.push_back(val); }
 void ByteArrayTag::push_back(std::byte val) { mStorage.push_back(static_cast<uint8_t>(val)); }
 
-ByteArrayTag& ByteArrayTag::operator=(std::vector<uint8_t> const value) {
+ByteArrayTag& ByteArrayTag::operator=(std::vector<uint8_t> const& value) {
     mStorage = value;
     return *this;
 }
-ByteArrayTag& ByteArrayTag::operator=(std::vector<std::byte> const value) {
+ByteArrayTag& ByteArrayTag::operator=(std::vector<std::byte> const& value) {
+    mStorage.assign(
+        reinterpret_cast<uint8_t const*>(value.data()),
+        reinterpret_cast<uint8_t const*>(value.data() + value.size())
+    );
+    return *this;
+}
+ByteArrayTag& ByteArrayTag::operator=(std::string_view value) {
     mStorage.assign(
         reinterpret_cast<uint8_t const*>(value.data()),
         reinterpret_cast<uint8_t const*>(value.data() + value.size())
