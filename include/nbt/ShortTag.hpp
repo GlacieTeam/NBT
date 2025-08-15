@@ -49,8 +49,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] constexpr short&       storage() { return mStorage; }
-    [[nodiscard]] constexpr short const& storage() const { return mStorage; }
+    [[nodiscard]] constexpr short&       storage() noexcept { return mStorage; }
+    [[nodiscard]] constexpr short const& storage() const noexcept { return mStorage; }
 };
 
 } // namespace bedrock_protocol

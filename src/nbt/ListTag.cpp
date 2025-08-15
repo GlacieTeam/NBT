@@ -125,10 +125,10 @@ bool ListTag::remove(size_t startIndex, size_t endIndex) {
     return false;
 }
 
-void ListTag::clear() { mStorage.clear(); }
+void ListTag::clear() noexcept { mStorage.clear(); }
 
-ListTag::TagList&       ListTag::storage() { return mStorage; }
-ListTag::TagList const& ListTag::storage() const { return mStorage; }
+ListTag::TagList&       ListTag::storage() noexcept { return mStorage; }
+ListTag::TagList const& ListTag::storage() const noexcept { return mStorage; }
 
 void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> func) {
     if (mType == Tag::Type::Compound) {
@@ -136,7 +136,7 @@ void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> fun
     }
 }
 
-size_t ListTag::size() const { return mStorage.size(); }
+size_t ListTag::size() const noexcept { return mStorage.size(); }
 bool   ListTag::empty() const { return mStorage.empty(); }
 
 Tag::Type const& ListTag::getElementType() const { return mType; }

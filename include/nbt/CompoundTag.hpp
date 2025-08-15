@@ -59,8 +59,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] TagMap&       items();
-    [[nodiscard]] TagMap const& items() const;
+    [[nodiscard]] TagMap&       items() noexcept;
+    [[nodiscard]] TagMap const& items() const noexcept;
 
 public:
     [[nodiscard]] CompoundTagVariant&       operator[](std::string_view index);
@@ -144,13 +144,13 @@ public:
     [[nodiscard]] bool contains(std::string_view key) const;
     [[nodiscard]] bool contains(std::string_view key, Type type) const;
 
-    [[nodiscard]] bool empty() const;
+    [[nodiscard]] bool empty() const noexcept;
 
-    [[nodiscard]] size_t size() const;
+    [[nodiscard]] size_t size() const noexcept;
 
     bool remove(std::string_view index);
     bool rename(std::string_view index, std::string_view newName);
-    void clear();
+    void clear() noexcept;
 
     [[nodiscard]] std::unique_ptr<CompoundTag> clone() const;
 

@@ -48,16 +48,19 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] std::vector<uint8_t>&       storage();
-    [[nodiscard]] std::vector<uint8_t> const& storage() const;
+    [[nodiscard]] std::vector<uint8_t>&       storage() noexcept;
+    [[nodiscard]] std::vector<uint8_t> const& storage() const noexcept;
 
-    [[nodiscard]] size_t size() const;
+    [[nodiscard]] uint8_t const* data() const noexcept;
+    [[nodiscard]] uint8_t*       data() noexcept;
+
+    [[nodiscard]] size_t size() const noexcept;
 
     void reserve(size_t size);
 
     bool remove(size_t index);
     bool remove(size_t startIndex, size_t endIndex);
-    void clear();
+    void clear() noexcept;
 
     [[nodiscard]] uint8_t&       operator[](size_t index) noexcept;
     [[nodiscard]] uint8_t const& operator[](size_t index) const noexcept;

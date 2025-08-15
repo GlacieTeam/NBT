@@ -52,10 +52,10 @@ void IntArrayTag::load(ReadOnlyBinaryStream& stream) {
     for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getVarInt()); }
 }
 
-std::vector<int>&       IntArrayTag::storage() { return mStorage; }
-std::vector<int> const& IntArrayTag::storage() const { return mStorage; }
+std::vector<int>&       IntArrayTag::storage() noexcept { return mStorage; }
+std::vector<int> const& IntArrayTag::storage() const noexcept { return mStorage; }
 
-size_t IntArrayTag::size() const { return mStorage.size(); }
+size_t IntArrayTag::size() const noexcept { return mStorage.size(); }
 
 void IntArrayTag::reserve(size_t size) { mStorage.reserve(size); }
 
@@ -75,7 +75,7 @@ bool IntArrayTag::remove(size_t startIndex, size_t endIndex) {
     return false;
 }
 
-void IntArrayTag::clear() { mStorage.clear(); }
+void IntArrayTag::clear() noexcept { mStorage.clear(); }
 
 int&       IntArrayTag::operator[](size_t index) noexcept { return mStorage[index]; }
 int const& IntArrayTag::operator[](size_t index) const noexcept { return mStorage[index]; }

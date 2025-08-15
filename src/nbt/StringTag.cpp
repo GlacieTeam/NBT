@@ -31,9 +31,9 @@ void StringTag::write(BinaryStream& stream) const { stream.writeString(mStorage)
 
 void StringTag::load(ReadOnlyBinaryStream& stream) { stream.getString(mStorage); }
 
-std::string&       StringTag::storage() { return mStorage; }
-std::string const& StringTag::storage() const { return mStorage; }
-std::string_view   StringTag::view() const { return mStorage; }
+std::string&       StringTag::storage() noexcept { return mStorage; }
+std::string const& StringTag::storage() const noexcept { return mStorage; }
+std::string_view   StringTag::view() const noexcept { return mStorage; }
 
 StringTag::operator std::string const&() const { return mStorage; }
 StringTag::operator std::string&() { return mStorage; }

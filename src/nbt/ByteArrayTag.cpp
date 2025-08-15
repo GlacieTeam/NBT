@@ -78,10 +78,13 @@ void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
     for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getUnsignedChar()); }
 }
 
-std::vector<uint8_t>&       ByteArrayTag::storage() { return mStorage; }
-std::vector<uint8_t> const& ByteArrayTag::storage() const { return mStorage; }
+std::vector<uint8_t>&       ByteArrayTag::storage() noexcept { return mStorage; }
+std::vector<uint8_t> const& ByteArrayTag::storage() const noexcept { return mStorage; }
 
-size_t ByteArrayTag::size() const { return mStorage.size(); }
+uint8_t const* ByteArrayTag::data() const noexcept { return mStorage.data(); }
+uint8_t*       ByteArrayTag::data() noexcept { return mStorage.data(); }
+
+size_t ByteArrayTag::size() const noexcept { return mStorage.size(); }
 
 void ByteArrayTag::reserve(size_t size) { mStorage.reserve(size); }
 
@@ -101,7 +104,7 @@ bool ByteArrayTag::remove(size_t startIndex, size_t endIndex) {
     return false;
 }
 
-void ByteArrayTag::clear() { mStorage.clear(); }
+void ByteArrayTag::clear() noexcept { mStorage.clear(); }
 
 uint8_t&       ByteArrayTag::operator[](size_t index) noexcept { return mStorage[index]; }
 uint8_t const& ByteArrayTag::operator[](size_t index) const noexcept { return mStorage[index]; }

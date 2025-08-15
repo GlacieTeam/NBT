@@ -321,7 +321,7 @@ bool CompoundTag::contains(std::string_view key, Tag::Type type) const {
     return false;
 }
 
-bool CompoundTag::empty() const { return mTagMap.empty(); }
+bool CompoundTag::empty() const noexcept { return mTagMap.empty(); }
 
 bool CompoundTag::remove(std::string_view index) {
     if (mTagMap.contains(index)) {
@@ -340,7 +340,7 @@ bool CompoundTag::rename(std::string_view index, std::string_view newName) {
     return false;
 }
 
-void CompoundTag::clear() { mTagMap.clear(); }
+void CompoundTag::clear() noexcept { mTagMap.clear(); }
 
 CompoundTag::iterator CompoundTag::begin() noexcept { return mTagMap.begin(); }
 CompoundTag::iterator CompoundTag::end() noexcept { return mTagMap.end(); }
@@ -362,8 +362,8 @@ CompoundTag::iterator CompoundTag::erase(const_iterator first, const_iterator la
     return mTagMap.erase(first, last);
 }
 
-CompoundTag::TagMap&       CompoundTag::items() { return mTagMap; }
-CompoundTag::TagMap const& CompoundTag::items() const { return mTagMap; }
+CompoundTag::TagMap&       CompoundTag::items() noexcept { return mTagMap; }
+CompoundTag::TagMap const& CompoundTag::items() const noexcept { return mTagMap; }
 
 void CompoundTag::serialize(BinaryStream& stream) const {
     stream.writeUnsignedChar((uint8_t)Tag::Type::Compound);
@@ -423,7 +423,7 @@ CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const 
     return mTagMap.at(std::string(index));
 }
 
-size_t CompoundTag::size() const { return mTagMap.size(); }
+size_t CompoundTag::size() const noexcept { return mTagMap.size(); }
 
 std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
     return CompoundTagVariant::parse(snbt, parsedLength)

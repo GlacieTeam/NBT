@@ -43,9 +43,9 @@ public:
     void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] std::string&       storage();
-    [[nodiscard]] std::string const& storage() const;
-    [[nodiscard]] std::string_view   view() const;
+    [[nodiscard]] std::string&       storage() noexcept;
+    [[nodiscard]] std::string const& storage() const noexcept;
+    [[nodiscard]] std::string_view   view() const noexcept;
 };
 
 } // namespace bedrock_protocol

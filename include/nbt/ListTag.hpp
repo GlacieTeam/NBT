@@ -59,7 +59,7 @@ public:
 public:
     [[nodiscard]] std::unique_ptr<ListTag> copyList() const;
 
-    [[nodiscard]] size_t size() const;
+    [[nodiscard]] size_t size() const noexcept;
     [[nodiscard]] bool   empty() const;
 
     [[nodiscard]] Type const& getElementType() const;
@@ -73,10 +73,10 @@ public:
 
     bool remove(size_t index);
     bool remove(size_t startIndex, size_t endIndex);
-    void clear();
+    void clear() noexcept;
 
-    [[nodiscard]] TagList&       storage();
-    [[nodiscard]] TagList const& storage() const;
+    [[nodiscard]] TagList&       storage() noexcept;
+    [[nodiscard]] TagList const& storage() const noexcept;
 
     void forEachCompoundTag(std::function<void(CompoundTag const& tag)> func);
 
