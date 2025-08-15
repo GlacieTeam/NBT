@@ -346,14 +346,18 @@ nbtio_buffer nbt_compound_to_json(void* handle, uint8_t indent) {
 
 void* nbt_compound_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    auto             result = bedrock_protocol::CompoundTag::fromBinaryNbt(content, little_endian);
-    return new bedrock_protocol::CompoundTag(result);
+    if (auto result = bedrock_protocol::CompoundTag::fromBinaryNbt(content, little_endian)) {
+        return new bedrock_protocol::CompoundTag(*result);
+    }
+    return nullptr;
 }
 
 void* nbt_compound_from_network_nbt(const uint8_t* data, size_t size) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    auto             result = bedrock_protocol::CompoundTag::fromNetworkNbt(content);
-    return new bedrock_protocol::CompoundTag(result);
+    if (auto result = bedrock_protocol::CompoundTag::fromNetworkNbt(content)) {
+        return new bedrock_protocol::CompoundTag(*result);
+    }
+    return nullptr;
 }
 
 void* nbt_compound_from_snbt(const uint8_t* data, size_t size) {

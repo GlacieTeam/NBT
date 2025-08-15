@@ -162,14 +162,14 @@ public:
     void deserialize(BytesDataInput& stream);
 
 public:
-    [[nodiscard]] static CompoundTag fromNetworkNbt(std::string_view binaryData);
-    [[nodiscard]] static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
-
+    [[nodiscard]] static std::optional<CompoundTag> fromNetworkNbt(std::string_view binaryData) noexcept;
+    [[nodiscard]] static std::optional<CompoundTag>
+    fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true) noexcept;
     [[nodiscard]] static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 
-    [[nodiscard]] std::string toNetworkNbt() const;
-    [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const;
+    [[nodiscard]] std::string toNetworkNbt() const noexcept;
+    [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const noexcept;
 };
 
 } // namespace bedrock_protocol

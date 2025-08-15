@@ -389,27 +389,27 @@ void CompoundTag::deserialize(BytesDataInput& stream) {
     load(stream);
 }
 
-CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) {
+std::optional<CompoundTag> CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) noexcept try {
     BytesDataInput stream(binaryData, false, isLittleEndian);
     CompoundTag    result;
     result.deserialize(stream);
     return result;
-}
+} catch (...) { return std::nullopt; }
 
-std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const {
+std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const noexcept {
     BytesDataOutput stream(isLittleEndian);
     serialize(stream);
     return stream.getAndReleaseData();
 }
 
-CompoundTag CompoundTag::fromNetworkNbt(std::string_view binaryData) {
+std::optional<CompoundTag> CompoundTag::fromNetworkNbt(std::string_view binaryData) noexcept try {
     ReadOnlyBinaryStream stream(binaryData, false);
     CompoundTag          result;
     result.deserialize(stream);
     return result;
-}
+} catch (...) { return std::nullopt; }
 
-std::string CompoundTag::toNetworkNbt() const {
+std::string CompoundTag::toNetworkNbt() const noexcept {
     BinaryStream stream;
     serialize(stream);
     return stream.getAndReleaseData();
