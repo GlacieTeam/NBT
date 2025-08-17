@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-windows:
-    name: Build on Windows (MSVC)
+  build-windows-x86_64:
+    name: Build on Windows X86_64 (MSVC)
     runs-on: windows-2022
     steps:
     - name: Checkout repository
@@ -23,57 +23,357 @@ jobs:
         
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
-        
+
     - name: Build NBT Static (Debug)
-      run: xmake config --mode=debug --kind=static -y && xmake --all -y
+      run: |
+        xmake f --mode=debug --kind=static
+        xmake --all
 
     - name: Build NBT Shared (Debug)
-      run: xmake config --mode=debug --kind=shared -y && xmake --all -y
-      
+      run: |
+        xmake f --mode=debug --kind=shared
+        xmake --all
+
     - name: Build NBT Static (Release)
-      run: xmake config --mode=release --kind=static -y && xmake --all -y
+      run: |
+        xmake f --mode=release --kind=static
+        xmake --all
 
     - name: Build NBT Shared (Release)
-      run: xmake config --mode=release --kind=shared -y && xmake --all -y
+      run: |
+        xmake f --mode=release --kind=shared
+        xmake --all
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: NBT-windows-x86_64-${{ github.sha }}
-        path: |
-          bin/
+        path: artifacts/NBT-windows-x86_64.zip
 
-  build-linux:
-    name: Build on Linux (Clang)
-    runs-on: ubuntu-latest
+  build-windows-arm64:
+    name: Build on Windows ARM64 (MSVC)
+    runs-on: windows-2022
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup Clang
-      run: |
-        sudo apt-get update && sudo apt-get install -y clang
-        sudo apt-get update
-        sudo apt-get install -y clang libc++-dev libc++abi-dev
-      
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: arm64
+
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
-        
+
     - name: Build NBT Static (Debug)
-      run: xmake config --mode=debug --kind=static -y && xmake --all -y
+      run: |
+        xmake f --mode=debug --arch=arm64 --kind=static
+        xmake --all
 
     - name: Build NBT Shared (Debug)
-      run: xmake config --mode=debug --kind=shared -y && xmake --all -y
-      
+      run: |
+        xmake f --mode=debug --arch=arm64 --kind=shared
+        xmake --all
+
     - name: Build NBT Static (Release)
-      run: xmake config --mode=release --kind=static -y && xmake --all -y
+      run: |
+        xmake f --mode=release --arch=arm64 --kind=static
+        xmake --all
 
     - name: Build NBT Shared (Release)
-      run: xmake config --mode=release --kind=shared -y && xmake --all -y
+      run: |
+        xmake f --mode=release --arch=arm64 --kind=shared
+        xmake --all
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-windows-arm64-${{ github.sha }}
+        path: artifacts/NBT-windows-arm64.zip
+
+  build-linux-x86_64:
+    name: Build on Linux X86_64 (Clang)
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:20.04
+      options: --privileged
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+        
+    - name: Setup Clang 18
+      run: |
+        ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
+        echo "Etc/UTC" > /etc/timezone
+        apt-get update -y
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+        apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        ./llvm.sh 18
+        update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
+        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
+        apt-get install -y libc++-18-dev libc++abi-18-dev
+
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --kind=static --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=debug --kind=shared --root
+        xmake --all --root
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=release --kind=static --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --kind=shared --root
+        xmake --all --root
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: NBT-linux-x86_64-${{ github.sha }}
-        path: |
-          bin/
+        path: artifacts/NBT-linux-x86_64.zip
+
+  build-linux-arm64:
+    name: Build on Linux ARM64 (Clang)
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:20.04
+      options: --privileged
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Clang 18
+      run: |
+        ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
+        echo "Etc/UTC" > /etc/timezone
+        apt-get update -y
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+        apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        ./llvm.sh 18
+        update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
+        update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
+        tee /etc/apt/sources.list << 'EOF'
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse
+        deb [arch=amd64] http://security.ubuntu.com/ubuntu focal-security main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports focal main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports focal-security main restricted universe multiverse
+        EOF
+        dpkg --add-architecture arm64
+        apt-get update -y
+        apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+        apt-get install -y libc6:arm64 libgcc-s1:arm64 libstdc++6:arm64
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+        echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" >> /etc/apt/sources.list
+        echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-18 main" >> /etc/apt/sources.list
+        apt-get update -y
+        apt-get install -y libc++-18-dev:arm64 libc++abi-18-dev:arm64
+      
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=debug --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
+        xmake --all --root
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=release --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
+        xmake --all --root
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-linux-arm64-${{ github.sha }}
+        path: artifacts/NBT-linux-arm64.zip
+
+  build-macos-x86_64:
+    name: Build on MacOS X86_64 (Clang)
+    runs-on: macos-14
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --arch=x86_64 --kind=static
+        xmake --all
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=debug --arch=x86_64 --kind=shared
+        xmake --all
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=release --arch=x86_64 --kind=static
+        xmake --all
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --arch=x86_64 --kind=shared
+        xmake --all
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-macosx-x86_64-${{ github.sha }}
+        path: artifacts/NBT-macosx-x86_64.zip
+
+  build-macos-arm64:
+    name: Build on MacOS ARM64 (Clang)
+    runs-on: macos-14
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --kind=static
+        xmake --all
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=debug --kind=shared
+        xmake --all
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=release --kind=static
+        xmake --all
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --kind=shared
+        xmake --all
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-macosx-arm64-${{ github.sha }}
+        path: artifacts/NBT-macosx-arm64.zip
+
+  build-android-x86_64:
+    name: Build on Android X86_64 (Clang)
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:24.04
+      options: --privileged
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Android NDK
+      run: |
+        apt-get update -y
+        apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
+        wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
+        unzip android-ndk-r26b-linux.zip -d $HOME/
+
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-android-x86_64-${{ github.sha }}
+        path: artifacts/NBT-android-x86_64.zip
+
+  build-android-arm64:
+    name: Build on Android ARM64 (Clang)
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:24.04
+      options: --privileged
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Android NDK
+      run: |
+        apt-get update -y
+        apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
+        wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
+        unzip android-ndk-r26b-linux.zip -d $HOME/
+
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+
+    - name: Build NBT Static (Debug)
+      run: |
+        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Debug)
+      run: |
+        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+
+    - name: Build NBT Static (Release)
+      run: |
+        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Build NBT Shared (Release)
+      run: |
+        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake --all --root
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NBT-android-arm64-v8a-${{ github.sha }}
+        path: artifacts/NBT-android-arm64-v8a.zip

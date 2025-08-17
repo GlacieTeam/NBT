@@ -9,7 +9,7 @@ if is_plat("windows") then
     if not has_config("vs_runtime") then
         set_runtimes("MD")
     end
-else
+elseif is_plat("linux") or is_plat("macosx") then
     set_toolchains("clang")
 end
 
@@ -77,14 +77,46 @@ target("NBT")
                 "-fvisibility=hidden",
                 "-fvisibility-inlines-hidden"
             )
-            add_syslinks("c++")
+            if is_plat("linux") then
+                add_syslinks("c++")
+            elseif is_plat("macosx") then
+                add_shflags("-dynamiclib")
+            end
         end
     end
     if is_config("kind", "shared") then
         after_build(function (target)
-            local output_dir = path.join(os.projectdir(), "bin")
+            local plat = target:plat()
+            local arch = target:arch()
+            local name = target:name()
+            if arch == "x64" then
+                arch = "x86_64" -- Fix arch name on Windows
+            end
+            local target_file = target:targetfile()
+            local filename = path.filename(target_file)
+            local output_dir = path.join(os.projectdir(), "bin/" .. name .. "-" .. plat .. "-" .. arch)
             os.mkdir(output_dir)
-            os.cp(target:targetfile(), path.join(output_dir, path.filename(target:targetfile())))
-            cprint("${bright green}[Shared Library]: ${reset}".. path.filename(target:targetfile()) .. " already generated to " .. output_dir)
+            local artifact_dir = path.join(os.projectdir(), "artifacts")
+            os.mkdir(artifact_dir)
+            os.cp(target_file, output_dir)
+            if plat == "macosx" then -- Fix rpath on MacOS
+                os.run("install_name_tool -id @rpath/" .. filename .. " " .. path.join(output_dir, filename))
+            end
+            local zip_file = path.join(os.projectdir(), "bin/" .. name .. "-" .. plat .. "-" .. arch .. ".zip")
+            os.rm(zip_file)
+            if plat == "windows" then
+                local win_src = output_dir:gsub("/", "\\")
+                local win_dest = zip_file:gsub("/", "\\")
+                local command = string.format(
+                    'powershell -Command "Compress-Archive -Path \'%s\\*\' -DestinationPath \'%s\'"',
+                    win_src,
+                    win_dest
+                )
+                os.exec(command)
+            else
+                os.exec("zip -rj -q '%s' '%s'", zip_file, output_dir)
+            end
+            os.mv(zip_file, artifact_dir)
+            cprint("${bright green}[Shared Library]: ${reset}".. filename .. " already generated to " .. output_dir)
         end)
     end

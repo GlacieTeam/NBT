@@ -39,6 +39,9 @@
 build
 CmakeLists.txt
 compile_commands.json
+artifacts
+bin
+.xmake
 
 # clangd
 .cache
