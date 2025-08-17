@@ -26,23 +26,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --kind=static
-        xmake --all
+        xmake f --mode=debug --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --kind=shared
-        xmake --all
+        xmake f --mode=debug --kind=shared -y
+        xmake --all -y
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --kind=static
-        xmake --all
+        xmake f --mode=release --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --kind=shared
-        xmake --all
+        xmake f --mode=release --kind=shared -y
+        xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -67,23 +67,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --arch=arm64 --kind=static
-        xmake --all
+        xmake f --mode=debug --arch=arm64 --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --arch=arm64 --kind=shared
-        xmake --all
+        xmake f --mode=debug --arch=arm64 --kind=shared -y
+        xmake --all -y
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --arch=arm64 --kind=static
-        xmake --all
+        xmake f --mode=release --arch=arm64 --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --arch=arm64 --kind=shared
-        xmake --all
+        xmake f --mode=release --arch=arm64 --kind=shared -y
+        xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -120,23 +120,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --kind=static --root
-        xmake --all --root
+        xmake f --mode=debug --kind=static -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --kind=shared --root
-        xmake --all --root
+        xmake f --mode=debug --kind=shared -y --root
+        xmake --all -y --root
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --kind=static --root
-        xmake --all --root
+        xmake f --mode=release --kind=static -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --kind=shared --root
-        xmake --all --root
+        xmake f --mode=release --kind=shared -y --root
+        xmake --all -y --root
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -191,23 +191,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
-        xmake --all --root
+        xmake f --mode=debug --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
-        xmake --all --root
+        xmake f --mode=debug --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
-        xmake --all --root
+        xmake f --mode=release --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" --root
-        xmake --all --root
+        xmake f --mode=release --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cxflags="-target aarch64-linux-gnu" --shflags="-target aarch64-linux-gnu -fuse-ld=lld" -y --root
+        xmake --all -y --root
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -227,23 +227,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --arch=x86_64 --kind=static
-        xmake --all
+        xmake f --mode=debug --arch=x86_64 --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --arch=x86_64 --kind=shared
-        xmake --all
+        xmake f --mode=debug --arch=x86_64 --kind=shared -y
+        xmake --all -y
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --arch=x86_64 --kind=static
-        xmake --all
+        xmake f --mode=release --arch=x86_64 --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --arch=x86_64 --kind=shared
-        xmake --all
+        xmake f --mode=release --arch=x86_64 --kind=shared -y
+        xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -263,23 +263,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --kind=static
-        xmake --all
+        xmake f --mode=debug --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --kind=shared
-        xmake --all
+        xmake f --mode=debug --kind=shared -y
+        xmake --all -y
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --kind=static
-        xmake --all
+        xmake f --mode=release --kind=static -y
+        xmake --all -y
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --kind=shared
-        xmake --all
+        xmake f --mode=release --kind=shared -y
+        xmake --all -y
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -309,23 +309,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -355,22 +355,23 @@ jobs:
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
+        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" --root
-        xmake --all --root
+        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake --all -y --root
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
