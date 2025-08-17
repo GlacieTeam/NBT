@@ -14,6 +14,7 @@
 #include "nbt/StringTag.hpp"
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
+#include <format>
 
 namespace bedrock_protocol {
 
