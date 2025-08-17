@@ -236,20 +236,20 @@ jobs:
       run: |
         apt-get update -y
         apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
-        wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
-        unzip android-ndk-r26b-linux.zip -d $HOME/
+        wget https://dl.google.com/android/repository/android-ndk-r28c-linux.zip
+        unzip android-ndk-r28c-linux.zip -d $HOME/
 
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake f --mode=debug --plat=android --arch=x86_64 --kind=static --ndk=$HOME/android-ndk-r28c --bin=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
         xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake f --mode=release --plat=android --arch=x86_64 --kind=shared --ndk=$HOME/android-ndk-r28c --bin=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=x86_64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
         xmake --all -y --root
 
     - name: Upload Artifact
@@ -272,20 +272,20 @@ jobs:
       run: |
         apt-get update -y
         apt-get install -y wget gnupg build-essential lsb-release software-properties-common zip git
-        wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
-        unzip android-ndk-r26b-linux.zip -d $HOME/
+        wget https://dl.google.com/android/repository/android-ndk-r28c-linux.zip
+        unzip android-ndk-r28c-linux.zip -d $HOME/
 
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake f --mode=debug --plat=android --arch=arm64-v8a --kind=static --ndk=$HOME/android-ndk-r28c --bin=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
         xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r26b --bin=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
+        xmake f --mode=release --plat=android --arch=arm64-v8a --kind=shared --ndk=$HOME/android-ndk-r28c --bin=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/bin --cxxflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot -nostdinc++ -isystem $HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1" --shflags="--target=aarch64-linux-android31 --sysroot=$HOME/android-ndk-r28c/toolchains/llvm/prebuilt/linux-x86_64/sysroot" -y --root
         xmake --all -y --root
 
     - name: Upload Artifact

@@ -3,7 +3,7 @@ add_rules("mode.debug", "mode.release")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
 add_requires("binarystream 2.1.2")
-add_requires("nlohmann_json")
+add_requires("nlohmann_json 3.12.0")
 
 if is_plat("windows") then
     if not has_config("vs_runtime") then
