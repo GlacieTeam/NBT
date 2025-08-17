@@ -2,7 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("binarystream 2.1.1")
+add_requires("binarystream 2.1.2")
 add_requires("nlohmann_json")
 
 if is_plat("windows") then
