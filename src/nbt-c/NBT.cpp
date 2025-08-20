@@ -207,7 +207,7 @@ void nbt_string_tag_set_value(void* handle, const char* data, size_t size) {
     if (handle && data) { toTag(handle)->as<bedrock_protocol::StringTag>() = std::string(data, size); }
 }
 
-nbtio_buffer nbt_string_tag_get(void* handle) {
+nbtio_buffer nbt_string_tag_get_value(void* handle) {
     if (handle) {
         std::string value = toTag(handle)->as<bedrock_protocol::StringTag>();
         uint8_t*    data  = new uint8_t[value.size()];
@@ -271,10 +271,18 @@ void nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_siz
     toTag(handle)->as<bedrock_protocol::CompoundTag>().put(key, toTag(tag)->copy());
 }
 
+bool nbt_compound_tag_has_tag(void* handle, const char* key_data, size_t key_size) {
+    if (handle) {
+        std::string key(key_data, key_size);
+        return toTag(handle)->as<bedrock_protocol::CompoundTag>().contains(key);
+    }
+    return false;
+}
+
 void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size) {
     if (handle) {
         std::string key(key_data, key_size);
-        return toTag(handle)->as<bedrock_protocol::CompoundTag>().get(key)->copy().release();
+        if (auto tag = toTag(handle)->as<bedrock_protocol::CompoundTag>().get(key)) { return tag->copy().release(); }
     }
     return nullptr;
 }

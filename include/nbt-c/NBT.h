@@ -105,7 +105,7 @@ NBT_API nbtio_buffer nbt_byte_array_tag_get_value(void* handle);
 // StringTag
 NBT_API void*        nbt_string_tag_create(const char* data, size_t size);
 NBT_API void         nbt_string_tag_set_value(void* handle, const char* data, size_t size);
-NBT_API nbtio_buffer nbt_string_tag_get(void* handle);
+NBT_API nbtio_buffer nbt_string_tag_get_value(void* handle);
 
 // ListTag
 NBT_API void*  nbt_list_tag_create();
@@ -121,6 +121,7 @@ NBT_API void*  nbt_compound_tag_create();
 NBT_API size_t nbt_compound_tag_size(void* handle);
 NBT_API void   nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_size, void* tag);
 NBT_API void*  nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size);
+NBT_API bool   nbt_compound_tag_has_tag(void* handle, const char* key_data, size_t key_size);
 NBT_API bool   nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size);
 NBT_API void   nbt_compound_tag_clear(void* handle);
 
