@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] IntTag operator+() const noexcept { return IntTag{+mStorage}; }
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::Int; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

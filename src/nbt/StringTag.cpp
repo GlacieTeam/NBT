@@ -19,6 +19,8 @@ bool StringTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::String) && (mStorage == static_cast<const StringTag&>(other).mStorage);
 }
 
+Tag::Type StringTag::getType() const { return Type::String; }
+
 std::unique_ptr<Tag> StringTag::copy() const { return std::make_unique<StringTag>(mStorage); }
 
 std::size_t StringTag::hash() const { return std::hash<std::string>{}(mStorage); }

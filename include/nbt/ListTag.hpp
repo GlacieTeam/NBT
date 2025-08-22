@@ -40,7 +40,7 @@ public:
     ListTag& operator=(ListTag const& other);
     ListTag& operator=(ListTag&& other);
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::List; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

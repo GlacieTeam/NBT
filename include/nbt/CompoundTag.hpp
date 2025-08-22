@@ -43,7 +43,7 @@ public:
     [[nodiscard]] CompoundTag() = default;
     [[nodiscard]] CompoundTag(std::initializer_list<TagMap::value_type> tagPairs) : mTagMap(tagPairs) {}
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::Compound; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 
@@ -161,15 +161,15 @@ public:
     void deserialize(ReadOnlyBinaryStream& stream);
     void deserialize(BytesDataInput& stream);
 
+    [[nodiscard]] std::string toNetworkNbt() const noexcept;
+    [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const noexcept;
+
 public:
     [[nodiscard]] static std::optional<CompoundTag> fromNetworkNbt(std::string_view binaryData) noexcept;
     [[nodiscard]] static std::optional<CompoundTag>
     fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true) noexcept;
     [[nodiscard]] static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
-
-    [[nodiscard]] std::string toNetworkNbt() const noexcept;
-    [[nodiscard]] std::string toBinaryNbt(bool isLittleEndian = true) const noexcept;
 };
 
 } // namespace bedrock_protocol

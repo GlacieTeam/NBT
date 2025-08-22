@@ -8,10 +8,12 @@
 #include "nbt/DoubleTag.hpp"
 
 namespace bedrock_protocol {
-    
+
 bool DoubleTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Double) && (mStorage == static_cast<const DoubleTag&>(other).mStorage);
 }
+
+Tag::Type DoubleTag::getType() const { return Type::Double; }
 
 std::unique_ptr<Tag> DoubleTag::copy() const { return std::make_unique<DoubleTag>(mStorage); }
 

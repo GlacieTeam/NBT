@@ -20,6 +20,8 @@ bool IntArrayTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::IntArray) && (mStorage == static_cast<const IntArrayTag&>(other).mStorage);
 }
 
+Tag::Type IntArrayTag::getType() const { return Type::IntArray; }
+
 std::unique_ptr<Tag> IntArrayTag::copy() const { return std::make_unique<IntArrayTag>(mStorage); }
 
 std::size_t IntArrayTag::hash() const {

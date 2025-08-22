@@ -13,6 +13,8 @@ bool FloatTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Float) && (mStorage == static_cast<const FloatTag&>(other).mStorage);
 }
 
+Tag::Type FloatTag::getType() const { return Type::Float; }
+
 std::unique_ptr<Tag> FloatTag::copy() const { return std::make_unique<FloatTag>(mStorage); }
 
 std::size_t FloatTag::hash() const { return std::hash<float>{}(mStorage); }

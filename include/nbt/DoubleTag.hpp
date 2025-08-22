@@ -26,7 +26,7 @@ public:
 
     [[nodiscard]] constexpr operator double() const noexcept { return mStorage; }
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::Double; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

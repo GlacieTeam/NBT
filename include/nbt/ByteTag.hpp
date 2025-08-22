@@ -37,7 +37,7 @@ public:
 
     [[nodiscard]] ByteTag operator+() const { return ByteTag{+mStorage}; }
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::Byte; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

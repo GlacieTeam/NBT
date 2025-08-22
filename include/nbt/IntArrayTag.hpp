@@ -24,7 +24,7 @@ public:
     [[nodiscard]] operator std::vector<int> const&() const;
     [[nodiscard]] operator std::vector<int>&();
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::IntArray; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

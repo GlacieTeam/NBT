@@ -31,7 +31,7 @@ public:
     [[nodiscard]] operator std::vector<std::byte>() const;
     [[nodiscard]] operator std::string_view() const;
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::ByteArray; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

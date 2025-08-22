@@ -46,6 +46,8 @@ bool ByteArrayTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::ByteArray) && (mStorage == static_cast<const ByteArrayTag&>(other).mStorage);
 }
 
+Tag::Type ByteArrayTag::getType() const { return Type::ByteArray; }
+
 std::unique_ptr<Tag> ByteArrayTag::copy() const { return std::make_unique<ByteArrayTag>(mStorage); }
 
 std::size_t ByteArrayTag::hash() const {

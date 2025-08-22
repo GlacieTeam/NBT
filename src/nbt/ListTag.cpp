@@ -39,6 +39,8 @@ bool ListTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::List) && (mStorage == static_cast<const ListTag&>(other).mStorage);
 }
 
+Tag::Type ListTag::getType() const { return Type::List; }
+
 std::unique_ptr<Tag> ListTag::copy() const { return copyList(); }
 
 std::size_t ListTag::hash() const {

@@ -13,6 +13,8 @@ bool ShortTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Short) && (mStorage == static_cast<const ShortTag&>(other).mStorage);
 }
 
+Tag::Type ShortTag::getType() const { return Type::Short; }
+
 std::unique_ptr<Tag> ShortTag::copy() const { return std::make_unique<ShortTag>(mStorage); }
 
 std::size_t ShortTag::hash() const { return mStorage; }

@@ -26,7 +26,7 @@ public:
     [[nodiscard]] operator std::string const&() const;
     [[nodiscard]] operator std::string&();
 
-    [[nodiscard]] constexpr Type getType() const override { return Type::String; }
+    [[nodiscard]] Type getType() const override;
 
     [[nodiscard]] bool equals(Tag const& other) const override;
 

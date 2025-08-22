@@ -44,6 +44,8 @@ std::size_t CompoundTag::hash() const {
     return hash;
 }
 
+Tag::Type CompoundTag::getType() const { return Type::Compound; }
+
 std::unique_ptr<CompoundTag> CompoundTag::clone() const {
     auto new_tag = std::make_unique<CompoundTag>();
     for (const auto& [key, value] : mTagMap) {
