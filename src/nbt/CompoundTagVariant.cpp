@@ -74,6 +74,17 @@ std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
     } catch (...) { return {}; }
 }
 
+void CompoundTagVariant::merge(CompoundTagVariant const& other, bool mergeList) {
+    if (getType() == other.getType()) {
+        if (is_object()) {
+            return as<CompoundTag>().merge(other.as<CompoundTag>(), mergeList);
+        } else if (is_array() && mergeList) {
+            return as<ListTag>().merge(other.as<ListTag>());
+        }
+    }
+    mStorage = other.mStorage;
+}
+
 std::optional<CompoundTagVariant>
 CompoundTagVariant::parse(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
     auto begin{snbt.begin()};

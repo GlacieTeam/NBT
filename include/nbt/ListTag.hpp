@@ -56,6 +56,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
+    void merge(ListTag const& other);
+
 public:
     [[nodiscard]] std::unique_ptr<ListTag> copyList() const;
 

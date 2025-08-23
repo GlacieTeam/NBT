@@ -316,6 +316,15 @@ void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_si
     return nullptr;
 }
 
+void* nbt_compound_tag_get_index(void* handle, size_t index) {
+    if (handle) {
+        auto nbt = toTag(handle)->as<bedrock_protocol::CompoundTag>();
+        auto it  = std::next(nbt.begin(), index);
+        if (it != nbt.end()) { return it->second.toUniqueCopy().release(); }
+    }
+    return nullptr;
+}
+
 bool nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size) {
     if (!handle) { return false; }
     std::string key(key_data, key_size);

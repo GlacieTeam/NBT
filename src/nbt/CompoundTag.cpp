@@ -106,6 +106,21 @@ void CompoundTag::load(ReadOnlyBinaryStream& stream) {
     } while (type != Tag::Type::End);
 }
 
+void CompoundTag::merge(CompoundTag const& other, bool mergeList) {
+    for (auto const& [key, val] : other) {
+        if (mTagMap.contains(key)) {
+            if (val.getType() == Type::Compound) {
+                mTagMap[key].as<CompoundTag>().merge(val.as<CompoundTag>());
+                continue;
+            } else if (val.getType() == Type::List && mergeList) {
+                mTagMap[key].as<ListTag>().merge(val.as<ListTag>());
+                continue;
+            }
+        }
+        mTagMap[key] = val;
+    }
+}
+
 void CompoundTag::put(std::string_view key, Tag&& tag) { mTagMap[std::string(key)].emplace(std::forward<Tag>(tag)); }
 
 void CompoundTag::put(std::string_view key, std::unique_ptr<Tag> tag) {

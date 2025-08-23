@@ -238,13 +238,13 @@ public:
     [[nodiscard]] const_iterator cend() const noexcept { return const_iterator::makeEnd(*this); }
 
     [[nodiscard]] constexpr Tag::Type index() const noexcept { return Tag::Type(mStorage.index()); }
-    [[nodiscard]] constexpr Tag::Type getId() const noexcept { return index(); }
+    [[nodiscard]] constexpr Tag::Type getType() const noexcept { return index(); }
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr bool hold() const noexcept {
         return std::holds_alternative<T>(mStorage);
     }
-    [[nodiscard]] constexpr bool hold(Tag::Type type) const noexcept { return getId() == type; }
+    [[nodiscard]] constexpr bool hold(Tag::Type type) const noexcept { return getType() == type; }
 
     [[nodiscard]] constexpr bool is_array() const noexcept { return hold(Tag::Type::List); }
     [[nodiscard]] constexpr bool is_binary() const noexcept {
@@ -440,6 +440,8 @@ public:
     toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
     [[nodiscard]] std::string toJson(uint8_t indent = 4) const noexcept;
+
+    void merge(CompoundTagVariant const& other, bool mergeList = false);
 
 public:
     [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {

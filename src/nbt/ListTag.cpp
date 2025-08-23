@@ -7,6 +7,7 @@
 
 #include "nbt/ListTag.hpp"
 #include "nbt/CompoundTagVariant.hpp"
+#include <algorithm>
 
 namespace bedrock_protocol {
 
@@ -94,6 +95,21 @@ void ListTag::load(ReadOnlyBinaryStream& stream) {
             tag->load(stream);
             mStorage.push_back(std::move(tag));
         }
+    }
+}
+
+void ListTag::merge(ListTag const& other) {
+    if (mType == other.mType) {
+        for (auto const& val : other.mStorage) {
+            if (std::any_of(mStorage.begin(), mStorage.end(), [&val](std::unique_ptr<Tag> const& tag) {
+                    return !tag->equals(*val);
+                })) {
+                push_back(val->copy());
+            }
+        }
+    } else {
+        mType = other.mType;
+        for (const auto& data : other.mStorage) { mStorage.emplace_back(data.get()->copy()); }
     }
 }
 

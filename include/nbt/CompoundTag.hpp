@@ -59,6 +59,8 @@ public:
 
     void load(ReadOnlyBinaryStream& stream) override;
 
+    void merge(CompoundTag const& other, bool mergeList = false);
+
     [[nodiscard]] TagMap&       items() noexcept;
     [[nodiscard]] TagMap const& items() const noexcept;
 
