@@ -316,7 +316,24 @@ void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_si
     return nullptr;
 }
 
-void* nbt_compound_tag_get_index(void* handle, size_t index) {
+nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
+    if (handle) {
+        auto nbt = toTag(handle)->as<bedrock_protocol::CompoundTag>();
+        auto it  = std::next(nbt.begin(), index);
+        if (it != nbt.end()) {
+            auto     value = it->first;
+            uint8_t* data  = new uint8_t[value.size()];
+            std::memcpy(data, value.data(), value.size());
+            nbtio_buffer result;
+            result.data = data;
+            result.size = value.size();
+            return result;
+        }
+    }
+    return nbtio_buffer();
+}
+
+void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
     if (handle) {
         auto nbt = toTag(handle)->as<bedrock_protocol::CompoundTag>();
         auto it  = std::next(nbt.begin(), index);
