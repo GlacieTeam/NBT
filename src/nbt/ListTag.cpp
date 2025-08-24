@@ -99,6 +99,7 @@ void ListTag::load(ReadOnlyBinaryStream& stream) {
 }
 
 void ListTag::merge(ListTag const& other) {
+    if (other.size() == 0) { return; }
     if (mType == other.mType) {
         for (auto const& val : other.mStorage) {
             if (std::any_of(mStorage.begin(), mStorage.end(), [&val](std::unique_ptr<Tag> const& tag) {
