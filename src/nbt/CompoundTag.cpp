@@ -109,10 +109,10 @@ void CompoundTag::load(ReadOnlyBinaryStream& stream) {
 void CompoundTag::merge(CompoundTag const& other, bool mergeList) {
     for (auto const& [key, val] : other) {
         if (mTagMap.contains(key)) {
-            if (val.getType() == Type::Compound) {
+            if (getType() == Type::Compound && val.getType() == Type::Compound) {
                 mTagMap[key].as<CompoundTag>().merge(val.as<CompoundTag>());
                 continue;
-            } else if (val.getType() == Type::List && mergeList) {
+            } else if (getType() == Type::List && val.getType() == Type::List && mergeList) {
                 mTagMap[key].as<ListTag>().merge(val.as<ListTag>());
                 continue;
             }
