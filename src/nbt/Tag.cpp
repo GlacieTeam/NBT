@@ -79,4 +79,22 @@ std::string Tag::toJson(uint8_t indent) const noexcept {
     } catch (...) { return {}; }
 }
 
+Tag& Tag::operator[](size_t index) {
+    if (getType() == Type::List) { return as<ListTag>().operator[](index); }
+    throw std::runtime_error("tag not hold an array");
+}
+Tag const& Tag::operator[](size_t index) const {
+    if (getType() == Type::List) { return as<ListTag>().operator[](index); }
+    throw std::runtime_error("tag not hold an array");
+}
+
+CompoundTagVariant& Tag::operator[](std::string_view index) {
+    if (getType() == Type::List) { return as<CompoundTag>().operator[](index); }
+    throw std::runtime_error("tag not hold an object");
+}
+CompoundTagVariant const& Tag::operator[](std::string_view index) const {
+    if (getType() == Type::List) { return as<CompoundTag>().operator[](index); }
+    throw std::runtime_error("tag not hold an object");
+}
+
 } // namespace bedrock_protocol

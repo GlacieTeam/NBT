@@ -13,6 +13,8 @@
 
 namespace bedrock_protocol {
 
+class CompoundTagVariant;
+
 class Tag {
 public:
     enum class Type : uint8_t {
@@ -51,6 +53,22 @@ public:
 
 public:
     [[nodiscard]] NBT_API bool operator==(Tag const& other) const;
+
+    [[nodiscard]] NBT_API Tag&       operator[](size_t index);
+    [[nodiscard]] NBT_API Tag const& operator[](size_t index) const;
+
+    [[nodiscard]] NBT_API CompoundTagVariant&       operator[](std::string_view index);
+    [[nodiscard]] NBT_API CompoundTagVariant const& operator[](std::string_view index) const;
+
+    template <size_t N>
+    [[nodiscard]] CompoundTagVariant& operator[](char const (&index)[N]) {
+        return operator[](std::string_view{index, N - 1});
+    }
+
+    template <size_t N>
+    [[nodiscard]] CompoundTagVariant const& operator[](char const (&index)[N]) const {
+        return operator[](std::string_view{index, N - 1});
+    }
 
     [[nodiscard]] NBT_API std::string
     toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
