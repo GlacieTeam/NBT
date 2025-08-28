@@ -17,6 +17,139 @@ CompoundTagVariant::CompoundTagVariant(Tag&& tag) { emplace(std::move(tag)); }
 
 CompoundTagVariant::CompoundTagVariant(std::unique_ptr<Tag> tag) { emplace(std::move(*tag)); }
 
+CompoundTagVariant::CompoundTagVariant(std::nullptr_t) {}
+
+CompoundTagVariant::CompoundTagVariant(TagVariant tag) : mStorage(std::move(tag)) {}
+
+CompoundTagVariant::CompoundTagVariant(Tag const& tag) : CompoundTagVariant(tag.copy()) {}
+
+CompoundTagVariant::CompoundTagVariant(std::initializer_list<CompoundTag::TagMap::value_type> tagPairs)
+: mStorage(std::in_place_type<CompoundTag>, tagPairs) {}
+
+CompoundTagVariant::CompoundTagVariant(std::string s) : mStorage(std::in_place_type<StringTag>, std::move(s)) {}
+
+CompoundTagVariant::CompoundTagVariant(std::string_view s) : mStorage(std::in_place_type<StringTag>, std::string(s)) {}
+
+CompoundTagVariant::iterator       CompoundTagVariant::begin() noexcept { return iterator::makeBegin(*this); }
+CompoundTagVariant::const_iterator CompoundTagVariant::begin() const noexcept { return cbegin(); }
+CompoundTagVariant::const_iterator CompoundTagVariant::cbegin() const noexcept {
+    return const_iterator::makeBegin(*this);
+}
+
+CompoundTagVariant::iterator       CompoundTagVariant::end() noexcept { return iterator::makeEnd(*this); }
+CompoundTagVariant::const_iterator CompoundTagVariant::end() const noexcept { return cend(); }
+CompoundTagVariant::const_iterator CompoundTagVariant::cend() const noexcept { return const_iterator::makeEnd(*this); }
+
+CompoundTag::TagMap const& CompoundTagVariant::items() const { return as<CompoundTag>().items(); }
+CompoundTag::TagMap&       CompoundTagVariant::items() { return as<CompoundTag>().items(); }
+
+bool CompoundTagVariant::contains(std::string_view key) const noexcept {
+    if (is_object()) { return as<CompoundTag>().contains(std::string(key)); }
+    return false;
+}
+
+bool CompoundTagVariant::contains(std::string_view key, Tag::Type type) const noexcept {
+    if (is_object()) { return as<CompoundTag>().contains(std::string(key), type); }
+    return false;
+}
+
+Tag& CompoundTagVariant::operator[](size_t index) {
+    if (hold(Tag::Type::List)) {
+        return as<ListTag>()[index];
+    } else {
+        throw std::runtime_error("tag not hold an array");
+    }
+}
+
+Tag const& CompoundTagVariant::operator[](size_t index) const {
+    if (hold(Tag::Type::List)) {
+        return as<ListTag>()[index];
+    } else {
+        throw std::runtime_error("tag not hold an array");
+    }
+}
+
+CompoundTagVariant& CompoundTagVariant::operator[](std::string_view index) {
+    if (is_null()) { mStorage = CompoundTag{}; }
+    if (!hold(Tag::Type::Compound)) { throw std::runtime_error("tag not hold an object"); }
+    return as<CompoundTag>()[index];
+}
+
+CompoundTagVariant const& CompoundTagVariant::operator[](std::string_view index) const {
+    if (!hold(Tag::Type::Compound)) { throw std::runtime_error("tag not hold an object"); }
+    return as<CompoundTag>()[index];
+}
+
+std::unique_ptr<Tag> CompoundTagVariant::toUniqueCopy() const& {
+    return std::visit(
+        [](auto& val) -> std::unique_ptr<Tag> { return std::make_unique<std::decay_t<decltype(val)>>(val); },
+        mStorage
+    );
+}
+
+std::unique_ptr<Tag> CompoundTagVariant::toUnique() && {
+    return std::visit(
+        [](auto&& val) -> std::unique_ptr<Tag> {
+            return std::make_unique<std::decay_t<decltype(val)>>(std::move(val));
+        },
+        mStorage
+    );
+}
+
+bool CompoundTagVariant::remove(std::string_view index) {
+    if (is_object()) { as<CompoundTag>().remove(index); }
+    throw std::runtime_error("tag not hold an object");
+}
+
+bool CompoundTagVariant::remove(size_t index) {
+    if (is_object()) { as<ListTag>().remove(index); }
+    throw std::runtime_error("tag not hold an array");
+}
+
+bool CompoundTagVariant::rename(std::string_view index, std::string_view newName) {
+    if (is_object()) { as<CompoundTag>().rename(index, newName); }
+    throw std::runtime_error("tag not hold an object");
+}
+
+void CompoundTagVariant::push_back(CompoundTagVariant val) {
+    if (is_null()) { mStorage = ListTag{}; }
+    if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
+    as<ListTag>().push_back(std::move(val).toUnique());
+}
+
+void CompoundTagVariant::push_back(Tag const& val) {
+    if (is_null()) { mStorage = ListTag{}; }
+    if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
+    as<ListTag>().push_back(val);
+}
+
+CompoundTagVariant::operator std::string const&() const {
+    if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
+    return as<StringTag>().storage();
+}
+CompoundTagVariant::operator std::string&() {
+    if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
+    return as<StringTag>().storage();
+}
+
+CompoundTagVariant::operator std::vector<uint8_t> const&() const {
+    if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+    return as<ByteArrayTag>().storage();
+}
+CompoundTagVariant::operator std::vector<uint8_t>&() {
+    if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+    return as<ByteArrayTag>().storage();
+}
+
+CompoundTagVariant::operator std::vector<int> const&() const {
+    if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+    return as<IntArrayTag>().storage();
+}
+CompoundTagVariant::operator std::vector<int>&() {
+    if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+    return as<IntArrayTag>().storage();
+}
+
 Tag& CompoundTagVariant::emplace(Tag&& tag) {
     switch (tag.getType()) {
     case Tag::Type::Byte:

@@ -31,23 +31,23 @@ public:
         return static_cast<int64_t>(mStorage);
     }
 
-    [[nodiscard]] Int64Tag operator+() const noexcept { return Int64Tag{+mStorage}; }
+    [[nodiscard]] NBT_API Int64Tag operator+() const noexcept;
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] NBT_API Type getType() const override;
 
-    [[nodiscard]] bool equals(Tag const& other) const override;
+    [[nodiscard]] NBT_API bool equals(Tag const& other) const override;
 
-    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] NBT_API std::unique_ptr<Tag> copy() const override;
 
-    [[nodiscard]] std::size_t hash() const override;
+    [[nodiscard]] NBT_API std::size_t hash() const override;
 
-    void write(BytesDataOutput& stream) const override;
+    NBT_API void write(BytesDataOutput& stream) const override;
 
-    void load(BytesDataInput& stream) override;
+    NBT_API void load(BytesDataInput& stream) override;
 
-    void write(BinaryStream& stream) const override;
+    NBT_API void write(BinaryStream& stream) const override;
 
-    void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(ReadOnlyBinaryStream& stream) override;
 
     [[nodiscard]] constexpr int64_t&       storage() noexcept { return mStorage; }
     [[nodiscard]] constexpr int64_t const& storage() const noexcept { return mStorage; }

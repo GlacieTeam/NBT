@@ -7,6 +7,7 @@
 
 #pragma once
 #include <binarystream/ReadOnlyBinaryStream.hpp>
+#include <nbt-c/Macros.h>
 
 namespace bedrock_protocol {
 

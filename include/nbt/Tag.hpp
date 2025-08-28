@@ -50,12 +50,12 @@ public:
     virtual void load(ReadOnlyBinaryStream& stream) = 0;
 
 public:
-    [[nodiscard]] bool operator==(Tag const& other) const;
+    [[nodiscard]] NBT_API bool operator==(Tag const& other) const;
 
-    [[nodiscard]] std::string
+    [[nodiscard]] NBT_API std::string
     toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
-    [[nodiscard]] std::string toJson(uint8_t indent = 4) const noexcept;
+    [[nodiscard]] NBT_API std::string toJson(uint8_t indent = 4) const noexcept;
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr T& as() noexcept {
@@ -78,7 +78,7 @@ public:
     }
 
 public:
-    [[nodiscard]] static std::unique_ptr<Tag> newTag(Type type);
+    [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
 };
 
 } // namespace bedrock_protocol

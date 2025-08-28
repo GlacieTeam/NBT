@@ -96,16 +96,13 @@ public:
 
         [[nodiscard]] reference operator*() const noexcept {
             switch (iter.index()) {
-            case 0:
-                return *std::get<0>(iter)->get();
             case 1:
                 return *std::get<1>(iter)->second.get();
             case 2:
                 return *std::get<2>(iter)->get();
             default:
-                std::unreachable();
+                return *std::get<0>(iter)->get();
             }
-            std::unreachable();
         }
 
         [[nodiscard]] pointer operator->() const noexcept { return std::addressof(**this); }
@@ -136,15 +133,15 @@ public:
     };
 
 public:
-    [[nodiscard]] CompoundTagVariant(Tag&& tag);
-    [[nodiscard]] CompoundTagVariant(std::unique_ptr<Tag> tag);
+    [[nodiscard]] NBT_API CompoundTagVariant(Tag&& tag);
+    [[nodiscard]] NBT_API CompoundTagVariant(std::unique_ptr<Tag> tag);
 
-    [[nodiscard]] constexpr CompoundTagVariant()                          = default;
-    [[nodiscard]] constexpr CompoundTagVariant(CompoundTagVariant&&)      = default;
-    [[nodiscard]] constexpr CompoundTagVariant(CompoundTagVariant const&) = default;
+    [[nodiscard]] NBT_API CompoundTagVariant()                          = default;
+    [[nodiscard]] NBT_API CompoundTagVariant(CompoundTagVariant&&)      = default;
+    [[nodiscard]] NBT_API CompoundTagVariant(CompoundTagVariant const&) = default;
 
-    CompoundTagVariant& operator=(CompoundTagVariant&&)      = default;
-    CompoundTagVariant& operator=(CompoundTagVariant const&) = default;
+    NBT_API CompoundTagVariant& operator=(CompoundTagVariant&&)      = default;
+    NBT_API CompoundTagVariant& operator=(CompoundTagVariant const&) = default;
 
     template <class T>
         requires(requires(T o) { mStorage = std::move(o); })
@@ -160,7 +157,7 @@ public:
         return std::get<T>(mStorage);
     }
 
-    Tag& emplace(Tag&& tag);
+    NBT_API Tag& emplace(Tag&& tag);
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr T& as() noexcept {
@@ -172,35 +169,33 @@ public:
         return static_cast<T const&>(*get());
     }
 
-    [[nodiscard]] const Tag* operator->() const;
-    [[nodiscard]] Tag*       operator->();
+    [[nodiscard]] NBT_API const Tag* operator->() const;
+    [[nodiscard]] NBT_API Tag*       operator->();
 
-    [[nodiscard]] const Tag* get() const;
-    [[nodiscard]] Tag*       get();
+    [[nodiscard]] NBT_API const Tag* get() const;
+    [[nodiscard]] NBT_API Tag*       get();
 
-    [[nodiscard]] const Tag& operator*() const;
-    [[nodiscard]] Tag&       operator*();
+    [[nodiscard]] NBT_API const Tag& operator*() const;
+    [[nodiscard]] NBT_API Tag&       operator*();
 
-    [[nodiscard]] bool operator==(CompoundTagVariant const& other) const;
+    [[nodiscard]] NBT_API bool operator==(CompoundTagVariant const& other) const;
 
 public:
     using iterator       = Iterator<false>;
     using const_iterator = Iterator<true>;
 
-    [[nodiscard]] constexpr CompoundTagVariant(std::nullptr_t) {}
-
-    [[nodiscard]] CompoundTagVariant(TagVariant tag) : mStorage(std::move(tag)) {}
+    [[nodiscard]] NBT_API CompoundTagVariant(std::nullptr_t);
+    [[nodiscard]] NBT_API CompoundTagVariant(TagVariant tag);
+    [[nodiscard]] NBT_API CompoundTagVariant(Tag const& tag);
+    [[nodiscard]] NBT_API CompoundTagVariant(std::initializer_list<CompoundTag::TagMap::value_type> tagPairs);
 
     template <class T, class... Args>
     [[nodiscard]] constexpr CompoundTagVariant(std::in_place_type_t<T>, Args&&... args)
     : mStorage(std::in_place_type<T>, std::forward<Args>(args)...) {}
 
-    [[nodiscard]] constexpr CompoundTagVariant(std::initializer_list<CompoundTag::TagMap::value_type> tagPairs)
-    : mStorage(std::in_place_type<CompoundTag>, tagPairs) {}
-
-    [[nodiscard]] CompoundTagVariant(Tag const& tag) : CompoundTagVariant(tag.copy()) {}
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr CompoundTagVariant(T tag) : mStorage(std::move(tag)) {}
+
     template <std::integral T>
     [[nodiscard]] constexpr CompoundTagVariant(T integer) {
         constexpr size_t size = sizeof(T);
@@ -214,28 +209,27 @@ public:
             mStorage = Int64Tag{integer};
         }
     }
-    [[nodiscard]] CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}
+    [[nodiscard]] constexpr CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}
 
-    [[nodiscard]] CompoundTagVariant(float f) : mStorage(FloatTag{f}) {}
+    [[nodiscard]] constexpr CompoundTagVariant(float f) : mStorage(FloatTag{f}) {}
 
-    [[nodiscard]] CompoundTagVariant(double d) : mStorage(DoubleTag{d}) {}
+    [[nodiscard]] constexpr CompoundTagVariant(double d) : mStorage(DoubleTag{d}) {}
 
-    [[nodiscard]] constexpr CompoundTagVariant(std::string s) : mStorage(std::in_place_type<StringTag>, std::move(s)) {}
+    [[nodiscard]] NBT_API CompoundTagVariant(std::string s);
 
-    [[nodiscard]] constexpr CompoundTagVariant(std::string_view s)
-    : mStorage(std::in_place_type<StringTag>, std::string(s)) {}
+    [[nodiscard]] NBT_API CompoundTagVariant(std::string_view s);
 
     template <size_t N>
     [[nodiscard]] constexpr CompoundTagVariant(char const (&str)[N])
     : CompoundTagVariant(std::string_view{str, N - 1}) {}
 
-    [[nodiscard]] iterator       begin() noexcept { return iterator::makeBegin(*this); }
-    [[nodiscard]] const_iterator begin() const noexcept { return cbegin(); }
-    [[nodiscard]] const_iterator cbegin() const noexcept { return const_iterator::makeBegin(*this); }
+    [[nodiscard]] NBT_API iterator       begin() noexcept;
+    [[nodiscard]] NBT_API const_iterator begin() const noexcept;
+    [[nodiscard]] NBT_API const_iterator cbegin() const noexcept;
 
-    [[nodiscard]] iterator       end() noexcept { return iterator::makeEnd(*this); }
-    [[nodiscard]] const_iterator end() const noexcept { return cend(); }
-    [[nodiscard]] const_iterator cend() const noexcept { return const_iterator::makeEnd(*this); }
+    [[nodiscard]] NBT_API iterator       end() noexcept;
+    [[nodiscard]] NBT_API const_iterator end() const noexcept;
+    [[nodiscard]] NBT_API const_iterator cend() const noexcept;
 
     [[nodiscard]] constexpr Tag::Type index() const noexcept { return Tag::Type(mStorage.index()); }
     [[nodiscard]] constexpr Tag::Type getType() const noexcept { return index(); }
@@ -266,18 +260,12 @@ public:
     }
     [[nodiscard]] constexpr bool is_structured() const noexcept { return is_array() || is_object(); }
 
-    [[nodiscard]] CompoundTag::TagMap const& items() const { return as<CompoundTag>().items(); }
-    [[nodiscard]] CompoundTag::TagMap&       items() { return as<CompoundTag>().items(); }
+    [[nodiscard]] NBT_API CompoundTag::TagMap const& items() const;
+    [[nodiscard]] NBT_API CompoundTag::TagMap& items();
 
-    [[nodiscard]] bool contains(std::string_view key) const noexcept {
-        if (is_object()) { return as<CompoundTag>().contains(std::string(key)); }
-        return false;
-    }
+    [[nodiscard]] NBT_API bool contains(std::string_view key) const noexcept;
 
-    [[nodiscard]] bool contains(std::string_view key, Tag::Type type) const noexcept {
-        if (is_object()) { return as<CompoundTag>().contains(std::string(key), type); }
-        return false;
-    }
+    [[nodiscard]] NBT_API bool contains(std::string_view key, Tag::Type type) const noexcept;
 
     [[nodiscard]] constexpr size_t size() const noexcept {
         switch (index()) {
@@ -297,39 +285,16 @@ public:
             return as<IntArrayTag>().size();
         case Tag::Type::ByteArray:
             return as<ByteArrayTag>().size();
-        case Tag::Type::End:
-            return 0;
         default:
-            std::unreachable();
+            return 0;
         }
     }
 
-    [[nodiscard]] Tag& operator[](size_t index) {
-        if (hold(Tag::Type::List)) {
-            return as<ListTag>()[index];
-        } else {
-            throw std::runtime_error("tag not hold an array");
-        }
-    }
+    [[nodiscard]] NBT_API Tag&       operator[](size_t index);
+    [[nodiscard]] NBT_API Tag const& operator[](size_t index) const;
 
-    [[nodiscard]] Tag const& operator[](size_t index) const {
-        if (hold(Tag::Type::List)) {
-            return as<ListTag>()[index];
-        } else {
-            throw std::runtime_error("tag not hold an array");
-        }
-    }
-
-    [[nodiscard]] CompoundTagVariant& operator[](std::string_view index) {
-        if (is_null()) { mStorage = CompoundTag{}; }
-        if (!hold(Tag::Type::Compound)) { throw std::runtime_error("tag not hold an object"); }
-        return as<CompoundTag>()[index];
-    }
-
-    [[nodiscard]] CompoundTagVariant const& operator[](std::string_view index) const {
-        if (!hold(Tag::Type::Compound)) { throw std::runtime_error("tag not hold an object"); }
-        return as<CompoundTag>()[index];
-    }
+    [[nodiscard]] NBT_API CompoundTagVariant&       operator[](std::string_view index);
+    [[nodiscard]] NBT_API CompoundTagVariant const& operator[](std::string_view index) const;
 
     template <size_t N>
     [[nodiscard]] CompoundTagVariant& operator[](char const (&index)[N]) {
@@ -341,48 +306,17 @@ public:
         return operator[](std::string_view{index, N - 1});
     }
 
-    [[nodiscard]] std::unique_ptr<Tag> toUniqueCopy() const& {
-        return std::visit(
-            [](auto& val) -> std::unique_ptr<Tag> { return std::make_unique<std::decay_t<decltype(val)>>(val); },
-            mStorage
-        );
-    }
+    [[nodiscard]] NBT_API std::unique_ptr<Tag> toUniqueCopy() const&;
 
-    [[nodiscard]] std::unique_ptr<Tag> toUnique() && {
-        return std::visit(
-            [](auto&& val) -> std::unique_ptr<Tag> {
-                return std::make_unique<std::decay_t<decltype(val)>>(std::move(val));
-            },
-            mStorage
-        );
-    }
+    [[nodiscard]] NBT_API std::unique_ptr<Tag> toUnique() &&;
 
-    bool remove(std::string_view index) {
-        if (is_object()) { as<CompoundTag>().remove(index); }
-        throw std::runtime_error("tag not hold an object");
-    }
+    NBT_API bool remove(std::string_view index);
+    NBT_API bool remove(size_t index);
 
-    bool remove(size_t index) {
-        if (is_object()) { as<ListTag>().remove(index); }
-        throw std::runtime_error("tag not hold an array");
-    }
+    NBT_API bool rename(std::string_view index, std::string_view newName);
 
-    bool rename(std::string_view index, std::string_view newName) {
-        if (is_object()) { as<CompoundTag>().rename(index, newName); }
-        throw std::runtime_error("tag not hold an object");
-    }
-
-    void push_back(CompoundTagVariant val) {
-        if (is_null()) { mStorage = ListTag{}; }
-        if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
-        as<ListTag>().push_back(std::move(val).toUnique());
-    }
-
-    void push_back(Tag const& val) {
-        if (is_null()) { mStorage = ListTag{}; }
-        if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
-        as<ListTag>().push_back(val);
-    }
+    NBT_API void push_back(CompoundTagVariant val);
+    NBT_API void push_back(Tag const& val);
 
     template <typename T>
         requires std::is_arithmetic_v<T>
@@ -399,32 +333,14 @@ public:
         );
     }
 
-    [[nodiscard]] operator std::string const&() const {
-        if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
-        return as<StringTag>().storage();
-    }
-    [[nodiscard]] operator std::string&() {
-        if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
-        return as<StringTag>().storage();
-    }
+    [[nodiscard]] NBT_API operator std::string const&() const;
+    [[nodiscard]] NBT_API operator std::string&();
 
-    [[nodiscard]] operator std::vector<uint8_t> const&() const {
-        if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
-        return as<ByteArrayTag>().storage();
-    }
-    [[nodiscard]] operator std::vector<uint8_t>&() {
-        if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
-        return as<ByteArrayTag>().storage();
-    }
+    [[nodiscard]] NBT_API operator std::vector<uint8_t> const&() const;
+    [[nodiscard]] NBT_API operator std::vector<uint8_t>&();
 
-    [[nodiscard]] operator std::vector<int> const&() const {
-        if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
-        return as<IntArrayTag>().storage();
-    }
-    [[nodiscard]] operator std::vector<int>&() {
-        if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
-        return as<IntArrayTag>().storage();
-    }
+    [[nodiscard]] NBT_API operator std::vector<int> const&() const;
+    [[nodiscard]] NBT_API operator std::vector<int>&();
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr operator T&() noexcept {
@@ -436,23 +352,24 @@ public:
         return as<T const&>();
     }
 
-    [[nodiscard]] std::string
+    [[nodiscard]] NBT_API std::string
     toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
 
-    [[nodiscard]] std::string toJson(uint8_t indent = 4) const noexcept;
+    [[nodiscard]] NBT_API std::string toJson(uint8_t indent = 4) const noexcept;
 
-    void merge(CompoundTagVariant const& other, bool mergeList = false);
+    NBT_API void merge(CompoundTagVariant const& other, bool mergeList = false);
 
 public:
-    [[nodiscard]] static CompoundTagVariant object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
+    [[nodiscard]] NBT_API static CompoundTagVariant
+    object(std::initializer_list<CompoundTag::TagMap::value_type> init = {}) {
         return CompoundTagVariant{std::in_place_type<CompoundTag>, init};
     }
 
-    [[nodiscard]] static CompoundTagVariant array(std::initializer_list<CompoundTagVariant> init = {}) {
+    [[nodiscard]] NBT_API static CompoundTagVariant array(std::initializer_list<CompoundTagVariant> init = {}) {
         return CompoundTagVariant{std::in_place_type<ListTag>, init};
     }
 
-    [[nodiscard]] static std::optional<CompoundTagVariant>
+    [[nodiscard]] NBT_API static std::optional<CompoundTagVariant>
     parse(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
 

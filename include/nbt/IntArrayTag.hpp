@@ -16,50 +16,50 @@ protected:
     std::vector<int> mStorage;
 
 public:
-    [[nodiscard]] IntArrayTag() = default;
+    [[nodiscard]] NBT_API IntArrayTag() = default;
 
-    [[nodiscard]] IntArrayTag(std::vector<int> const& arr);
-    [[nodiscard]] IntArrayTag(std::initializer_list<int> val);
+    [[nodiscard]] NBT_API IntArrayTag(std::vector<int> const& arr);
+    [[nodiscard]] NBT_API IntArrayTag(std::initializer_list<int> val);
 
-    [[nodiscard]] operator std::vector<int> const&() const;
-    [[nodiscard]] operator std::vector<int>&();
+    [[nodiscard]] NBT_API operator std::vector<int> const&() const;
+    [[nodiscard]] NBT_API operator std::vector<int>&();
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] NBT_API Type getType() const override;
 
-    [[nodiscard]] bool equals(Tag const& other) const override;
+    [[nodiscard]] NBT_API bool equals(Tag const& other) const override;
 
-    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] NBT_API std::unique_ptr<Tag> copy() const override;
 
-    [[nodiscard]] std::size_t hash() const override;
+    [[nodiscard]] NBT_API std::size_t hash() const override;
 
-    void write(BytesDataOutput& stream) const override;
+    NBT_API void write(BytesDataOutput& stream) const override;
 
-    void load(BytesDataInput& stream) override;
+    NBT_API void load(BytesDataInput& stream) override;
 
-    void write(BinaryStream& stream) const override;
+    NBT_API void write(BinaryStream& stream) const override;
 
-    void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(ReadOnlyBinaryStream& stream) override;
 
-    [[nodiscard]] std::vector<int>&       storage() noexcept;
-    [[nodiscard]] std::vector<int> const& storage() const noexcept;
+    [[nodiscard]] NBT_API std::vector<int>& storage() noexcept;
+    [[nodiscard]] NBT_API std::vector<int> const& storage() const noexcept;
 
-    [[nodiscard]] size_t size() const noexcept;
+    [[nodiscard]] NBT_API size_t size() const noexcept;
 
-    void reserve(size_t size);
+    NBT_API void reserve(size_t size);
 
-    bool remove(size_t index);
-    bool remove(size_t startIndex, size_t endIndex);
-    void clear() noexcept;
+    NBT_API bool remove(size_t index);
+    NBT_API bool remove(size_t startIndex, size_t endIndex);
+    NBT_API void clear() noexcept;
 
-    [[nodiscard]] int&       operator[](size_t index) noexcept;
-    [[nodiscard]] int const& operator[](size_t index) const noexcept;
+    [[nodiscard]] NBT_API int&       operator[](size_t index) noexcept;
+    [[nodiscard]] NBT_API int const& operator[](size_t index) const noexcept;
 
-    [[nodiscard]] int&       at(size_t index);
-    [[nodiscard]] int const& at(size_t index) const;
+    [[nodiscard]] NBT_API int&       at(size_t index);
+    [[nodiscard]] NBT_API int const& at(size_t index) const;
 
-    void push_back(int val);
+    NBT_API void push_back(int val);
 
-    IntArrayTag& operator=(std::vector<int> const& value);
+    NBT_API IntArrayTag& operator=(std::vector<int> const& value);
 };
 
 } // namespace bedrock_protocol

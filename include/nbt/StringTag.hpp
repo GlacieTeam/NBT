@@ -15,37 +15,37 @@ protected:
     std::string mStorage;
 
 public:
-    [[nodiscard]] StringTag() = default;
-    [[nodiscard]] StringTag(std::string_view str);
-    [[nodiscard]] StringTag(std::string str);
-    [[nodiscard]] StringTag(const char* data, size_t size);
+    [[nodiscard]] NBT_API StringTag() = default;
+    [[nodiscard]] NBT_API StringTag(std::string_view str);
+    [[nodiscard]] NBT_API StringTag(std::string str);
+    [[nodiscard]] NBT_API StringTag(const char* data, size_t size);
 
     template <size_t N>
     [[nodiscard]] constexpr StringTag(char const (&str)[N]) : mStorage(str) {}
 
-    [[nodiscard]] operator std::string const&() const;
-    [[nodiscard]] operator std::string&();
+    [[nodiscard]] NBT_API operator std::string const&() const;
+    [[nodiscard]] NBT_API operator std::string&();
 
-    [[nodiscard]] Type getType() const override;
+    [[nodiscard]] NBT_API Type getType() const override;
 
-    [[nodiscard]] bool equals(Tag const& other) const override;
+    [[nodiscard]] NBT_API bool equals(Tag const& other) const override;
 
-    [[nodiscard]] std::unique_ptr<Tag> copy() const override;
+    [[nodiscard]] NBT_API std::unique_ptr<Tag> copy() const override;
 
-    [[nodiscard]] std::size_t hash() const override;
+    [[nodiscard]] NBT_API std::size_t hash() const override;
 
-    void write(BytesDataOutput& stream) const override;
+    NBT_API void write(BytesDataOutput& stream) const override;
 
-    void load(BytesDataInput& stream) override;
+    NBT_API void load(BytesDataInput& stream) override;
 
-    void write(BinaryStream& stream) const override;
+    NBT_API void write(BinaryStream& stream) const override;
 
-    void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(ReadOnlyBinaryStream& stream) override;
 
 public:
-    [[nodiscard]] std::string&       storage() noexcept;
-    [[nodiscard]] std::string const& storage() const noexcept;
-    [[nodiscard]] std::string_view   view() const noexcept;
+    [[nodiscard]] NBT_API std::string& storage() noexcept;
+    [[nodiscard]] NBT_API std::string const& storage() const noexcept;
+    [[nodiscard]] NBT_API std::string_view view() const noexcept;
 };
 
 } // namespace bedrock_protocol

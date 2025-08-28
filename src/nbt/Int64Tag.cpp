@@ -13,6 +13,8 @@ bool Int64Tag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Int64) && (mStorage == static_cast<const Int64Tag&>(other).mStorage);
 }
 
+Int64Tag Int64Tag::operator+() const noexcept { return Int64Tag{+mStorage}; }
+
 Tag::Type Int64Tag::getType() const { return Type::Int64; }
 
 std::unique_ptr<Tag> Int64Tag::copy() const { return std::make_unique<Int64Tag>(mStorage); }

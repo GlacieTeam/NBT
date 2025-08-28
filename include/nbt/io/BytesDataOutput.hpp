@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include <nbt-c/Macros.h>
 #include <nbt/io/BytesDataInput.hpp>
 
 namespace bedrock_protocol {
