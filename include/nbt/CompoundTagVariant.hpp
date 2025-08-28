@@ -159,14 +159,16 @@ public:
 
     NBT_API Tag& emplace(Tag&& tag);
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr T& as() noexcept {
-        return static_cast<T&>(*get());
+        return static_cast<std::remove_cvref_t<T>&>(*get());
     }
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr T const& as() const noexcept {
-        return static_cast<T const&>(*get());
+        return static_cast<std::remove_cvref_t<T> const&>(*get());
     }
 
     [[nodiscard]] NBT_API const Tag* operator->() const;
@@ -193,7 +195,8 @@ public:
     [[nodiscard]] constexpr CompoundTagVariant(std::in_place_type_t<T>, Args&&... args)
     : mStorage(std::in_place_type<T>, std::forward<Args>(args)...) {}
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr CompoundTagVariant(T tag) : mStorage(std::move(tag)) {}
 
     template <std::integral T>
@@ -342,14 +345,16 @@ public:
     [[nodiscard]] NBT_API operator std::vector<int> const&() const;
     [[nodiscard]] NBT_API operator std::vector<int>&();
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr operator T&() noexcept {
-        return as<T&>();
+        return as<std::remove_cvref_t<T>&>();
     }
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr operator T const&() const noexcept {
-        return as<T const&>();
+        return as<std::remove_cvref_t<T> const&>();
     }
 
     [[nodiscard]] NBT_API std::string

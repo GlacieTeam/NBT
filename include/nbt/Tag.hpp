@@ -57,24 +57,28 @@ public:
 
     [[nodiscard]] NBT_API std::string toJson(uint8_t indent = 4) const noexcept;
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr T& as() noexcept {
-        return static_cast<T&>(*this);
+        return static_cast<std::remove_cvref_t<T>&>(*this);
     }
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr T const& as() const noexcept {
-        return static_cast<T const&>(*this);
+        return static_cast<std::remove_cvref_t<T> const&>(*this);
     }
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr operator T&() noexcept {
-        return as<T&>();
+        return as<std::remove_cvref_t<T>&>();
     }
 
-    template <std::derived_from<Tag> T>
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
     [[nodiscard]] constexpr operator T const&() const noexcept {
-        return as<T const&>();
+        return as<std::remove_cvref_t<T> const&>();
     }
 
 public:
