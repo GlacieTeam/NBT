@@ -23,26 +23,30 @@ protected:
     bool             mIsLittleEndian;
 
 public:
-    [[nodiscard]] explicit BytesDataInput(bool isLittleEndian = true);
-    [[nodiscard]] explicit BytesDataInput(std::string_view buffer, bool copyBuffer = false, bool isLittleEndian = true);
+    [[nodiscard]] NBT_API explicit BytesDataInput(bool isLittleEndian = true);
+    [[nodiscard]] NBT_API explicit BytesDataInput(
+        std::string_view buffer,
+        bool             copyBuffer     = false,
+        bool             isLittleEndian = true
+    );
 
-    bool getBytes(void* target, size_t num);
+    NBT_API bool getBytes(void* target, size_t num);
 
-    [[nodiscard]] std::string getString();
+    [[nodiscard]] NBT_API std::string getString();
 
-    [[nodiscard]] std::string getLongString();
+    [[nodiscard]] NBT_API std::string getLongString();
 
-    [[nodiscard]] float getFloat();
+    [[nodiscard]] NBT_API float getFloat();
 
-    [[nodiscard]] double getDouble();
+    [[nodiscard]] NBT_API double getDouble();
 
-    [[nodiscard]] uint8_t getByte();
+    [[nodiscard]] NBT_API uint8_t getByte();
 
-    [[nodiscard]] int16_t getShort();
+    [[nodiscard]] NBT_API int16_t getShort();
 
-    [[nodiscard]] int getInt();
+    [[nodiscard]] NBT_API int getInt();
 
-    [[nodiscard]] int64_t getInt64();
+    [[nodiscard]] NBT_API int64_t getInt64();
 };
 
 } // namespace bedrock_protocol

@@ -13,6 +13,8 @@ bool ByteTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Byte) && (mStorage == static_cast<const ByteTag&>(other).mStorage);
 }
 
+ByteTag ByteTag::operator+() const { return ByteTag{+mStorage}; }
+
 Tag::Type ByteTag::getType() const { return Type::Byte; }
 
 std::unique_ptr<Tag> ByteTag::copy() const { return std::make_unique<ByteTag>(mStorage); }

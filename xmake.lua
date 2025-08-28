@@ -38,7 +38,7 @@ target("NBT")
         set_strip("all")
     end
     if is_config("kind", "shared") then
-        add_defines("NBT_EXPORT")
+        add_defines("_NBT_EXPORT")
     end
     
     if is_plat("windows") then
@@ -77,8 +77,13 @@ target("NBT")
                 "-fvisibility=hidden",
                 "-fvisibility-inlines-hidden"
             )
+            add_shflags(
+                "-stdlib=libc++",
+                "-static-libstdc++",
+                "-static-libgcc"
+            )
             if is_plat("linux") then
-                add_syslinks("c++")
+                add_syslinks("libc++.a", "libc++abi.a")
             elseif is_plat("macosx") then
                 add_shflags("-dynamiclib")
             end

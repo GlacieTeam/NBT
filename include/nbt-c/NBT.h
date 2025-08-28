@@ -6,18 +6,9 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
+#include <nbt-c/Macros.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#ifdef NBT_EXPORT
-#ifdef _WIN32
-#define NBT_API __declspec(dllexport)
-#else
-#define NBT_API __attribute__((visibility("default"), used))
-#endif
-#else
-#define NBT_API
-#endif
 
 #ifdef __cplusplus
 extern "C" {

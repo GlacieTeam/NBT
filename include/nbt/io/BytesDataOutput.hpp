@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
+#include <nbt-c/Macros.h>
 #include <nbt/io/BytesDataInput.hpp>
 
 namespace bedrock_protocol {
@@ -15,28 +16,32 @@ protected:
     std::string& mBuffer;
 
 public:
-    [[nodiscard]] explicit BytesDataOutput(bool isLittleEndian = true);
-    [[nodiscard]] explicit BytesDataOutput(std::string& buffer, bool copyBuffer = false, bool isLittleEndian = true);
+    [[nodiscard]] NBT_API explicit BytesDataOutput(bool isLittleEndian = true);
+    [[nodiscard]] NBT_API explicit BytesDataOutput(
+        std::string& buffer,
+        bool         copyBuffer     = false,
+        bool         isLittleEndian = true
+    );
 
-    [[nodiscard]] std::string getAndReleaseData();
+    [[nodiscard]] NBT_API std::string getAndReleaseData();
 
-    void writeBytes(const void* origin, size_t num);
+    NBT_API void writeBytes(const void* origin, size_t num);
 
-    void writeString(std::string_view  value);
+    NBT_API void writeString(std::string_view value);
 
-    void writeLongString(std::string_view  value);
+    NBT_API void writeLongString(std::string_view value);
 
-    void writeFloat(float value);
+    NBT_API void writeFloat(float value);
 
-    void writeDouble(double value);
+    NBT_API void writeDouble(double value);
 
-    void writeByte(uint8_t value);
+    NBT_API void writeByte(uint8_t value);
 
-    void writeShort(int16_t value);
+    NBT_API void writeShort(int16_t value);
 
-    void writeInt(int value);
+    NBT_API void writeInt(int value);
 
-    void writeInt64(int64_t value);
+    NBT_API void writeInt64(int64_t value);
 };
 
 } // namespace bedrock_protocol
