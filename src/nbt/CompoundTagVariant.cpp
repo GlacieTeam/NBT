@@ -70,7 +70,7 @@ Tag const& CompoundTagVariant::operator[](size_t index) const {
 }
 
 CompoundTagVariant& CompoundTagVariant::operator[](std::string_view index) {
-    if (is_null()) { mStorage = CompoundTag{}; }
+    if (is_null()) { mStorage = CompoundTag(); }
     if (!hold(Tag::Type::Compound)) { throw std::runtime_error("tag not hold an object"); }
     return as<CompoundTag>()[index];
 }

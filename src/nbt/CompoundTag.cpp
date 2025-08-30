@@ -25,9 +25,10 @@ namespace bedrock_protocol {
 
 bool CompoundTag::equals(Tag const& other) const {
     if (other.getType() != Tag::Type::Compound) { return false; }
-    const auto& other_tag = static_cast<const CompoundTag&>(other);
+    const auto& otherTag = static_cast<const CompoundTag&>(other);
+    if (size() != otherTag.size()) { return false; }
     return std::all_of(mTagMap.begin(), mTagMap.end(), [&](const auto& kv) {
-        const auto* tag = other_tag.get(kv.first);
+        const auto* tag = otherTag.get(kv.first);
         return tag && kv.second.get()->equals(*tag);
     });
 }
@@ -35,12 +36,12 @@ bool CompoundTag::equals(Tag const& other) const {
 std::unique_ptr<Tag> CompoundTag::copy() const { return clone(); }
 
 std::size_t CompoundTag::hash() const {
-    size_t hash      = 0x811c9dc5;
-    size_t fnv_prime = 0x01000193;
-    auto   binary    = toBinaryNbt();
+    size_t           hash   = 0x811c9dc5;
+    constexpr size_t prime  = 0x01000193;
+    auto             binary = toBinaryNbt();
     for (uint8_t byte : binary) {
         hash ^= byte;
-        hash  = hash * fnv_prime;
+        hash  = hash * prime;
     }
     return hash;
 }
@@ -404,27 +405,27 @@ CompoundTag::TagMap&       CompoundTag::items() noexcept { return mTagMap; }
 CompoundTag::TagMap const& CompoundTag::items() const noexcept { return mTagMap; }
 
 void CompoundTag::serialize(BinaryStream& stream) const {
-    stream.writeUnsignedChar((uint8_t)Tag::Type::Compound);
+    stream.writeByte(static_cast<std::byte>(Type::Compound));
     stream.writeString("");
     write(stream);
 }
 
 void CompoundTag::serialize(BytesDataOutput& stream) const {
-    stream.writeByte((uint8_t)Tag::Type::Compound);
+    stream.writeByte(static_cast<uint8_t>(Type::Compound));
     stream.writeString("");
     write(stream);
 }
 
 void CompoundTag::deserialize(ReadOnlyBinaryStream& stream) {
-    (void)stream.getByte();
+    auto tagType = static_cast<Type>(stream.getByte());
     (void)stream.getString();
-    load(stream);
+    if (tagType == Type::Compound) { load(stream); }
 }
 
 void CompoundTag::deserialize(BytesDataInput& stream) {
-    (void)stream.getByte();
+    auto tagType = static_cast<Type>(stream.getByte());
     (void)stream.getString();
-    load(stream);
+    if (tagType == Type::Compound) { load(stream); }
 }
 
 std::optional<CompoundTag> CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) noexcept try {
