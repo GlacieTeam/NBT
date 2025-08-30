@@ -33,6 +33,7 @@ enum TagType {
     Tag_List      = 9,
     Tag_Compound  = 10,
     Tag_IntArray  = 11,
+    Tag_LongArray = 12,
 };
 
 enum Snbt_Format {
@@ -135,7 +136,16 @@ NBT_API void   nbt_int_array_tag_add_value(void* handle, int value);
 NBT_API int    nbt_int_array_tag_get_value(void* handle, size_t index);
 NBT_API bool   nbt_int_array_tag_remove_value(void* handle, size_t index);
 NBT_API void   nbt_int_array_tag_clear(void* handle);
-NBT_API bool   nbt_int_array_tag_set_value(void* handle, size_t index, void* tag);
+NBT_API bool   nbt_int_array_tag_set_value(void* handle, size_t index, int value);
+
+// LongArrayTag
+NBT_API void*   nbt_long_array_tag_create();
+NBT_API size_t  nbt_long_array_tag_size(void* handle);
+NBT_API void    nbt_long_array_tag_add_value(void* handle, int64_t value);
+NBT_API int64_t nbt_long_array_tag_get_value(void* handle, size_t index);
+NBT_API bool    nbt_long_array_tag_remove_value(void* handle, size_t index);
+NBT_API void    nbt_long_array_tag_clear(void* handle);
+NBT_API bool    nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value);
 
 #ifdef __cplusplus
 }

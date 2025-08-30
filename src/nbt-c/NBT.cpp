@@ -93,6 +93,10 @@ void nbt_any_tag_destroy(void* handle) {
         delete reinterpret_cast<bedrock_protocol::IntArrayTag*>(handle);
         break;
     }
+    case Tag_LongArray: {
+        delete reinterpret_cast<bedrock_protocol::LongArrayTag*>(handle);
+        break;
+    }
     default:
         delete reinterpret_cast<bedrock_protocol::EndTag*>(handle);
         break;
@@ -428,13 +432,50 @@ bool nbt_int_array_tag_remove_value(void* handle, size_t index) {
 }
 
 void nbt_int_array_tag_clear(void* handle) {
-    if (handle) { return toTag(handle)->as<bedrock_protocol::ListTag>().clear(); }
+    if (handle) { return toTag(handle)->as<bedrock_protocol::IntArrayTag>().clear(); }
 }
 
-bool nbt_int_array_tag_set_value(void* handle, size_t index, void* tag) {
+bool nbt_int_array_tag_set_value(void* handle, size_t index, int value) {
     if (handle) {
-        auto& intArrayTag = toTag(handle)->as<bedrock_protocol::ListTag>();
-        if (index < intArrayTag.size()) { return intArrayTag.set(index, *toTag(tag)); }
+        auto& intArrayTag = toTag(handle)->as<bedrock_protocol::IntArrayTag>();
+        if (index < intArrayTag.size()) { return intArrayTag[index] = value; }
+    }
+    return false;
+}
+
+// LongArrayTag
+void* nbt_long_array_tag_create() { return new bedrock_protocol::LongArrayTag(); }
+
+size_t nbt_long_array_tag_size(void* handle) {
+    if (!handle) { return 0; }
+    return toTag(handle)->as<bedrock_protocol::LongArrayTag>().size();
+}
+
+void nbt_long_array_tag_add_value(void* handle, int64_t value) {
+    toTag(handle)->as<bedrock_protocol::LongArrayTag>().push_back(value);
+}
+
+int64_t nbt_long_array_tag_get_value(void* handle, size_t index) {
+    if (handle) {
+        auto& tag = toTag(handle)->as<bedrock_protocol::LongArrayTag>();
+        if (index < tag.size()) { return tag[index]; }
+    }
+    return 0;
+}
+
+bool nbt_long_array_tag_remove_value(void* handle, size_t index) {
+    if (!handle) { return false; }
+    return toTag(handle)->as<bedrock_protocol::LongArrayTag>().remove(index);
+}
+
+void nbt_long_array_tag_clear(void* handle) {
+    if (handle) { return toTag(handle)->as<bedrock_protocol::LongArrayTag>().clear(); }
+}
+
+bool nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value) {
+    if (handle) {
+        auto& longArrayTag = toTag(handle)->as<bedrock_protocol::LongArrayTag>();
+        if (index < longArrayTag.size()) { return longArrayTag[index] = value; }
     }
     return false;
 }
