@@ -25,6 +25,7 @@ class ByteArrayTag;
 class StringTag;
 class ListTag;
 class IntArrayTag;
+class LongArrayTag;
 
 class CompoundTag : public Tag {
 public:
@@ -102,6 +103,7 @@ public:
     NBT_API void putString(std::string_view key, std::string_view value);
     NBT_API void putByteArray(std::string_view key, std::vector<uint8_t> const& value);
     NBT_API void putIntArray(std::string_view key, std::vector<int> const& value);
+    NBT_API void putLongArray(std::string_view key, std::vector<int64_t> const& value);
     NBT_API void putCompound(std::string_view key, CompoundTag&& value);
     NBT_API void putCompound(std::string_view key, std::unique_ptr<CompoundTag> value);
     NBT_API void putList(std::string_view key, ListTag&& value);
@@ -136,6 +138,9 @@ public:
 
     [[nodiscard]] NBT_API const IntArrayTag* getIntArray(std::string_view key) const;
     [[nodiscard]] NBT_API IntArrayTag*       getIntArray(std::string_view key);
+
+    [[nodiscard]] NBT_API const LongArrayTag* getLongArray(std::string_view key) const;
+    [[nodiscard]] NBT_API LongArrayTag*       getLongArray(std::string_view key);
 
     [[nodiscard]] NBT_API const CompoundTag* getCompound(std::string_view key) const;
     [[nodiscard]] NBT_API CompoundTag*       getCompound(std::string_view key);

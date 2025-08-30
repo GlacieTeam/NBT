@@ -16,6 +16,7 @@ class ByteArrayTag;
 class StringTag;
 class ListTag;
 class IntArrayTag;
+class LongArrayTag;
 
 namespace detail {
 
@@ -30,6 +31,7 @@ std::string TypedToSnbt(StringTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(ListTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(CompoundTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(IntArrayTag const&, uint8_t, SnbtFormat);
+std::string TypedToSnbt(LongArrayTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat);
 
 } // namespace detail

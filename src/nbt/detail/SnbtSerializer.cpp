@@ -258,6 +258,41 @@ std::string TypedToSnbt(IntArrayTag const& self, uint8_t indent, SnbtFormat form
     return res;
 }
 
+std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat format) {
+
+    std::string res;
+
+    std::string lbracket{"[L;"}, rbracket{"]"};
+    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) { lbracket = "[ /*L;*/"; }
+
+    res += lbracket;
+
+    size_t      i = self.size();
+    std::string indentSpace(indent, ' ');
+
+    bool isMinimized = isMinimize(format);
+    bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
+
+    if (isNewLine && self.size() > 0) { res += '\n'; }
+
+    for (auto& tag : self.storage()) {
+        i--;
+        if (isNewLine) { res += indentSpace; }
+
+        res += toString(tag);
+
+        if (i > 0) {
+            res += ',';
+            if (!isMinimized && !isNewLine) { res += ' '; }
+        }
+        if (isNewLine) { res += '\n'; }
+    }
+
+    res += rbracket;
+
+    return res;
+}
+
 } // namespace detail
 
 } // namespace bedrock_protocol

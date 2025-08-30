@@ -71,8 +71,7 @@ void ListTag::load(BytesDataInput& stream) {
     auto size = stream.getInt();
     mStorage.clear();
     for (int i = 0; i < size; ++i) {
-        auto tag = newTag(mType);
-        if (tag) {
+        if (auto tag = newTag(mType)) {
             tag->load(stream);
             mStorage.push_back(std::move(tag));
         }
@@ -90,8 +89,7 @@ void ListTag::load(ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
     mStorage.clear();
     for (int i = 0; i < size; ++i) {
-        auto tag = newTag(mType);
-        if (tag) {
+        if (auto tag = newTag(mType)) {
             tag->load(stream);
             mStorage.push_back(std::move(tag));
         }

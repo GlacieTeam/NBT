@@ -21,6 +21,7 @@ std::string BytesDataOutput::getAndReleaseData() { return std::move(mBuffer); }
 
 void BytesDataOutput::writeBytes(const void* origin, size_t num) {
     mBuffer.append(reinterpret_cast<const char*>(origin), num);
+    mBufferView = mBuffer;
 }
 
 void BytesDataOutput::writeString(std::string_view value) {

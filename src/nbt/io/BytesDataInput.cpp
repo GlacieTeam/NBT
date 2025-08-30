@@ -30,7 +30,9 @@ BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool is
     mIsLittleEndian = isLittleEndian;
 }
 
-bool BytesDataInput::getBytes(void* target, size_t num) {
+bool BytesDataInput::hasDataLeft() const noexcept { return mReadPointer < mBufferView.size(); }
+
+bool BytesDataInput::getBytes(void* target, size_t num) noexcept {
     if (mHasOverflowed) { return false; }
     if (num == 0) { return true; }
 
@@ -51,57 +53,65 @@ bool BytesDataInput::getBytes(void* target, size_t num) {
     }
 }
 
-std::string BytesDataInput::getString() {
-    std::string result;
-    auto        size = getShort();
+void BytesDataInput::getString(std::string& result) {
+    auto size = getShort();
     result.resize(size);
     getBytes(result.data(), size);
+}
+
+std::string BytesDataInput::getString() {
+    std::string result;
+    getString(result);
     return result;
+}
+
+void BytesDataInput::getLongString(std::string& result) {
+    auto size = getInt();
+    result.resize(size);
+    getBytes(result.data(), size);
 }
 
 std::string BytesDataInput::getLongString() {
     std::string result;
-    auto        size = getInt();
-    result.resize(size);
-    getBytes(result.data(), size);
+    getLongString(result);
     return result;
 }
 
-float BytesDataInput::getFloat() {
+float BytesDataInput::getFloat() noexcept {
     float result;
     getBytes(&result, sizeof(float));
     if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
-double BytesDataInput::getDouble() {
+double BytesDataInput::getDouble() noexcept {
     double result;
     getBytes(&result, sizeof(double));
     if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
-uint8_t BytesDataInput::getByte() {
+uint8_t BytesDataInput::getByte() noexcept {
     uint8_t result;
     getBytes(&result, sizeof(uint8_t));
     return result;
 }
 
-int16_t BytesDataInput::getShort() {
+int16_t BytesDataInput::getShort() noexcept {
     int16_t result;
     getBytes(&result, sizeof(int16_t));
     if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
-int BytesDataInput::getInt() {
+int BytesDataInput::getInt() noexcept {
     int result;
     getBytes(&result, sizeof(int));
     if (!mIsLittleEndian) { result = detail::swapEndian(result); }
     return result;
 }
 
-int64_t BytesDataInput::getInt64() {
+int64_t BytesDataInput::getInt64() noexcept {
     int64_t result;
     getBytes(&result, sizeof(int64_t));
     if (!mIsLittleEndian) { result = detail::swapEndian(result); }

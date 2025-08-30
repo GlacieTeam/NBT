@@ -27,7 +27,7 @@ std::size_t StringTag::hash() const { return std::hash<std::string>{}(mStorage);
 
 void StringTag::write(BytesDataOutput& stream) const { stream.writeString(mStorage); }
 
-void StringTag::load(BytesDataInput& stream) { mStorage = stream.getString(); }
+void StringTag::load(BytesDataInput& stream) { stream.getString(mStorage); }
 
 void StringTag::write(BinaryStream& stream) const { stream.writeString(mStorage); }
 

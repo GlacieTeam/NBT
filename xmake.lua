@@ -60,6 +60,7 @@ target("NBT")
     else
         add_cxflags(
             "-Wall",
+            "-Wextra",
             "-pedantic",
             "-fexceptions",
             "-stdlib=libc++"

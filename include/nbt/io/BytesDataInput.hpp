@@ -31,23 +31,29 @@ public:
         bool             isLittleEndian = true
     );
 
-    NBT_API bool getBytes(void* target, size_t num);
+    [[nodiscard]] bool hasDataLeft() const noexcept;
+
+    NBT_API bool getBytes(void* target, size_t num) noexcept;
+
+    NBT_API void getString(std::string& result);
 
     [[nodiscard]] NBT_API std::string getString();
 
+    NBT_API void getLongString(std::string& result);
+
     [[nodiscard]] NBT_API std::string getLongString();
 
-    [[nodiscard]] NBT_API float getFloat();
+    [[nodiscard]] NBT_API float getFloat() noexcept;
 
-    [[nodiscard]] NBT_API double getDouble();
+    [[nodiscard]] NBT_API double getDouble() noexcept;
 
-    [[nodiscard]] NBT_API uint8_t getByte();
+    [[nodiscard]] NBT_API uint8_t getByte() noexcept;
 
-    [[nodiscard]] NBT_API int16_t getShort();
+    [[nodiscard]] NBT_API int16_t getShort() noexcept;
 
-    [[nodiscard]] NBT_API int getInt();
+    [[nodiscard]] NBT_API int getInt() noexcept;
 
-    [[nodiscard]] NBT_API int64_t getInt64();
+    [[nodiscard]] NBT_API int64_t getInt64() noexcept;
 };
 
 } // namespace bedrock_protocol

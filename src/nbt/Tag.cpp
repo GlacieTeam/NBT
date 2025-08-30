@@ -15,6 +15,8 @@ namespace bedrock_protocol {
 
 std::unique_ptr<Tag> Tag::newTag(Type type) {
     switch (type) {
+    case Type::End:
+        return std::make_unique<EndTag>();
     case Type::Byte:
         return std::make_unique<ByteTag>();
     case Type::Short:
@@ -37,8 +39,10 @@ std::unique_ptr<Tag> Tag::newTag(Type type) {
         return std::make_unique<CompoundTag>();
     case Type::IntArray:
         return std::make_unique<IntArrayTag>();
+    case Type::LongArray:
+        return std::make_unique<LongArrayTag>();
     default:
-        return std::make_unique<EndTag>();
+        return nullptr;
     }
 }
 
@@ -89,11 +93,11 @@ Tag const& Tag::operator[](size_t index) const {
 }
 
 CompoundTagVariant& Tag::operator[](std::string_view index) {
-    if (getType() == Type::List) { return as<CompoundTag>().operator[](index); }
+    if (getType() == Type::Compound) { return as<CompoundTag>().operator[](index); }
     throw std::runtime_error("tag not hold an object");
 }
 CompoundTagVariant const& Tag::operator[](std::string_view index) const {
-    if (getType() == Type::List) { return as<CompoundTag>().operator[](index); }
+    if (getType() == Type::Compound) { return as<CompoundTag>().operator[](index); }
     throw std::runtime_error("tag not hold an object");
 }
 

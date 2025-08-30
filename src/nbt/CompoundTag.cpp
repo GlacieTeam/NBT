@@ -16,6 +16,7 @@
 #include "nbt/IntArrayTag.hpp"
 #include "nbt/IntTag.hpp"
 #include "nbt/ListTag.hpp"
+#include "nbt/LongArrayTag.hpp"
 #include "nbt/ShortTag.hpp"
 #include "nbt/StringTag.hpp"
 #include <algorithm>
@@ -73,9 +74,10 @@ void CompoundTag::load(BytesDataInput& stream) {
         type = Tag::Type(stream.getByte());
         if (type != Tag::Type::End) {
             auto key = stream.getString();
-            auto tag = Tag::newTag(type);
-            tag->load(stream);
-            put(key, std::move(tag));
+            if (auto tag = Tag::newTag(type)) {
+                tag->load(stream);
+                put(key, std::move(tag));
+            }
         }
     } while (type != Tag::Type::End);
 }
@@ -99,9 +101,10 @@ void CompoundTag::load(ReadOnlyBinaryStream& stream) {
         type = Tag::Type(stream.getUnsignedChar());
         if (type != Tag::Type::End) {
             auto key = stream.getString();
-            auto tag = Tag::newTag(type);
-            tag->load(stream);
-            put(key, std::move(tag));
+            if (auto tag = Tag::newTag(type)) {
+                tag->load(stream);
+                put(key, std::move(tag));
+            }
         }
     } while (type != Tag::Type::End);
 }
@@ -149,6 +152,10 @@ void CompoundTag::putByteArray(std::string_view key, std::vector<uint8_t> const&
 
 void CompoundTag::putIntArray(std::string_view key, std::vector<int> const& value) {
     mTagMap[std::string(key)].emplace(IntArrayTag(value));
+}
+
+void CompoundTag::putLongArray(std::string_view key, std::vector<int64_t> const& value) {
+    mTagMap[std::string(key)].emplace(LongArrayTag(value));
 }
 
 void CompoundTag::putCompound(std::string_view key, CompoundTag&& value) {
@@ -299,6 +306,20 @@ const IntArrayTag* CompoundTag::getIntArray(std::string_view key) const {
 IntArrayTag* CompoundTag::getIntArray(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::IntArray) { return static_cast<IntArrayTag*>(tag); }
+    }
+    return nullptr;
+}
+
+const LongArrayTag* CompoundTag::getLongArray(std::string_view key) const {
+    if (const auto* tag = get(key)) {
+        if (tag->getType() == Tag::Type::LongArray) { return static_cast<const LongArrayTag*>(tag); }
+    }
+    return nullptr;
+}
+
+LongArrayTag* CompoundTag::getLongArray(std::string_view key) {
+    if (auto* tag = get(key); tag) {
+        if (tag->getType() == Type::LongArray) { return static_cast<LongArrayTag*>(tag); }
     }
     return nullptr;
 }

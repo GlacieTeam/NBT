@@ -10,6 +10,7 @@
 #include "nbt/IntArrayTag.hpp"
 #include "nbt/IntTag.hpp"
 #include "nbt/ListTag.hpp"
+#include "nbt/LongArrayTag.hpp"
 #include "nbt/ShortTag.hpp"
 #include "nbt/StringTag.hpp"
 #include "nbt/detail/Base64.hpp"
@@ -391,10 +392,9 @@ std::optional<IntArrayTag> parseIntArray(std::string_view& s) {
     });
 }
 
-std::optional<ByteArrayTag> parseLongArray(std::string_view& s) {
-    return parseNumArray<ByteArrayTag, std::vector<uint8_t>, Int64Tag>(s, [](auto&& vec, auto&& num) {
-        int64_t val = num;
-        for (int j = 7; j >= 0; j--) { vec.emplace_back((uint8_t)(val >> (uint64_t)(8 * j))); }
+std::optional<LongArrayTag> parseLongArray(std::string_view& s) {
+    return parseNumArray<LongArrayTag, std::vector<int64_t>, Int64Tag>(s, [](auto&& vec, auto&& num) {
+        vec.emplace_back(num);
     });
 }
 

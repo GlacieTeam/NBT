@@ -30,7 +30,8 @@ public:
         List        = 9,
         Compound    = 10,
         IntArray    = 11,
-        NumTagTypes = 12,
+        LongArray   = 12,
+        NumTagTypes = 13,
     };
 
     virtual ~Tag() = default;

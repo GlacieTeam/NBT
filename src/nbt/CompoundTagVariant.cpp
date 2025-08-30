@@ -102,7 +102,7 @@ bool CompoundTagVariant::remove(std::string_view index) {
 }
 
 bool CompoundTagVariant::remove(size_t index) {
-    if (is_object()) { as<ListTag>().remove(index); }
+    if (is_array()) { as<ListTag>().remove(index); }
     throw std::runtime_error("tag not hold an array");
 }
 
@@ -133,21 +133,30 @@ CompoundTagVariant::operator std::string&() {
 }
 
 CompoundTagVariant::operator std::vector<uint8_t> const&() const {
-    if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+    if (!hold(Tag::Type::ByteArray)) { throw std::runtime_error("tag can not convert to a byte array"); }
     return as<ByteArrayTag>().storage();
 }
 CompoundTagVariant::operator std::vector<uint8_t>&() {
-    if (!is_binary()) { throw std::runtime_error("tag can not convert to a byte array"); }
+    if (!hold(Tag::Type::ByteArray)) { throw std::runtime_error("tag can not convert to a byte array"); }
     return as<ByteArrayTag>().storage();
 }
 
 CompoundTagVariant::operator std::vector<int> const&() const {
-    if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+    if (!hold(Tag::Type::IntArray)) { throw std::runtime_error("tag can not convert to a int array"); }
     return as<IntArrayTag>().storage();
 }
 CompoundTagVariant::operator std::vector<int>&() {
-    if (!is_binary()) { throw std::runtime_error("tag can not convert to a int array"); }
+    if (!hold(Tag::Type::IntArray)) { throw std::runtime_error("tag can not convert to a int array"); }
     return as<IntArrayTag>().storage();
+}
+
+CompoundTagVariant::operator std::vector<int64_t> const&() const {
+    if (!hold(Tag::Type::LongArray)) { throw std::runtime_error("tag can not convert to a long array"); }
+    return as<LongArrayTag>().storage();
+}
+CompoundTagVariant::operator std::vector<int64_t>&() {
+    if (!hold(Tag::Type::LongArray)) { throw std::runtime_error("tag can not convert to a long array"); }
+    return as<LongArrayTag>().storage();
 }
 
 Tag& CompoundTagVariant::emplace(Tag&& tag) {
@@ -174,6 +183,8 @@ Tag& CompoundTagVariant::emplace(Tag&& tag) {
         return emplace<CompoundTag>(static_cast<CompoundTag&&>(tag));
     case Tag::Type::IntArray:
         return emplace<IntArrayTag>(static_cast<IntArrayTag&&>(tag));
+    case Tag::Type::LongArray:
+        return emplace<LongArrayTag>(static_cast<LongArrayTag&&>(tag));
     default:
         return emplace<EndTag>();
     }
