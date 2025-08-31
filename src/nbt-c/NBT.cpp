@@ -347,9 +347,10 @@ void nbt_compound_tag_clear(void* handle) {
     if (handle) { toTag(handle)->as<nbt::CompoundTag>().clear(); }
 }
 
-nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian) {
+nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian, bool write_header) {
     if (handle) {
-        std::string value = toTag(handle)->as<nbt::CompoundTag>().toBinaryNbt(little_endian);
+        std::string value = write_header ? toTag(handle)->as<nbt::CompoundTag>().toBinaryNbtWithHeader(little_endian)
+                                         : toTag(handle)->as<nbt::CompoundTag>().toBinaryNbt(little_endian);
         uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -373,9 +374,12 @@ nbtio_buffer nbt_compound_tag_to_network_nbt(void* handle) {
     return nbtio_buffer();
 }
 
-void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian) {
+void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian, bool read_header) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    if (auto result = nbt::CompoundTag::fromBinaryNbt(content, little_endian)) { return new nbt::CompoundTag(*result); }
+    if (auto result = read_header ? nbt::CompoundTag::fromBinaryNbtWithHeader(content, little_endian)
+                                  : nbt::CompoundTag::fromBinaryNbt(content, little_endian)) {
+        return new nbt::CompoundTag(*result);
+    }
     return nullptr;
 }
 

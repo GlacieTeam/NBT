@@ -131,10 +131,10 @@ NBT_API bool         nbt_compound_tag_has_tag(void* handle, const char* key);
 NBT_API bool         nbt_compound_tag_remove_tag(void* handle, const char* key);
 NBT_API void         nbt_compound_tag_clear(void* handle);
 
-NBT_API nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian);
+NBT_API nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian, bool write_header);
 NBT_API nbtio_buffer nbt_compound_tag_to_network_nbt(void* handle);
 
-NBT_API void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian);
+NBT_API void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian, bool read_header);
 NBT_API void* nbt_compound_tag_from_network_nbt(const uint8_t* data, size_t size);
 NBT_API void* nbt_compound_tag_from_snbt(const uint8_t* data, size_t size);
 

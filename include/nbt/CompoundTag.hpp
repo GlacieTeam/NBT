@@ -170,11 +170,14 @@ public:
 
     [[nodiscard]] NBT_API std::string toNetworkNbt() const noexcept;
     [[nodiscard]] NBT_API std::string toBinaryNbt(bool isLittleEndian = true) const noexcept;
+    [[nodiscard]] NBT_API std::string toBinaryNbtWithHeader(bool isLittleEndian = true) const noexcept;
 
 public:
     [[nodiscard]] NBT_API static std::optional<CompoundTag> fromNetworkNbt(std::string_view binaryData) noexcept;
     [[nodiscard]] NBT_API static std::optional<CompoundTag>
     fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true) noexcept;
+    [[nodiscard]] NBT_API static std::optional<CompoundTag>
+    fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian = true) noexcept;
     [[nodiscard]] NBT_API static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
