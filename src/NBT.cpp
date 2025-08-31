@@ -11,35 +11,41 @@
 namespace nbt {
 
 std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtFileFormat format) {
-    if (!std::filesystem::exists(path)) { return std::nullopt; }
-    std::ifstream           fRead;
-    std::ios_base::openmode mode = std::ios_base::in;
-    if (format != NbtFileFormat::SNBT) mode |= std::ios_base::binary;
-    fRead.open(path, mode);
-    if (!fRead.is_open()) { return std::nullopt; }
-    std::string content(std::istreambuf_iterator<char>(fRead), {});
-    switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
-        return CompoundTag::fromBinaryNbt(content, true);
+    if (std::filesystem::exists(path)) {
+        std::ios_base::openmode mode = std::ios::ate;
+        if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
+        std::ifstream fRead(path, mode);
+        if (fRead.is_open()) {
+            std::string content;
+            auto        size = fRead.tellg();
+            fRead.seekg(0);
+            content.resize(size);
+            fRead.read(content.data(), size);
+            switch (format) {
+            case NbtFileFormat::LittleEndianBinary: {
+                return CompoundTag::fromBinaryNbt(content, true);
+            }
+            case NbtFileFormat::LittleEndianBinaryWithHeader: {
+                return CompoundTag::fromBinaryNbtWithHeader(content, true);
+            }
+            case NbtFileFormat::BigEndianBinary: {
+                return CompoundTag::fromBinaryNbt(content, false);
+            }
+            case NbtFileFormat::BigEndianBinaryWithHeader: {
+                return CompoundTag::fromBinaryNbtWithHeader(content, false);
+            }
+            case NbtFileFormat::BedrockNetwork: {
+                return CompoundTag::fromNetworkNbt(content);
+            }
+            case NbtFileFormat::SNBT: {
+                return CompoundTag::fromSnbt(content);
+            }
+            default:
+                return std::nullopt;
+            }
+        }
     }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
-        return CompoundTag::fromBinaryNbtWithHeader(content, true);
-    }
-    case NbtFileFormat::BigEndianBinary: {
-        return CompoundTag::fromBinaryNbt(content, false);
-    }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
-        return CompoundTag::fromBinaryNbtWithHeader(content, false);
-    }
-    case NbtFileFormat::BedrockNetwork: {
-        return CompoundTag::fromNetworkNbt(content);
-    }
-    case NbtFileFormat::SNBT: {
-        return CompoundTag::fromSnbt(content);
-    }
-    default:
-        return std::nullopt;
-    }
+    return std::nullopt;
 }
 
 bool saveToFile(CompoundTag const& nbt, std::filesystem::path const& path, NbtFileFormat format) {
