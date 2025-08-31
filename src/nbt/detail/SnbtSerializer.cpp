@@ -274,12 +274,12 @@ std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat for
     bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
-
+    std::string back{"l"};
+    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) { back = " /*l*/"; }
     for (auto& tag : self.storage()) {
         i--;
         if (isNewLine) { res += indentSpace; }
-
-        res += toString(tag);
+        res += toString(tag) + back;
 
         if (i > 0) {
             res += ',';
