@@ -7,7 +7,7 @@
 
 #include "nbt/IntTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool IntTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Int) && (mStorage == static_cast<const IntTag&>(other).mStorage);
@@ -25,8 +25,8 @@ void IntTag::write(BytesDataOutput& stream) const { stream.writeInt(mStorage); }
 
 void IntTag::load(BytesDataInput& stream) { mStorage = stream.getInt(); }
 
-void IntTag::write(BinaryStream& stream) const { stream.writeVarInt(mStorage); }
+void IntTag::write(bstream::BinaryStream& stream) const { stream.writeVarInt(mStorage); }
 
-void IntTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getVarInt(); }
+void IntTag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getVarInt(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -7,7 +7,7 @@
 
 #include "nbt/StringTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 StringTag::StringTag(std::string_view str) : mStorage(str) {}
 
@@ -29,9 +29,9 @@ void StringTag::write(BytesDataOutput& stream) const { stream.writeString(mStora
 
 void StringTag::load(BytesDataInput& stream) { stream.getString(mStorage); }
 
-void StringTag::write(BinaryStream& stream) const { stream.writeString(mStorage); }
+void StringTag::write(bstream::BinaryStream& stream) const { stream.writeString(mStorage); }
 
-void StringTag::load(ReadOnlyBinaryStream& stream) { stream.getString(mStorage); }
+void StringTag::load(bstream::ReadOnlyBinaryStream& stream) { stream.getString(mStorage); }
 
 std::string&       StringTag::storage() noexcept { return mStorage; }
 std::string const& StringTag::storage() const noexcept { return mStorage; }
@@ -40,4 +40,4 @@ std::string_view   StringTag::view() const noexcept { return mStorage; }
 StringTag::operator std::string const&() const { return mStorage; }
 StringTag::operator std::string&() { return mStorage; }
 
-} // namespace bedrock_protocol
+} // namespace nbt

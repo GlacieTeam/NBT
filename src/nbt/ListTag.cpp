@@ -9,7 +9,7 @@
 #include "nbt/CompoundTagVariant.hpp"
 #include <algorithm>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 ListTag::ListTag(TagList&& data) : mStorage(std::move(data)) {
     if (!mStorage.empty()) { mType = mStorage.front()->getType(); }
@@ -78,13 +78,13 @@ void ListTag::load(BytesDataInput& stream) {
     }
 }
 
-void ListTag::write(BinaryStream& stream) const {
+void ListTag::write(bstream::BinaryStream& stream) const {
     stream.writeUnsignedChar((uint8_t)mType);
     stream.writeVarInt((int)mStorage.size());
     for (const auto& data : mStorage) { data->write(stream); }
 }
 
-void ListTag::load(ReadOnlyBinaryStream& stream) {
+void ListTag::load(bstream::ReadOnlyBinaryStream& stream) {
     mType     = Tag::Type(stream.getUnsignedChar());
     auto size = stream.getVarInt();
     mStorage.clear();
@@ -193,4 +193,4 @@ bool ListTag::set(size_t index, Tag const& tag) {
     return false;
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

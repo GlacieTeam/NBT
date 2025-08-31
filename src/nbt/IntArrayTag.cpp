@@ -7,7 +7,7 @@
 
 #include "nbt/IntArrayTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 IntArrayTag::IntArrayTag(std::vector<int> const& arr) : mStorage(std::move(arr)) {}
 
@@ -44,12 +44,12 @@ void IntArrayTag::load(BytesDataInput& stream) {
     for (int i = 0; i < size; ++i) { mStorage.push_back(stream.getInt()); }
 }
 
-void IntArrayTag::write(BinaryStream& stream) const {
+void IntArrayTag::write(bstream::BinaryStream& stream) const {
     stream.writeVarInt((int)mStorage.size());
     for (auto& data : mStorage) { stream.writeVarInt(data); }
 }
 
-void IntArrayTag::load(ReadOnlyBinaryStream& stream) {
+void IntArrayTag::load(bstream::ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
     for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getVarInt()); }
 }
@@ -92,4 +92,4 @@ IntArrayTag& IntArrayTag::operator=(std::vector<int> const& value) {
     return *this;
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

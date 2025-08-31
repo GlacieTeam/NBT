@@ -11,7 +11,7 @@
 #include "nbt/detail/SnbtSerializer.hpp"
 #include <nlohmann/json.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 std::unique_ptr<Tag> Tag::newTag(Type type) {
     switch (type) {
@@ -101,4 +101,4 @@ CompoundTagVariant const& Tag::operator[](std::string_view index) const {
     throw std::runtime_error("tag not hold an object");
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

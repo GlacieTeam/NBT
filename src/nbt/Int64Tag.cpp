@@ -7,7 +7,7 @@
 
 #include "nbt/Int64Tag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool Int64Tag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Int64) && (mStorage == static_cast<const Int64Tag&>(other).mStorage);
@@ -25,8 +25,8 @@ void Int64Tag::write(BytesDataOutput& stream) const { stream.writeInt64(mStorage
 
 void Int64Tag::load(BytesDataInput& stream) { mStorage = stream.getInt64(); }
 
-void Int64Tag::write(BinaryStream& stream) const { stream.writeVarInt64(mStorage); }
+void Int64Tag::write(bstream::BinaryStream& stream) const { stream.writeVarInt64(mStorage); }
 
-void Int64Tag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getVarInt64(); }
+void Int64Tag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getVarInt64(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

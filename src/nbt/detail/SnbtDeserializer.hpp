@@ -2,7 +2,7 @@
 #include <optional>
 #include <string_view>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTagVariant;
 
@@ -13,4 +13,4 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s);
 
 } // namespace detail
 
-} // namespace bedrock_protocol
+} // namespace nbt

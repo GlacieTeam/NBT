@@ -7,7 +7,7 @@
 
 #include "nbt/ByteArrayTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 ByteArrayTag::ByteArrayTag(std::vector<uint8_t> const& arr) : mStorage(arr) {}
 
@@ -70,12 +70,12 @@ void ByteArrayTag::load(BytesDataInput& stream) {
     stream.getBytes(mStorage.data(), size);
 }
 
-void ByteArrayTag::write(BinaryStream& stream) const {
+void ByteArrayTag::write(bstream::BinaryStream& stream) const {
     stream.writeVarInt((int)mStorage.size());
     for (auto& data : mStorage) { stream.writeUnsignedChar(data); }
 }
 
-void ByteArrayTag::load(ReadOnlyBinaryStream& stream) {
+void ByteArrayTag::load(bstream::ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
     for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getUnsignedChar()); }
 }
@@ -142,4 +142,4 @@ void ByteArrayTag::reinit(std::byte const* data, size_t size) {
     mStorage.assign(reinterpret_cast<uint8_t const*>(data), reinterpret_cast<uint8_t const*>(data) + size);
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

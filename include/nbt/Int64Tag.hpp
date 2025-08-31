@@ -8,7 +8,7 @@
 #pragma once
 #include <nbt/Tag.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class Int64Tag : public Tag {
 protected:
@@ -45,12 +45,12 @@ public:
 
     NBT_API void load(BytesDataInput& stream) override;
 
-    NBT_API void write(BinaryStream& stream) const override;
+    NBT_API void write(bstream::BinaryStream& stream) const override;
 
-    NBT_API void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream) override;
 
     [[nodiscard]] constexpr int64_t&       storage() noexcept { return mStorage; }
     [[nodiscard]] constexpr int64_t const& storage() const noexcept { return mStorage; }
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -7,7 +7,7 @@
 
 #include "nbt/ByteTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool ByteTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Byte) && (mStorage == static_cast<const ByteTag&>(other).mStorage);
@@ -25,8 +25,8 @@ void ByteTag::write(BytesDataOutput& stream) const { stream.writeByte(mStorage);
 
 void ByteTag::load(BytesDataInput& stream) { mStorage = stream.getByte(); }
 
-void ByteTag::write(BinaryStream& stream) const { stream.writeUnsignedChar(mStorage); }
+void ByteTag::write(bstream::BinaryStream& stream) const { stream.writeUnsignedChar(mStorage); }
 
-void ByteTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getUnsignedChar(); }
+void ByteTag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getUnsignedChar(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

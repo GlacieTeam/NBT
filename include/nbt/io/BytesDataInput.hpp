@@ -9,7 +9,7 @@
 #include <binarystream/ReadOnlyBinaryStream.hpp>
 #include <nbt-c/Macros.h>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class BytesDataOutput;
 
@@ -56,4 +56,4 @@ public:
     [[nodiscard]] NBT_API int64_t getInt64() noexcept;
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

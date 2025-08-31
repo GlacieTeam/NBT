@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 enum class SnbtFormat : uint8_t {
     Minimize        = 0,
@@ -28,4 +28,4 @@ enum class SnbtFormat : uint8_t {
     );
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -2,7 +2,7 @@
 #include "nbt/SnbtFormat.hpp"
 #include <string>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTag;
 class EndTag;
@@ -36,4 +36,4 @@ std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat);
 
 } // namespace detail
 
-} // namespace bedrock_protocol
+} // namespace nbt

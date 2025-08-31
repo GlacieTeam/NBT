@@ -16,7 +16,7 @@
 #include <format>
 #include <nlohmann/json.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 namespace {
 static constexpr std::string_view BASE64_TAG = " /*BASE64*/";
@@ -295,4 +295,4 @@ std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat for
 
 } // namespace detail
 
-} // namespace bedrock_protocol
+} // namespace nbt

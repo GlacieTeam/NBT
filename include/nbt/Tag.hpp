@@ -6,12 +6,12 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include <binarystream/BinaryStream.hpp>
+#include <bstream.hpp>
 #include <memory>
 #include <nbt/SnbtFormat.hpp>
 #include <nbt/io/BytesDataOutput.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTagVariant;
 
@@ -48,9 +48,9 @@ public:
 
     virtual void load(BytesDataInput& stream) = 0;
 
-    virtual void write(BinaryStream& stream) const = 0;
+    virtual void write(bstream::BinaryStream& stream) const = 0;
 
-    virtual void load(ReadOnlyBinaryStream& stream) = 0;
+    virtual void load(bstream::ReadOnlyBinaryStream& stream) = 0;
 
 public:
     [[nodiscard]] NBT_API bool operator==(Tag const& other) const;
@@ -104,4 +104,4 @@ public:
     [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -21,7 +21,7 @@
 #include "nbt/StringTag.hpp"
 #include <algorithm>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool CompoundTag::equals(Tag const& other) const {
     if (other.getType() != Tag::Type::Compound) { return false; }
@@ -83,7 +83,7 @@ void CompoundTag::load(BytesDataInput& stream) {
     } while (type != Tag::Type::End);
 }
 
-void CompoundTag::write(BinaryStream& stream) const {
+void CompoundTag::write(bstream::BinaryStream& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
         stream.writeUnsignedChar((uint8_t)type);
@@ -95,7 +95,7 @@ void CompoundTag::write(BinaryStream& stream) const {
     stream.writeUnsignedChar((uint8_t)Type::End);
 }
 
-void CompoundTag::load(ReadOnlyBinaryStream& stream) {
+void CompoundTag::load(bstream::ReadOnlyBinaryStream& stream) {
     mTagMap.clear();
     auto type = Tag::Type::End;
     do {
@@ -404,7 +404,7 @@ CompoundTag::iterator CompoundTag::erase(const_iterator first, const_iterator la
 CompoundTag::TagMap&       CompoundTag::items() noexcept { return mTagMap; }
 CompoundTag::TagMap const& CompoundTag::items() const noexcept { return mTagMap; }
 
-void CompoundTag::serialize(BinaryStream& stream) const {
+void CompoundTag::serialize(bstream::BinaryStream& stream) const {
     stream.writeByte(static_cast<std::byte>(Type::Compound));
     stream.writeString("");
     write(stream);
@@ -416,7 +416,7 @@ void CompoundTag::serialize(BytesDataOutput& stream) const {
     write(stream);
 }
 
-void CompoundTag::deserialize(ReadOnlyBinaryStream& stream) {
+void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
     (void)stream.getString();
     if (tagType == Type::Compound) { load(stream); }
@@ -442,14 +442,14 @@ std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const noexcept {
 }
 
 std::optional<CompoundTag> CompoundTag::fromNetworkNbt(std::string_view binaryData) noexcept try {
-    ReadOnlyBinaryStream stream(binaryData, false);
-    CompoundTag          result;
+    bstream::ReadOnlyBinaryStream stream(binaryData, false);
+    CompoundTag                   result;
     result.deserialize(stream);
     return result;
 } catch (...) { return std::nullopt; }
 
 std::string CompoundTag::toNetworkNbt() const noexcept {
-    BinaryStream stream;
+    bstream::BinaryStream stream;
     serialize(stream);
     return stream.getAndReleaseData();
 }
@@ -476,4 +476,4 @@ std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::opt
 }
 
 
-} // namespace bedrock_protocol
+} // namespace nbt

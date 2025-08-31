@@ -25,7 +25,7 @@
 #include <utility>
 #include <variant>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTagVariant {
 public:
@@ -384,4 +384,4 @@ public:
     parse(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -7,7 +7,7 @@
 
 #include "nbt/FloatTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool FloatTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Float) && (mStorage == static_cast<const FloatTag&>(other).mStorage);
@@ -23,8 +23,8 @@ void FloatTag::write(BytesDataOutput& stream) const { stream.writeFloat(mStorage
 
 void FloatTag::load(BytesDataInput& stream) { mStorage = stream.getFloat(); }
 
-void FloatTag::write(BinaryStream& stream) const { stream.writeFloat(mStorage); }
+void FloatTag::write(bstream::BinaryStream& stream) const { stream.writeFloat(mStorage); }
 
-void FloatTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getFloat(); }
+void FloatTag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getFloat(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

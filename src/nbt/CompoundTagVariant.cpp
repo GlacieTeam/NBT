@@ -11,7 +11,7 @@
 #include "nbt/detail/SnbtSerializer.hpp"
 #include <nlohmann/json.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 CompoundTagVariant::CompoundTagVariant(Tag&& tag) { emplace(std::move(tag)); }
 
@@ -237,4 +237,4 @@ CompoundTagVariant::parse(std::string_view snbt, std::optional<size_t> parsedLen
     return result;
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

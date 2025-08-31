@@ -7,7 +7,7 @@
 
 #include "nbt/EndTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool EndTag::equals(const Tag& other) const { return other.getType() == Tag::Type::End; }
 
@@ -21,8 +21,8 @@ void EndTag::write(BytesDataOutput&) const {}
 
 void EndTag::load(BytesDataInput&) {}
 
-void EndTag::write(BinaryStream&) const {}
+void EndTag::write(bstream::BinaryStream&) const {}
 
-void EndTag::load(ReadOnlyBinaryStream&) {}
+void EndTag::load(bstream::ReadOnlyBinaryStream&) {}
 
-} // namespace bedrock_protocol
+} // namespace nbt

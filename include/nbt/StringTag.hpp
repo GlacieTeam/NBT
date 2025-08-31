@@ -8,7 +8,7 @@
 #pragma once
 #include <nbt/Tag.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class StringTag : public Tag {
 protected:
@@ -38,9 +38,9 @@ public:
 
     NBT_API void load(BytesDataInput& stream) override;
 
-    NBT_API void write(BinaryStream& stream) const override;
+    NBT_API void write(bstream::BinaryStream& stream) const override;
 
-    NBT_API void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream) override;
 
 public:
     [[nodiscard]] NBT_API std::string& storage() noexcept;
@@ -48,4 +48,4 @@ public:
     [[nodiscard]] NBT_API std::string_view view() const noexcept;
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace bedrock_protocol::string_utils {
+namespace nbt::string_utils {
 
 constexpr std::string& replaceAll(std::string& str, std::string_view oldValue, std::string_view newValue) {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -28,4 +28,4 @@ replaceAll(std::string const& str, std::string_view oldValue, std::string_view n
     return hash;
 }
 
-} // namespace bedrock_protocol::string_utils
+} // namespace nbt::string_utils

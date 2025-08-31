@@ -3,7 +3,7 @@
 
 namespace {
 
-inline bedrock_protocol::Tag* toTag(void* handle) { return reinterpret_cast<bedrock_protocol::Tag*>(handle); }
+inline nbt::Tag* toTag(void* handle) { return reinterpret_cast<nbt::Tag*>(handle); }
 
 } // namespace
 
@@ -39,77 +39,74 @@ size_t nbt_any_tag_hash(void* handle) {
 }
 
 void nbt_any_tag_write(void* handle, void* stream) {
-    if (handle) { toTag(handle)->write(*reinterpret_cast<bedrock_protocol::BinaryStream*>(stream)); }
+    if (handle) { toTag(handle)->write(*reinterpret_cast<bstream::BinaryStream*>(stream)); }
 }
 
 void nbt_any_tag_load(void* handle, void* stream) {
-    if (handle) { return toTag(handle)->load(*reinterpret_cast<bedrock_protocol::ReadOnlyBinaryStream*>(stream)); }
+    if (handle) { return toTag(handle)->load(*reinterpret_cast<bstream::ReadOnlyBinaryStream*>(stream)); }
 }
 
 void nbt_any_tag_destroy(void* handle) {
     if (!handle) { return; }
     switch (nbt_any_tag_get_type(handle)) {
     case Tag_Byte: {
-        delete reinterpret_cast<bedrock_protocol::ByteTag*>(handle);
+        delete reinterpret_cast<nbt::ByteTag*>(handle);
         break;
     }
     case Tag_Short: {
-        delete reinterpret_cast<bedrock_protocol::ShortTag*>(handle);
+        delete reinterpret_cast<nbt::ShortTag*>(handle);
         break;
     }
     case Tag_Int: {
-        delete reinterpret_cast<bedrock_protocol::IntTag*>(handle);
+        delete reinterpret_cast<nbt::IntTag*>(handle);
         break;
     }
     case Tag_Int64: {
-        delete reinterpret_cast<bedrock_protocol::Int64Tag*>(handle);
+        delete reinterpret_cast<nbt::Int64Tag*>(handle);
         break;
     }
     case Tag_Float: {
-        delete reinterpret_cast<bedrock_protocol::FloatTag*>(handle);
+        delete reinterpret_cast<nbt::FloatTag*>(handle);
         break;
     }
     case Tag_Double: {
-        delete reinterpret_cast<bedrock_protocol::DoubleTag*>(handle);
+        delete reinterpret_cast<nbt::DoubleTag*>(handle);
         break;
     }
     case Tag_ByteArray: {
-        delete reinterpret_cast<bedrock_protocol::ByteArrayTag*>(handle);
+        delete reinterpret_cast<nbt::ByteArrayTag*>(handle);
         break;
     }
     case Tag_String: {
-        delete reinterpret_cast<bedrock_protocol::StringTag*>(handle);
+        delete reinterpret_cast<nbt::StringTag*>(handle);
         break;
     }
     case Tag_List: {
-        delete reinterpret_cast<bedrock_protocol::ListTag*>(handle);
+        delete reinterpret_cast<nbt::ListTag*>(handle);
         break;
     }
     case Tag_Compound: {
-        delete reinterpret_cast<bedrock_protocol::CompoundTag*>(handle);
+        delete reinterpret_cast<nbt::CompoundTag*>(handle);
         break;
     }
     case Tag_IntArray: {
-        delete reinterpret_cast<bedrock_protocol::IntArrayTag*>(handle);
+        delete reinterpret_cast<nbt::IntArrayTag*>(handle);
         break;
     }
     case Tag_LongArray: {
-        delete reinterpret_cast<bedrock_protocol::LongArrayTag*>(handle);
+        delete reinterpret_cast<nbt::LongArrayTag*>(handle);
         break;
     }
     default:
-        delete reinterpret_cast<bedrock_protocol::EndTag*>(handle);
+        delete reinterpret_cast<nbt::EndTag*>(handle);
         break;
     }
 }
 
 nbtio_buffer nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t indent) {
     if (handle) {
-        std::string value = toTag(handle)->as<bedrock_protocol::Tag>().toSnbt(
-            static_cast<bedrock_protocol::SnbtFormat>(format),
-            indent
-        );
-        uint8_t* data = new uint8_t[value.size()];
+        std::string value = toTag(handle)->as<nbt::Tag>().toSnbt(static_cast<nbt::SnbtFormat>(format), indent);
+        uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
         result.data = data;
@@ -121,7 +118,7 @@ nbtio_buffer nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t inden
 
 nbtio_buffer nbt_any_tag_to_json(void* handle, uint8_t indent) {
     if (handle) {
-        std::string value = toTag(handle)->as<bedrock_protocol::Tag>().toJson(indent);
+        std::string value = toTag(handle)->as<nbt::Tag>().toJson(indent);
         uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -133,93 +130,93 @@ nbtio_buffer nbt_any_tag_to_json(void* handle, uint8_t indent) {
 }
 
 // EndTag
-void* nbt_end_tag_create() { return new bedrock_protocol::EndTag(); }
+void* nbt_end_tag_create() { return new nbt::EndTag(); }
 
 // ByteTag
-void* nbt_byte_tag_create(uint8_t value) { return new bedrock_protocol::ByteTag(value); }
+void* nbt_byte_tag_create(uint8_t value) { return new nbt::ByteTag(value); }
 
 void nbt_byte_tag_set_value(void* handle, uint8_t value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::ByteTag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::ByteTag>() = value; }
 }
 
 uint8_t nbt_byte_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::ByteTag>();
+    return toTag(handle)->as<nbt::ByteTag>();
 }
 
 // ShortTag
-void* nbt_short_tag_create(short value) { return new bedrock_protocol::ShortTag(value); }
+void* nbt_short_tag_create(short value) { return new nbt::ShortTag(value); }
 
 void nbt_short_tag_set_value(void* handle, short value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::ShortTag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::ShortTag>() = value; }
 }
 
 short nbt_short_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::ShortTag>();
+    return toTag(handle)->as<nbt::ShortTag>();
 }
 
 // IntTag
-void* nbt_int_tag_create(int value) { return new bedrock_protocol::IntTag(value); }
+void* nbt_int_tag_create(int value) { return new nbt::IntTag(value); }
 
 void nbt_int_tag_set_value(void* handle, int value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::IntTag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::IntTag>() = value; }
 }
 
 int nbt_int_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::IntTag>();
+    return toTag(handle)->as<nbt::IntTag>();
 }
 
 // Int64Tag
-void* nbt_int64_tag_create(int64_t value) { return new bedrock_protocol::Int64Tag(value); }
+void* nbt_int64_tag_create(int64_t value) { return new nbt::Int64Tag(value); }
 
 void nbt_int64_tag_set_value(void* handle, int64_t value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::Int64Tag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::Int64Tag>() = value; }
 }
 
 int64_t nbt_int64_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::Int64Tag>();
+    return toTag(handle)->as<nbt::Int64Tag>();
 }
 
 // FloatTag
-void* nbt_float_tag_create(float value) { return new bedrock_protocol::FloatTag(value); }
+void* nbt_float_tag_create(float value) { return new nbt::FloatTag(value); }
 
 void nbt_float_tag_set_value(void* handle, float value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::FloatTag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::FloatTag>() = value; }
 }
 
 float nbt_float_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::FloatTag>();
+    return toTag(handle)->as<nbt::FloatTag>();
 }
 
 // DoubleTag
-void* nbt_double_tag_create(double value) { return new bedrock_protocol::DoubleTag(value); }
+void* nbt_double_tag_create(double value) { return new nbt::DoubleTag(value); }
 
 void nbt_double_tag_set_value(void* handle, double value) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::DoubleTag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::DoubleTag>() = value; }
 }
 
 double nbt_double_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::DoubleTag>();
+    return toTag(handle)->as<nbt::DoubleTag>();
 }
 
 // ByteArrayTag
 void* nbt_byte_array_tag_create(const uint8_t* data, size_t size) {
-    if (data) { return new bedrock_protocol::ByteArrayTag(data, size); }
-    return new bedrock_protocol::ByteArrayTag();
+    if (data) { return new nbt::ByteArrayTag(data, size); }
+    return new nbt::ByteArrayTag();
 }
 
 void nbt_byte_array_tag_set_value(void* handle, const uint8_t* data, size_t size) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::ByteArrayTag>().reinit(data, size); }
+    if (handle) { toTag(handle)->as<nbt::ByteArrayTag>().reinit(data, size); }
 }
 
 nbtio_buffer nbt_byte_array_tag_get_value(void* handle) {
     if (handle) {
-        std::vector<uint8_t> value = toTag(handle)->as<bedrock_protocol::ByteArrayTag>();
+        std::vector<uint8_t> value = toTag(handle)->as<nbt::ByteArrayTag>();
         uint8_t*             data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -232,17 +229,17 @@ nbtio_buffer nbt_byte_array_tag_get_value(void* handle) {
 
 // StringTag
 void* nbt_string_tag_create(const char* data, size_t size) {
-    if (data) { return new bedrock_protocol::StringTag(data, size); }
-    return new bedrock_protocol::StringTag();
+    if (data) { return new nbt::StringTag(data, size); }
+    return new nbt::StringTag();
 }
 
 void nbt_string_tag_set_value(void* handle, const char* data, size_t size) {
-    if (handle && data) { toTag(handle)->as<bedrock_protocol::StringTag>() = std::string(data, size); }
+    if (handle && data) { toTag(handle)->as<nbt::StringTag>() = std::string(data, size); }
 }
 
 nbtio_buffer nbt_string_tag_get_value(void* handle) {
     if (handle) {
-        std::string value = toTag(handle)->as<bedrock_protocol::StringTag>();
+        std::string value = toTag(handle)->as<nbt::StringTag>();
         uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -254,20 +251,20 @@ nbtio_buffer nbt_string_tag_get_value(void* handle) {
 }
 
 // ListTag
-void* nbt_list_tag_create() { return new bedrock_protocol::ListTag(); }
+void* nbt_list_tag_create() { return new nbt::ListTag(); }
 
 size_t nbt_list_tag_size(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::ListTag>().size();
+    return toTag(handle)->as<nbt::ListTag>().size();
 }
 
 void nbt_list_tag_add_tag(void* handle, void* tag) {
-    if (handle && tag) { toTag(handle)->as<bedrock_protocol::ListTag>().push_back(toTag(tag)->copy()); }
+    if (handle && tag) { toTag(handle)->as<nbt::ListTag>().push_back(toTag(tag)->copy()); }
 }
 
 void* nbt_list_tag_get_tag(void* handle, size_t index) {
     if (handle) {
-        auto& tag = toTag(handle)->as<bedrock_protocol::ListTag>();
+        auto& tag = toTag(handle)->as<nbt::ListTag>();
         if (index < tag.size()) { return tag[index].copy().release(); }
     }
     return nullptr;
@@ -275,39 +272,39 @@ void* nbt_list_tag_get_tag(void* handle, size_t index) {
 
 bool nbt_list_tag_remove_tag(void* handle, size_t index) {
     if (!handle) { return false; }
-    return toTag(handle)->as<bedrock_protocol::ListTag>().remove(index);
+    return toTag(handle)->as<nbt::ListTag>().remove(index);
 }
 
 void nbt_list_tag_clear(void* handle) {
-    if (handle) { return toTag(handle)->as<bedrock_protocol::ListTag>().clear(); }
+    if (handle) { return toTag(handle)->as<nbt::ListTag>().clear(); }
 }
 
 bool nbt_list_tag_set_tag(void* handle, size_t index, void* tag) {
     if (handle) {
-        auto& listTag = toTag(handle)->as<bedrock_protocol::ListTag>();
+        auto& listTag = toTag(handle)->as<nbt::ListTag>();
         if (index < listTag.size()) { return listTag.set(index, *toTag(tag)); }
     }
     return false;
 }
 
 // CompoundTag
-void* nbt_compound_tag_create() { return new bedrock_protocol::CompoundTag(); }
+void* nbt_compound_tag_create() { return new nbt::CompoundTag(); }
 
 size_t nbt_compound_tag_size(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::CompoundTag>().size();
+    return toTag(handle)->as<nbt::CompoundTag>().size();
 }
 
 void nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_size, void* tag) {
     if (!handle) { return; }
     std::string key(key_data, key_size);
-    toTag(handle)->as<bedrock_protocol::CompoundTag>().put(key, toTag(tag)->copy());
+    toTag(handle)->as<nbt::CompoundTag>().put(key, toTag(tag)->copy());
 }
 
 bool nbt_compound_tag_has_tag(void* handle, const char* key_data, size_t key_size) {
     if (handle) {
         std::string key(key_data, key_size);
-        return toTag(handle)->as<bedrock_protocol::CompoundTag>().contains(key);
+        return toTag(handle)->as<nbt::CompoundTag>().contains(key);
     }
     return false;
 }
@@ -315,14 +312,14 @@ bool nbt_compound_tag_has_tag(void* handle, const char* key_data, size_t key_siz
 void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size) {
     if (handle) {
         std::string key(key_data, key_size);
-        if (auto tag = toTag(handle)->as<bedrock_protocol::CompoundTag>().get(key)) { return tag->copy().release(); }
+        if (auto tag = toTag(handle)->as<nbt::CompoundTag>().get(key)) { return tag->copy().release(); }
     }
     return nullptr;
 }
 
 nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
     if (handle) {
-        auto nbt = toTag(handle)->as<bedrock_protocol::CompoundTag>();
+        auto nbt = toTag(handle)->as<nbt::CompoundTag>();
         auto it  = std::next(nbt.begin(), index);
         if (it != nbt.end()) {
             auto     value = it->first;
@@ -339,7 +336,7 @@ nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
 
 void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
     if (handle) {
-        auto nbt = toTag(handle)->as<bedrock_protocol::CompoundTag>();
+        auto nbt = toTag(handle)->as<nbt::CompoundTag>();
         auto it  = std::next(nbt.begin(), index);
         if (it != nbt.end()) { return it->second.toUniqueCopy().release(); }
     }
@@ -349,16 +346,16 @@ void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
 bool nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size) {
     if (!handle) { return false; }
     std::string key(key_data, key_size);
-    return toTag(handle)->as<bedrock_protocol::CompoundTag>().remove(key);
+    return toTag(handle)->as<nbt::CompoundTag>().remove(key);
 }
 
 void nbt_compound_tag_clear(void* handle) {
-    if (handle) { toTag(handle)->as<bedrock_protocol::CompoundTag>().clear(); }
+    if (handle) { toTag(handle)->as<nbt::CompoundTag>().clear(); }
 }
 
 nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian) {
     if (handle) {
-        std::string value = toTag(handle)->as<bedrock_protocol::CompoundTag>().toBinaryNbt(little_endian);
+        std::string value = toTag(handle)->as<nbt::CompoundTag>().toBinaryNbt(little_endian);
         uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -371,7 +368,7 @@ nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian) {
 
 nbtio_buffer nbt_compound_tag_to_network_nbt(void* handle) {
     if (handle) {
-        std::string value = toTag(handle)->as<bedrock_protocol::CompoundTag>().toNetworkNbt();
+        std::string value = toTag(handle)->as<nbt::CompoundTag>().toNetworkNbt();
         uint8_t*    data  = new uint8_t[value.size()];
         std::memcpy(data, value.data(), value.size());
         nbtio_buffer result;
@@ -384,43 +381,35 @@ nbtio_buffer nbt_compound_tag_to_network_nbt(void* handle) {
 
 void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    if (auto result = bedrock_protocol::CompoundTag::fromBinaryNbt(content, little_endian)) {
-        return new bedrock_protocol::CompoundTag(*result);
-    }
+    if (auto result = nbt::CompoundTag::fromBinaryNbt(content, little_endian)) { return new nbt::CompoundTag(*result); }
     return nullptr;
 }
 
 void* nbt_compound_tag_from_network_nbt(const uint8_t* data, size_t size) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    if (auto result = bedrock_protocol::CompoundTag::fromNetworkNbt(content)) {
-        return new bedrock_protocol::CompoundTag(*result);
-    }
+    if (auto result = nbt::CompoundTag::fromNetworkNbt(content)) { return new nbt::CompoundTag(*result); }
     return nullptr;
 }
 
 void* nbt_compound_tag_from_snbt(const uint8_t* data, size_t size) {
     std::string_view content(reinterpret_cast<const char*>(data), size);
-    if (auto result = bedrock_protocol::CompoundTag::fromSnbt(content)) {
-        return new bedrock_protocol::CompoundTag(*result);
-    }
+    if (auto result = nbt::CompoundTag::fromSnbt(content)) { return new nbt::CompoundTag(*result); }
     return nullptr;
 }
 
 // IntArrayTag
-void* nbt_int_array_tag_create() { return new bedrock_protocol::IntArrayTag(); }
+void* nbt_int_array_tag_create() { return new nbt::IntArrayTag(); }
 
 size_t nbt_int_array_tag_size(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::IntArrayTag>().size();
+    return toTag(handle)->as<nbt::IntArrayTag>().size();
 }
 
-void nbt_int_array_tag_add_value(void* handle, int value) {
-    toTag(handle)->as<bedrock_protocol::IntArrayTag>().push_back(value);
-}
+void nbt_int_array_tag_add_value(void* handle, int value) { toTag(handle)->as<nbt::IntArrayTag>().push_back(value); }
 
 int nbt_int_array_tag_get_value(void* handle, size_t index) {
     if (handle) {
-        auto& tag = toTag(handle)->as<bedrock_protocol::IntArrayTag>();
+        auto& tag = toTag(handle)->as<nbt::IntArrayTag>();
         if (index < tag.size()) { return tag[index]; }
     }
     return 0;
@@ -428,36 +417,36 @@ int nbt_int_array_tag_get_value(void* handle, size_t index) {
 
 bool nbt_int_array_tag_remove_value(void* handle, size_t index) {
     if (!handle) { return false; }
-    return toTag(handle)->as<bedrock_protocol::IntArrayTag>().remove(index);
+    return toTag(handle)->as<nbt::IntArrayTag>().remove(index);
 }
 
 void nbt_int_array_tag_clear(void* handle) {
-    if (handle) { return toTag(handle)->as<bedrock_protocol::IntArrayTag>().clear(); }
+    if (handle) { return toTag(handle)->as<nbt::IntArrayTag>().clear(); }
 }
 
 bool nbt_int_array_tag_set_value(void* handle, size_t index, int value) {
     if (handle) {
-        auto& intArrayTag = toTag(handle)->as<bedrock_protocol::IntArrayTag>();
+        auto& intArrayTag = toTag(handle)->as<nbt::IntArrayTag>();
         if (index < intArrayTag.size()) { return intArrayTag[index] = value; }
     }
     return false;
 }
 
 // LongArrayTag
-void* nbt_long_array_tag_create() { return new bedrock_protocol::LongArrayTag(); }
+void* nbt_long_array_tag_create() { return new nbt::LongArrayTag(); }
 
 size_t nbt_long_array_tag_size(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<bedrock_protocol::LongArrayTag>().size();
+    return toTag(handle)->as<nbt::LongArrayTag>().size();
 }
 
 void nbt_long_array_tag_add_value(void* handle, int64_t value) {
-    toTag(handle)->as<bedrock_protocol::LongArrayTag>().push_back(value);
+    toTag(handle)->as<nbt::LongArrayTag>().push_back(value);
 }
 
 int64_t nbt_long_array_tag_get_value(void* handle, size_t index) {
     if (handle) {
-        auto& tag = toTag(handle)->as<bedrock_protocol::LongArrayTag>();
+        auto& tag = toTag(handle)->as<nbt::LongArrayTag>();
         if (index < tag.size()) { return tag[index]; }
     }
     return 0;
@@ -465,16 +454,16 @@ int64_t nbt_long_array_tag_get_value(void* handle, size_t index) {
 
 bool nbt_long_array_tag_remove_value(void* handle, size_t index) {
     if (!handle) { return false; }
-    return toTag(handle)->as<bedrock_protocol::LongArrayTag>().remove(index);
+    return toTag(handle)->as<nbt::LongArrayTag>().remove(index);
 }
 
 void nbt_long_array_tag_clear(void* handle) {
-    if (handle) { return toTag(handle)->as<bedrock_protocol::LongArrayTag>().clear(); }
+    if (handle) { return toTag(handle)->as<nbt::LongArrayTag>().clear(); }
 }
 
 bool nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value) {
     if (handle) {
-        auto& longArrayTag = toTag(handle)->as<bedrock_protocol::LongArrayTag>();
+        auto& longArrayTag = toTag(handle)->as<nbt::LongArrayTag>();
         if (index < longArrayTag.size()) { return longArrayTag[index] = value; }
     }
     return false;

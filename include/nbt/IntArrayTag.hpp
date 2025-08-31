@@ -9,7 +9,7 @@
 #include <nbt/Tag.hpp>
 #include <vector>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class IntArrayTag : public Tag {
 protected:
@@ -36,9 +36,9 @@ public:
 
     NBT_API void load(BytesDataInput& stream) override;
 
-    NBT_API void write(BinaryStream& stream) const override;
+    NBT_API void write(bstream::BinaryStream& stream) const override;
 
-    NBT_API void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream) override;
 
     [[nodiscard]] NBT_API std::vector<int>& storage() noexcept;
     [[nodiscard]] NBT_API std::vector<int> const& storage() const noexcept;
@@ -62,4 +62,4 @@ public:
     NBT_API IntArrayTag& operator=(std::vector<int> const& value);
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

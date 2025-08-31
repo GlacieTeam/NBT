@@ -7,7 +7,7 @@
 
 #include "nbt/ShortTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool ShortTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Short) && (mStorage == static_cast<const ShortTag&>(other).mStorage);
@@ -25,8 +25,8 @@ void ShortTag::write(BytesDataOutput& stream) const { stream.writeShort(mStorage
 
 void ShortTag::load(BytesDataInput& stream) { mStorage = stream.getShort(); }
 
-void ShortTag::write(BinaryStream& stream) const { stream.writeSignedShort(mStorage); }
+void ShortTag::write(bstream::BinaryStream& stream) const { stream.writeSignedShort(mStorage); }
 
-void ShortTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getSignedShort(); }
+void ShortTag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getSignedShort(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

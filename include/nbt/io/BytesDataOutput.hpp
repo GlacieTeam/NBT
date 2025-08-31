@@ -8,7 +8,7 @@
 #pragma once
 #include <nbt/io/BytesDataInput.hpp>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class BytesDataOutput : public BytesDataInput {
 protected:
@@ -43,4 +43,4 @@ public:
     NBT_API void writeInt64(int64_t value);
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

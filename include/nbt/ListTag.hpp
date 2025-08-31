@@ -10,7 +10,7 @@
 #include <nbt/Tag.hpp>
 #include <vector>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTag;
 class CompoundTagVariant;
@@ -52,9 +52,9 @@ public:
 
     NBT_API void load(BytesDataInput& stream) override;
 
-    NBT_API void write(BinaryStream& stream) const override;
+    NBT_API void write(bstream::BinaryStream& stream) const override;
 
-    NBT_API void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream) override;
 
     NBT_API void merge(ListTag const& other);
 
@@ -109,4 +109,4 @@ public:
     NBT_API bool set(size_t index, Tag const& tag);
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

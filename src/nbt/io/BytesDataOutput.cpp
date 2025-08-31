@@ -7,7 +7,7 @@
 
 #include "nbt/io/BytesDataOutput.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 BytesDataOutput::BytesDataOutput(bool isLittleEndian)
 : BytesDataInput({}, true, isLittleEndian),
@@ -35,30 +35,30 @@ void BytesDataOutput::writeLongString(std::string_view value) {
 }
 
 void BytesDataOutput::writeFloat(float value) {
-    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
+    if (!mIsLittleEndian) { value = bstream::detail::swapEndian(value); }
     writeBytes(&value, sizeof(float));
 }
 
 void BytesDataOutput::writeDouble(double value) {
-    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
+    if (!mIsLittleEndian) { value = bstream::detail::swapEndian(value); }
     writeBytes(&value, sizeof(double));
 }
 
 void BytesDataOutput::writeByte(uint8_t value) { writeBytes(&value, sizeof(uint8_t)); }
 
 void BytesDataOutput::writeShort(int16_t value) {
-    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
+    if (!mIsLittleEndian) { value = bstream::detail::swapEndian(value); }
     writeBytes(&value, sizeof(int16_t));
 }
 
 void BytesDataOutput::writeInt(int value) {
-    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
+    if (!mIsLittleEndian) { value = bstream::detail::swapEndian(value); }
     writeBytes(&value, sizeof(int));
 }
 
 void BytesDataOutput::writeInt64(int64_t value) {
-    if (!mIsLittleEndian) { value = detail::swapEndian(value); }
+    if (!mIsLittleEndian) { value = bstream::detail::swapEndian(value); }
     writeBytes(&value, sizeof(int64_t));
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

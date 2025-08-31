@@ -11,7 +11,7 @@
 #include <optional>
 #include <vector>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 class CompoundTagVariant;
 class EndTag;
@@ -56,9 +56,9 @@ public:
 
     NBT_API void load(BytesDataInput& stream) override;
 
-    NBT_API void write(BinaryStream& stream) const override;
+    NBT_API void write(bstream::BinaryStream& stream) const override;
 
-    NBT_API void load(ReadOnlyBinaryStream& stream) override;
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream) override;
 
     NBT_API void merge(CompoundTag const& other, bool mergeList = false);
 
@@ -162,10 +162,10 @@ public:
     [[nodiscard]] NBT_API std::unique_ptr<CompoundTag> clone() const;
 
 public:
-    NBT_API void serialize(BinaryStream& stream) const;
+    NBT_API void serialize(bstream::BinaryStream& stream) const;
     NBT_API void serialize(BytesDataOutput& stream) const;
 
-    NBT_API void deserialize(ReadOnlyBinaryStream& stream);
+    NBT_API void deserialize(bstream::ReadOnlyBinaryStream& stream);
     NBT_API void deserialize(BytesDataInput& stream);
 
     [[nodiscard]] NBT_API std::string toNetworkNbt() const noexcept;
@@ -179,4 +179,4 @@ public:
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
 
-} // namespace bedrock_protocol
+} // namespace nbt

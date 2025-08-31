@@ -8,7 +8,7 @@
 #include "nbt/io/BytesDataInput.hpp"
 #include <algorithm>
 
-namespace bedrock_protocol {
+namespace nbt {
 
 BytesDataInput::BytesDataInput(bool isLittleEndian) {
     mOwnedBuffer    = std::string();
@@ -80,14 +80,14 @@ std::string BytesDataInput::getLongString() {
 float BytesDataInput::getFloat() noexcept {
     float result = 0;
     getBytes(&result, sizeof(float));
-    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
+    if (!mIsLittleEndian) { result = bstream::detail::swapEndian(result); }
     return result;
 }
 
 double BytesDataInput::getDouble() noexcept {
     double result = 0;
     getBytes(&result, sizeof(double));
-    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
+    if (!mIsLittleEndian) { result = bstream::detail::swapEndian(result); }
     return result;
 }
 
@@ -100,22 +100,22 @@ uint8_t BytesDataInput::getByte() noexcept {
 int16_t BytesDataInput::getShort() noexcept {
     int16_t result = 0;
     getBytes(&result, sizeof(int16_t));
-    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
+    if (!mIsLittleEndian) { result = bstream::detail::swapEndian(result); }
     return result;
 }
 
 int BytesDataInput::getInt() noexcept {
     int result = 0;
     getBytes(&result, sizeof(int));
-    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
+    if (!mIsLittleEndian) { result = bstream::detail::swapEndian(result); }
     return result;
 }
 
 int64_t BytesDataInput::getInt64() noexcept {
     int64_t result = 0;
     getBytes(&result, sizeof(int64_t));
-    if (!mIsLittleEndian) { result = detail::swapEndian(result); }
+    if (!mIsLittleEndian) { result = bstream::detail::swapEndian(result); }
     return result;
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

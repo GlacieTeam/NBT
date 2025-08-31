@@ -7,7 +7,7 @@
 
 #include "nbt/DoubleTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 bool DoubleTag::equals(const Tag& other) const {
     return (other.getType() == Tag::Type::Double) && (mStorage == static_cast<const DoubleTag&>(other).mStorage);
@@ -23,8 +23,8 @@ void DoubleTag::write(BytesDataOutput& stream) const { stream.writeDouble(mStora
 
 void DoubleTag::load(BytesDataInput& stream) { mStorage = stream.getDouble(); }
 
-void DoubleTag::write(BinaryStream& stream) const { stream.writeDouble(mStorage); }
+void DoubleTag::write(bstream::BinaryStream& stream) const { stream.writeDouble(mStorage); }
 
-void DoubleTag::load(ReadOnlyBinaryStream& stream) { mStorage = stream.getDouble(); }
+void DoubleTag::load(bstream::ReadOnlyBinaryStream& stream) { mStorage = stream.getDouble(); }
 
-} // namespace bedrock_protocol
+} // namespace nbt

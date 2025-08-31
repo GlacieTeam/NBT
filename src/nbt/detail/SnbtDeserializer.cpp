@@ -16,7 +16,7 @@
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 namespace {
 
@@ -557,4 +557,4 @@ std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s) noexcept t
 
 } // namespace detail
 
-} // namespace bedrock_protocol
+} // namespace nbt

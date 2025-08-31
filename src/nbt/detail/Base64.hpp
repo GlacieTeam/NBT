@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace bedrock_protocol::base64_utils {
+namespace nbt::base64_utils {
 
 namespace detail {
 
@@ -77,4 +77,4 @@ inline std::string decode(std::string_view str) {
     return out;
 }
 
-} // namespace bedrock_protocol::base64_utils
+} // namespace nbt::base64_utils

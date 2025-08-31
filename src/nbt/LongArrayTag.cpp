@@ -7,7 +7,7 @@
 
 #include "nbt/LongArrayTag.hpp"
 
-namespace bedrock_protocol {
+namespace nbt {
 
 LongArrayTag::LongArrayTag(std::vector<int64_t> const& arr) : mStorage(std::move(arr)) {}
 
@@ -44,12 +44,12 @@ void LongArrayTag::load(BytesDataInput& stream) {
     for (int64_t i = 0; i < size; ++i) { mStorage.push_back(stream.getInt64()); }
 }
 
-void LongArrayTag::write(BinaryStream& stream) const {
+void LongArrayTag::write(bstream::BinaryStream& stream) const {
     stream.writeVarInt((int)mStorage.size());
     for (auto& data : mStorage) { stream.writeVarInt64(data); }
 }
 
-void LongArrayTag::load(ReadOnlyBinaryStream& stream) {
+void LongArrayTag::load(bstream::ReadOnlyBinaryStream& stream) {
     auto size = stream.getVarInt();
     for (auto i = 0; i < size; i++) { mStorage.emplace_back(stream.getVarInt64()); }
 }
@@ -92,4 +92,4 @@ LongArrayTag& LongArrayTag::operator=(std::vector<int64_t> const& value) {
     return *this;
 }
 
-} // namespace bedrock_protocol
+} // namespace nbt

@@ -4,7 +4,7 @@ NBT Library written in C++
 
 ## Usage
 ```C++
-using namespace bedrock_protocol;
+using namespace nbt;
 
 CompoundTag nbt = {
     {"Byte",      (uint8_t)64                            },
