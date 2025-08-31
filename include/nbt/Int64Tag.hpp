@@ -28,7 +28,7 @@ public:
 
     template <std::integral T>
     [[nodiscard]] constexpr operator T() const noexcept {
-        return static_cast<int64_t>(mStorage);
+        return static_cast<T>(mStorage);
     }
 
     [[nodiscard]] NBT_API Int64Tag operator+() const noexcept;

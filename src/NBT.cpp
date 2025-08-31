@@ -1,0 +1,124 @@
+// Copyright © 2025 GlacieTeam.All rights reserved.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+// distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// SPDX-License-Identifier: MPL-2.0
+
+#include "NBT.hpp"
+#include <fstream>
+
+namespace nbt {
+
+std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtFileFormat format) {
+    if (!std::filesystem::exists(path)) { return std::nullopt; }
+    std::ifstream           fRead;
+    std::ios_base::openmode mode = std::ios_base::in;
+    if (format != NbtFileFormat::SNBT) mode |= std::ios_base::binary;
+    fRead.open(path, mode);
+    if (!fRead.is_open()) { return std::nullopt; }
+    std::string content(std::istreambuf_iterator<char>(fRead), {});
+    switch (format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        return CompoundTag::fromBinaryNbt(content, true);
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        bstream::ReadOnlyBinaryStream stream(content, false, false);
+        stream.ignoreBytes(sizeof(int));
+        auto size = stream.getSignedInt();
+        auto data = stream.getRawBytes(size);
+        return CompoundTag::fromBinaryNbt(data, true);
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        return CompoundTag::fromBinaryNbt(content, false);
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        bstream::ReadOnlyBinaryStream stream(content, false, true);
+        stream.ignoreBytes(sizeof(int));
+        auto size = stream.getSignedInt();
+        auto data = stream.getRawBytes(size);
+        return CompoundTag::fromBinaryNbt(data, false);
+    }
+    case NbtFileFormat::BedrockNetwork: {
+        return CompoundTag::fromNetworkNbt(content);
+    }
+    case NbtFileFormat::SNBT: {
+        return CompoundTag::fromSnbt(content);
+    }
+    default:
+        return std::nullopt;
+    }
+}
+
+bool saveToFile(CompoundTag const& nbt, std::filesystem::path const& path, NbtFileFormat format) {
+    std::string content;
+    switch (format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        content = nbt.toBinaryNbt(true);
+        break;
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        bstream::BinaryStream stream(content, false, false);
+        int                   storage_version = 0;
+        if (nbt.contains("StorageVersion")) {
+            auto version = nbt["StorageVersion"];
+            if (version.getType() == Tag::Type::Int) { storage_version = version; }
+        }
+        stream.writeSignedInt(storage_version);
+        auto binary = nbt.toBinaryNbt(true);
+        stream.writeSignedInt(static_cast<int>(binary.size()));
+        stream.writeRawBytes(binary);
+        content = stream.getAndReleaseData();
+        break;
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        content = nbt.toBinaryNbt(false);
+        break;
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        bstream::BinaryStream stream(content, false, true);
+        int                   storage_version = 0;
+        if (nbt.contains("StorageVersion")) {
+            auto version = nbt["StorageVersion"];
+            if (version.getType() == Tag::Type::Int) { storage_version = version; }
+        }
+        stream.writeSignedInt(storage_version);
+        auto binary = nbt.toBinaryNbt(false);
+        stream.writeSignedInt(static_cast<int>(binary.size()));
+        stream.writeRawBytes(binary);
+        content = stream.getAndReleaseData();
+        break;
+    }
+    case NbtFileFormat::BedrockNetwork: {
+        content = nbt.toNetworkNbt();
+        break;
+    }
+    case NbtFileFormat::SNBT: {
+        content = nbt.toSnbt(SnbtFormat::Minimize);
+        break;
+    }
+    default:
+        return false;
+    }
+    std::ofstream           fWrite;
+    std::ios_base::openmode mode = std::ios_base::out;
+    if (format != NbtFileFormat::SNBT) mode |= std::ios_base::binary;
+    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
+    fWrite.open(path, mode);
+    if (!fWrite.is_open()) { return false; }
+    fWrite << content;
+    fWrite.close();
+    return true;
+}
+
+bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, SnbtFormat format, uint8_t indent) {
+    std::ofstream fWrite;
+    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
+    fWrite.open(path, std::ios_base::out);
+    if (!fWrite.is_open()) { return false; }
+    fWrite << nbt.toSnbt(format, indent);
+    fWrite.close();
+    return true;
+}
+
+} // namespace nbt

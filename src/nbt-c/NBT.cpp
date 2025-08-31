@@ -1,5 +1,5 @@
 #include "nbt-c/NBT.h"
-#include "nbt/CompoundTagVariant.hpp"
+#include "NBT.hpp"
 
 namespace {
 
@@ -295,23 +295,18 @@ size_t nbt_compound_tag_size(void* handle) {
     return toTag(handle)->as<nbt::CompoundTag>().size();
 }
 
-void nbt_compound_tag_set_tag(void* handle, const char* key_data, size_t key_size, void* tag) {
+void nbt_compound_tag_set_tag(void* handle, const char* key, void* tag) {
     if (!handle) { return; }
-    std::string key(key_data, key_size);
     toTag(handle)->as<nbt::CompoundTag>().put(key, toTag(tag)->copy());
 }
 
-bool nbt_compound_tag_has_tag(void* handle, const char* key_data, size_t key_size) {
-    if (handle) {
-        std::string key(key_data, key_size);
-        return toTag(handle)->as<nbt::CompoundTag>().contains(key);
-    }
+bool nbt_compound_tag_has_tag(void* handle, const char* key) {
+    if (handle) { return toTag(handle)->as<nbt::CompoundTag>().contains(key); }
     return false;
 }
 
-void* nbt_compound_tag_get_tag(void* handle, const char* key_data, size_t key_size) {
+void* nbt_compound_tag_get_tag(void* handle, const char* key) {
     if (handle) {
-        std::string key(key_data, key_size);
         if (auto tag = toTag(handle)->as<nbt::CompoundTag>().get(key)) { return tag->copy().release(); }
     }
     return nullptr;
@@ -343,9 +338,8 @@ void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
     return nullptr;
 }
 
-bool nbt_compound_tag_remove_tag(void* handle, const char* key_data, size_t key_size) {
+bool nbt_compound_tag_remove_tag(void* handle, const char* key) {
     if (!handle) { return false; }
-    std::string key(key_data, key_size);
     return toTag(handle)->as<nbt::CompoundTag>().remove(key);
 }
 
@@ -465,6 +459,31 @@ bool nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value) {
     if (handle) {
         auto& longArrayTag = toTag(handle)->as<nbt::LongArrayTag>();
         if (index < longArrayTag.size()) { return longArrayTag[index] = value; }
+    }
+    return false;
+}
+
+// File IO
+void* nbt_parse_from_file(const char* path, NBT_FileFormat format) {
+    if (auto tag = nbt::parseFromFile(path, static_cast<nbt::NbtFileFormat>(format))) { return tag->copy().release(); }
+    return nullptr;
+}
+
+bool nbt_save_to_file(void* handle, const char* path, NBT_FileFormat format) {
+    if (handle) {
+        return nbt::saveToFile(toTag(handle)->as<nbt::CompoundTag>(), path, static_cast<nbt::NbtFileFormat>(format));
+    }
+    return false;
+}
+
+bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent) {
+    if (handle) {
+        return nbt::saveSnbtToFile(
+            toTag(handle)->as<nbt::CompoundTag>(),
+            path,
+            static_cast<nbt::SnbtFormat>(format),
+            indent
+        );
     }
     return false;
 }
