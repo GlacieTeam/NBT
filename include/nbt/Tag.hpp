@@ -10,6 +10,7 @@
 #include <memory>
 #include <nbt/SnbtFormat.hpp>
 #include <nbt/io/BytesDataOutput.hpp>
+#include <stdexcept>
 
 namespace nbt {
 
@@ -108,6 +109,43 @@ public:
 
     [[nodiscard]] NBT_API operator std::string&();
     [[nodiscard]] NBT_API operator std::string const&() const;
+
+    [[nodiscard]] NBT_API operator std::byte() const;
+
+    [[nodiscard]] NBT_API uint8_t asUnsignedChar() const;
+    [[nodiscard]] NBT_API std::byte asByte() const;
+    [[nodiscard]] NBT_API short     asShort() const;
+    [[nodiscard]] NBT_API int       asInt() const;
+    [[nodiscard]] NBT_API int64_t   asInt64() const;
+    [[nodiscard]] NBT_API float     asFloat() const;
+    [[nodiscard]] NBT_API double    asDouble() const;
+
+    template <typename T>
+        requires std::is_arithmetic_v<T>
+    [[nodiscard]] constexpr operator T() const {
+        switch (getType()) {
+        case Type::Byte: {
+            return static_cast<T>(asUnsignedChar());
+        }
+        case Type::Short: {
+            return static_cast<T>(asShort());
+        }
+        case Type::Int: {
+            return static_cast<T>(asInt());
+        }
+        case Type::Int64: {
+            return static_cast<T>(asInt64());
+        }
+        case Type::Float: {
+            return static_cast<T>(asFloat());
+        }
+        case Type::Double: {
+            return static_cast<T>(asDouble());
+        }
+        default:
+            throw std::runtime_error("tag can not convert to a number");
+        }
+    }
 
 public:
     [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
