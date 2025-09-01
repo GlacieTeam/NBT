@@ -26,7 +26,16 @@ enum class NbtFileFormat : uint8_t {
 [[nodiscard]] NBT_API std::optional<CompoundTag>
 parseFromFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
 
+[[nodiscard]] NBT_API std::optional<CompoundTag>
+parseFromCompressedFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+
 NBT_API bool saveToFile(
+    CompoundTag const&           nbt,
+    std::filesystem::path const& path,
+    NbtFileFormat                format = NbtFileFormat::LittleEndianBinary
+);
+
+NBT_API bool saveToCompressedFile(
     CompoundTag const&           nbt,
     std::filesystem::path const& path,
     NbtFileFormat                format = NbtFileFormat::LittleEndianBinary

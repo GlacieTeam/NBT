@@ -11,10 +11,10 @@
 namespace nbt {
 
 BytesDataInput::BytesDataInput(bool isLittleEndian)
-: mOwnedBuffer(std::string()),
-  mBufferView(mOwnedBuffer),
-  mReadPointer(0),
+: mReadPointer(0),
   mHasOverflowed(false),
+  mOwnedBuffer(std::string()),
+  mBufferView(mOwnedBuffer),
   mIsLittleEndian(isLittleEndian) {}
 
 BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian)
