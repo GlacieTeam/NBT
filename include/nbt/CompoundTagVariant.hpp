@@ -214,6 +214,7 @@ public:
             mStorage = Int64Tag{integer};
         }
     }
+
     [[nodiscard]] constexpr CompoundTagVariant(std::byte b) : mStorage(ByteTag{b}) {}
 
     [[nodiscard]] constexpr CompoundTagVariant(float f) : mStorage(FloatTag{f}) {}
@@ -246,9 +247,8 @@ public:
     [[nodiscard]] constexpr bool hold(Tag::Type type) const noexcept { return getType() == type; }
 
     [[nodiscard]] constexpr bool is_array() const noexcept { return hold(Tag::Type::List); }
-    [[nodiscard]] constexpr bool is_binary() const noexcept { return hold(Tag::Type::ByteArray); }
-    [[nodiscard]] constexpr bool is_number_array() const noexcept {
-        return hold(Tag::Type::IntArray) || hold(Tag::Type::LongArray);
+    [[nodiscard]] constexpr bool is_binary() const noexcept {
+        return hold(Tag::Type::ByteArray) || hold(Tag::Type::IntArray) || hold(Tag::Type::LongArray);
     }
     [[nodiscard]] constexpr bool is_boolean() const noexcept { return hold(Tag::Type::Byte); }
     [[nodiscard]] constexpr bool is_null() const noexcept { return hold(Tag::Type::End); }
@@ -262,7 +262,7 @@ public:
     [[nodiscard]] constexpr bool is_string() const noexcept { return hold(Tag::Type::String); }
     [[nodiscard]] constexpr bool is_number() const noexcept { return is_number_float() || is_number_integer(); }
     [[nodiscard]] constexpr bool is_primitive() const noexcept {
-        return is_null() || is_string() || is_number() || is_binary() || is_number_array();
+        return is_null() || is_string() || is_number() || is_binary();
     }
     [[nodiscard]] constexpr bool is_structured() const noexcept { return is_array() || is_object(); }
 

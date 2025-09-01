@@ -7,13 +7,22 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 
 ## Features ⚡
 - **Ultra-fast parsing** - Achieves 210-220 MB/s processing speed on modern CPUs
-- **Complete NBT support** - All NBT types (TAG_Compound, TAG_List, TAG_Int_Array, etc.)
+- **Complete NBT support** - All NBT types (Java and Bedrock)
 - **Zero-copy design** - Minimal memory allocation during parsing
 - **Streaming interface** - Process large NBT files with constant memory footprint
 - **Cross-platform** - Windows, Linux, macOS support
 - **Endian-aware** - Automatic little/big-endian conversion
 - **Zlib/Gzip support** - Built-in compression handling
 - **Simple API** - Intuitive interface inspired by standard libraries
+- **CFFI** - Pure C API support.
+
+## Supported NBT format 📖
+- **Little Endian Binary** (Bedrock Edition)
+- **Little Endian Binary with Header** (Bedrock Edition)
+- **Big Endian Binary** (Java Edition)
+- **Big Endian Binary with Header** (Java Edition)
+- **Bedrock Network NBT** (Bedrock Edition)
+- **String NBT (SNBT)** (Bedrock & Java Edition)
 
 ## Benchmarks 🚀
 Parsing speed: 210-220 MB/s
@@ -65,6 +74,11 @@ xmake --all
 xmake project -k cmake
 ```
 
+## Adopted By 🏆
+| Project          | Link                                         |
+| ---------------- | -------------------------------------------- |
+| ProtocolLib      | <https://github.com/GlacieTeam/ProtocolLib>  |
+| AntiXray         | <https://github.com/GlacieTeam/AntiXray>     |
 
 ## Contributing 🤝
 Contributions are welcome! Please follow these steps:

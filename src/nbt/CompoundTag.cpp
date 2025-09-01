@@ -414,13 +414,13 @@ void CompoundTag::serialize(BytesDataOutput& stream) const {
 
 void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    stream.ignoreBytes(1);
+    (void)stream.getString();
     if (tagType == Type::Compound) { load(stream); }
 }
 
 void CompoundTag::deserialize(BytesDataInput& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    stream.ignoreBytes(sizeof(short));
+    (void)stream.getString();
     if (tagType == Type::Compound) { load(stream); }
 }
 
