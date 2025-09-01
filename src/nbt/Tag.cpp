@@ -15,8 +15,6 @@ namespace nbt {
 
 std::unique_ptr<Tag> Tag::newTag(Type type) {
     switch (type) {
-    case Type::End:
-        return std::make_unique<EndTag>();
     case Type::Byte:
         return std::make_unique<ByteTag>();
     case Type::Short:
@@ -42,7 +40,7 @@ std::unique_ptr<Tag> Tag::newTag(Type type) {
     case Type::LongArray:
         return std::make_unique<LongArrayTag>();
     default:
-        return nullptr;
+        return std::make_unique<EndTag>();
     }
 }
 

@@ -10,53 +10,45 @@
 
 namespace nbt {
 
-BytesDataInput::BytesDataInput(bool isLittleEndian) {
-    mOwnedBuffer    = std::string();
-    mBufferView     = mOwnedBuffer;
-    mReadPointer    = 0;
-    mHasOverflowed  = false;
-    mIsLittleEndian = isLittleEndian;
-}
+BytesDataInput::BytesDataInput(bool isLittleEndian)
+: mOwnedBuffer(std::string()),
+  mBufferView(mOwnedBuffer),
+  mReadPointer(0),
+  mHasOverflowed(false),
+  mIsLittleEndian(isLittleEndian) {}
 
-BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian) {
+BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool isLittleEndian)
+: mReadPointer(0),
+  mHasOverflowed(false),
+  mIsLittleEndian(isLittleEndian) {
     if (copyBuffer) {
         mOwnedBuffer = buffer;
         mBufferView  = mOwnedBuffer;
     } else {
         mBufferView = buffer;
     }
-    mReadPointer    = 0;
-    mHasOverflowed  = false;
-    mIsLittleEndian = isLittleEndian;
 }
 
 bool BytesDataInput::hasDataLeft() const noexcept { return mReadPointer < mBufferView.size(); }
 
 bool BytesDataInput::getBytes(void* target, size_t num) noexcept {
     if (mHasOverflowed) { return false; }
-    if (num == 0) { return true; }
-
-    size_t checkedNumber = num + mReadPointer;
-    bool   hasOverflowed = checkedNumber < mReadPointer;
-
-    if (checkedNumber >= mReadPointer && checkedNumber <= mBufferView.length()) {
-        std::copy(
-            mBufferView.begin() + mReadPointer,
-            mBufferView.begin() + mReadPointer + num,
-            static_cast<char*>(target)
-        );
-        mReadPointer += num;
-        return true;
-    } else {
-        if (hasOverflowed || checkedNumber > mBufferView.length()) { mHasOverflowed = true; }
+    size_t newPointer = mReadPointer + num;
+    if (newPointer < mReadPointer || newPointer > mBufferView.size()) {
+        mHasOverflowed = true;
         return false;
     }
+    std::copy(mBufferView.begin() + mReadPointer, mBufferView.begin() + newPointer, static_cast<char*>(target));
+    mReadPointer = newPointer;
+    return true;
 }
 
+void BytesDataInput::ignoreBytes(size_t length) noexcept { mReadPointer += length; }
+
 void BytesDataInput::getString(std::string& result) {
-    auto size = getShort();
-    result.resize(size);
-    getBytes(result.data(), size);
+    auto length = getShort();
+    result.assign(mBufferView.substr(mReadPointer, length));
+    mReadPointer += length;
 }
 
 std::string BytesDataInput::getString() {

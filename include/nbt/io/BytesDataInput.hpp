@@ -11,17 +11,13 @@
 
 namespace nbt {
 
-class BytesDataOutput;
-
 class BytesDataInput {
-    friend class BytesDataOutput;
-
 protected:
     size_t           mReadPointer;
     bool             mHasOverflowed;
     std::string      mOwnedBuffer;
     std::string_view mBufferView;
-    bool             mIsLittleEndian;
+    const bool       mIsLittleEndian;
 
 public:
     [[nodiscard]] NBT_API explicit BytesDataInput(bool isLittleEndian = true);
@@ -32,6 +28,8 @@ public:
     );
 
     [[nodiscard]] bool hasDataLeft() const noexcept;
+
+    void ignoreBytes(size_t length) noexcept;
 
     NBT_API bool getBytes(void* target, size_t num) noexcept;
 

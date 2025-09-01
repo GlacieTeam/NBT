@@ -24,7 +24,7 @@
 namespace nbt {
 
 bool CompoundTag::equals(Tag const& other) const {
-    if (other.getType() != Tag::Type::Compound) { return false; }
+    if (other.getType() != Type::Compound) { return false; }
     const auto& otherTag = static_cast<const CompoundTag&>(other);
     if (size() != otherTag.size()) { return false; }
     return std::all_of(mTagMap.begin(), mTagMap.end(), [&](const auto& kv) {
@@ -60,7 +60,7 @@ void CompoundTag::write(BytesDataOutput& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
         stream.writeByte((uint8_t)type);
-        if (type != Tag::Type::End) {
+        if (type != Type::End) {
             stream.writeString(key);
             tag->write(stream);
         }
@@ -70,24 +70,22 @@ void CompoundTag::write(BytesDataOutput& stream) const {
 
 void CompoundTag::load(BytesDataInput& stream) {
     mTagMap.clear();
-    auto type = Tag::Type::End;
-    do {
-        type = Tag::Type(stream.getByte());
-        if (type != Tag::Type::End) {
-            auto key = stream.getString();
-            if (auto tag = Tag::newTag(type)) {
-                tag->load(stream);
-                put(key, std::move(tag));
-            }
-        }
-    } while (type != Tag::Type::End);
+    while (true) {
+        const Type type = static_cast<Type>(stream.getByte());
+        if (type == Type::End) { break; }
+        std::string key;
+        stream.getString(key);
+        auto tagPtr = Tag::newTag(type);
+        tagPtr->load(stream);
+        mTagMap.emplace(std::move(key), std::move(tagPtr));
+    }
 }
 
 void CompoundTag::write(bstream::BinaryStream& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
         stream.writeUnsignedChar((uint8_t)type);
-        if (type != Tag::Type::End) {
+        if (type != Type::End) {
             stream.writeString(key);
             tag->write(stream);
         }
@@ -97,17 +95,15 @@ void CompoundTag::write(bstream::BinaryStream& stream) const {
 
 void CompoundTag::load(bstream::ReadOnlyBinaryStream& stream) {
     mTagMap.clear();
-    auto type = Tag::Type::End;
-    do {
-        type = Tag::Type(stream.getUnsignedChar());
-        if (type != Tag::Type::End) {
-            auto key = stream.getString();
-            if (auto tag = Tag::newTag(type)) {
-                tag->load(stream);
-                put(key, std::move(tag));
-            }
-        }
-    } while (type != Tag::Type::End);
+    while (true) {
+        const Type type = static_cast<Type>(stream.getByte());
+        if (type == Type::End) { break; }
+        std::string key;
+        stream.getString(key);
+        auto tagPtr = Tag::newTag(type);
+        tagPtr->load(stream);
+        mTagMap.emplace(std::move(key), std::move(tagPtr));
+    }
 }
 
 void CompoundTag::merge(CompoundTag const& other, bool mergeList) {
@@ -187,7 +183,7 @@ Tag* CompoundTag::get(std::string_view key) {
 
 const ByteTag* CompoundTag::getByte(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Byte) { return static_cast<const ByteTag*>(tag); }
+        if (tag->getType() == Type::Byte) { return static_cast<const ByteTag*>(tag); }
     }
     return nullptr;
 }
@@ -201,7 +197,7 @@ ByteTag* CompoundTag::getByte(std::string_view key) {
 
 const ShortTag* CompoundTag::getShort(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Short) { return static_cast<const ShortTag*>(tag); }
+        if (tag->getType() == Type::Short) { return static_cast<const ShortTag*>(tag); }
     }
     return nullptr;
 }
@@ -215,7 +211,7 @@ ShortTag* CompoundTag::getShort(std::string_view key) {
 
 const IntTag* CompoundTag::getInt(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Int) { return static_cast<const IntTag*>(tag); }
+        if (tag->getType() == Type::Int) { return static_cast<const IntTag*>(tag); }
     }
     return nullptr;
 }
@@ -229,7 +225,7 @@ IntTag* CompoundTag::getInt(std::string_view key) {
 
 const Int64Tag* CompoundTag::getInt64(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Int64) { return static_cast<const Int64Tag*>(tag); }
+        if (tag->getType() == Type::Int64) { return static_cast<const Int64Tag*>(tag); }
     }
     return nullptr;
 }
@@ -243,7 +239,7 @@ Int64Tag* CompoundTag::getInt64(std::string_view key) {
 
 const FloatTag* CompoundTag::getFloat(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Float) { return static_cast<const FloatTag*>(tag); }
+        if (tag->getType() == Type::Float) { return static_cast<const FloatTag*>(tag); }
     }
     return nullptr;
 }
@@ -257,7 +253,7 @@ FloatTag* CompoundTag::getFloat(std::string_view key) {
 
 const DoubleTag* CompoundTag::getDouble(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::Double) { return static_cast<const DoubleTag*>(tag); }
+        if (tag->getType() == Type::Double) { return static_cast<const DoubleTag*>(tag); }
     }
     return nullptr;
 }
@@ -271,21 +267,21 @@ DoubleTag* CompoundTag::getDouble(std::string_view key) {
 
 const StringTag* CompoundTag::getString(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::String) { return static_cast<const StringTag*>(tag); }
+        if (tag->getType() == Type::String) { return static_cast<const StringTag*>(tag); }
     }
     return nullptr;
 }
 
 StringTag* CompoundTag::getString(std::string_view key) {
     if (auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::String) { return static_cast<StringTag*>(tag); }
+        if (tag->getType() == Type::String) { return static_cast<StringTag*>(tag); }
     }
     return nullptr;
 }
 
 const ByteArrayTag* CompoundTag::getByteArray(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::ByteArray) { return static_cast<const ByteArrayTag*>(tag); }
+        if (tag->getType() == Type::ByteArray) { return static_cast<const ByteArrayTag*>(tag); }
     }
     return nullptr;
 }
@@ -299,7 +295,7 @@ ByteArrayTag* CompoundTag::getByteArray(std::string_view key) {
 
 const IntArrayTag* CompoundTag::getIntArray(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::IntArray) { return static_cast<const IntArrayTag*>(tag); }
+        if (tag->getType() == Type::IntArray) { return static_cast<const IntArrayTag*>(tag); }
     }
     return nullptr;
 }
@@ -313,7 +309,7 @@ IntArrayTag* CompoundTag::getIntArray(std::string_view key) {
 
 const LongArrayTag* CompoundTag::getLongArray(std::string_view key) const {
     if (const auto* tag = get(key)) {
-        if (tag->getType() == Tag::Type::LongArray) { return static_cast<const LongArrayTag*>(tag); }
+        if (tag->getType() == Type::LongArray) { return static_cast<const LongArrayTag*>(tag); }
     }
     return nullptr;
 }
@@ -418,13 +414,13 @@ void CompoundTag::serialize(BytesDataOutput& stream) const {
 
 void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    (void)stream.getString();
+    stream.ignoreBytes(1);
     if (tagType == Type::Compound) { load(stream); }
 }
 
 void CompoundTag::deserialize(BytesDataInput& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    (void)stream.getString();
+    stream.ignoreBytes(sizeof(short));
     if (tagType == Type::Compound) { load(stream); }
 }
 
@@ -454,7 +450,7 @@ std::string CompoundTag::toBinaryNbtWithHeader(bool isLittleEndian) const noexce
     int             storage_version = 0;
     if (contains("StorageVersion")) {
         auto version = at("StorageVersion");
-        if (version.getType() == Tag::Type::Int) { storage_version = version; }
+        if (version.getType() == Type::Int) { storage_version = version; }
     }
     stream.writeInt(storage_version);
     auto binary = toBinaryNbt(isLittleEndian);
