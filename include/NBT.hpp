@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <nbt-c/Macros.h>
 #include <nbt/CompoundTagVariant.hpp>
+#include <nbt/Literals.hpp>
 #include <optional>
 
 namespace nbt {

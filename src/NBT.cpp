@@ -12,7 +12,7 @@ namespace nbt {
 
 std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtFileFormat format) {
     if (std::filesystem::exists(path)) {
-        std::ios_base::openmode mode = std::ios::ate;
+        auto mode = std::ios::ate;
         if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
         std::ifstream fRead(path, mode);
         if (fRead.is_open()) {
@@ -78,15 +78,16 @@ bool saveToFile(CompoundTag const& nbt, std::filesystem::path const& path, NbtFi
     default:
         return false;
     }
-    std::ofstream           fWrite;
-    std::ios_base::openmode mode = std::ios_base::out;
-    if (format != NbtFileFormat::SNBT) mode |= std::ios_base::binary;
+    auto mode = std::ios::out;
+    if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
-    fWrite.open(path, mode);
-    if (!fWrite.is_open()) { return false; }
-    fWrite << content;
-    fWrite.close();
-    return true;
+    std::ofstream fWrite(path, mode);
+    if (fWrite.is_open()) {
+        fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
+        fWrite.close();
+        return true;
+    }
+    return false;
 }
 
 bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, SnbtFormat format, uint8_t indent) {
