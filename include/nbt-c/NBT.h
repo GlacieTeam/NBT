@@ -37,23 +37,29 @@ enum TagType {
 };
 
 enum Snbt_Format {
-    Minimize        = 0,
-    PrettyFilePrint = 1,
-    ArrayLineFeed   = 2,
-    AlwaysLineFeed  = 3,
-    ForceAscii      = 4,
-    ForceQuote      = 8,
-    CommentMarks    = 16,
-    Jsonify         = 24,
+    Snbt_Minimize        = 0,
+    Snbt_PrettyFilePrint = 1,
+    Snbt_ArrayLineFeed   = 2,
+    Snbt_AlwaysLineFeed  = 3,
+    Snbt_ForceAscii      = 4,
+    Snbt_ForceQuote      = 8,
+    Snbt_CommentMarks    = 16,
+    Snbt_Jsonify         = 24,
 };
 
 enum NBT_FileFormat {
-    LittleEndianBinary           = 0,
-    LittleEndianBinaryWithHeader = 1,
-    BigEndianBinary              = 2,
-    BigEndianBinaryWithHeader    = 3,
-    BedrockNetwork               = 4,
-    SNBT                         = 5,
+    NBT_Format_LittleEndianBinary           = 0,
+    NBT_Format_LittleEndianBinaryWithHeader = 1,
+    NBT_Format_BigEndianBinary              = 2,
+    NBT_Format_BigEndianBinaryWithHeader    = 3,
+    NBT_Format_BedrockNetwork               = 4,
+    NBT_Format_SNBT                         = 5,
+};
+
+enum NBT_CompressionType {
+    NBT_Compression_None = 0,
+    NBT_Compression_Gzip = 1,
+    NBT_Compression_Zlib = 2,
 };
 
 // Any Tag
@@ -158,8 +164,14 @@ NBT_API bool    nbt_long_array_tag_set_value(void* handle, size_t index, int64_t
 
 // FileIO
 NBT_API void* nbt_parse_from_file(const char* path, NBT_FileFormat format);
-NBT_API bool  nbt_save_to_file(void* handle, const char* path, NBT_FileFormat format);
-NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
+NBT_API bool  nbt_save_to_file(
+     void*               handle,
+     const char*         path,
+     NBT_FileFormat      format,
+     NBT_CompressionType compressionType,
+     int                 compressionLevel
+ );
+NBT_API bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
 
 #ifdef __cplusplus
 }

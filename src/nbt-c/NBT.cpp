@@ -473,9 +473,21 @@ void* nbt_parse_from_file(const char* path, NBT_FileFormat format) {
     return nullptr;
 }
 
-bool nbt_save_to_file(void* handle, const char* path, NBT_FileFormat format) {
+bool nbt_save_to_file(
+    void*               handle,
+    const char*         path,
+    NBT_FileFormat      format,
+    NBT_CompressionType compressionType,
+    int                 compressionLevel
+) {
     if (handle) {
-        return nbt::saveToFile(toTag(handle)->as<nbt::CompoundTag>(), path, static_cast<nbt::NbtFileFormat>(format));
+        return nbt::saveToFile(
+            toTag(handle)->as<nbt::CompoundTag>(),
+            path,
+            static_cast<nbt::NbtFileFormat>(format),
+            static_cast<nbt::CompressionType>(compressionType),
+            static_cast<nbt::CompressionLevel>(compressionLevel)
+        );
     }
     return false;
 }
