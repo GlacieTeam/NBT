@@ -23,22 +23,35 @@ enum class NbtFileFormat : uint8_t {
     SNBT                         = 5,
 };
 
-[[nodiscard]] NBT_API std::optional<CompoundTag>
-parseFromFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+enum class CompressionType : uint8_t {
+    None = 0,
+    Gzip = 1,
+    Zlib = 2,
+};
+
+enum class CompressionLevel : int {
+    Default         = -1,
+    NoCompression   = 0,
+    BestSpeed       = 1,
+    Low             = 2,
+    MediumLow       = 3,
+    Medium          = 4,
+    MediumHigh      = 5,
+    High            = 6,
+    VeryHigh        = 7,
+    Ultra           = 8,
+    BestCompression = 9,
+};
 
 [[nodiscard]] NBT_API std::optional<CompoundTag>
-parseFromCompressedFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+parseFromFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
 
 NBT_API bool saveToFile(
     CompoundTag const&           nbt,
     std::filesystem::path const& path,
-    NbtFileFormat                format = NbtFileFormat::LittleEndianBinary
-);
-
-NBT_API bool saveToCompressedFile(
-    CompoundTag const&           nbt,
-    std::filesystem::path const& path,
-    NbtFileFormat                format = NbtFileFormat::LittleEndianBinary
+    NbtFileFormat                format           = NbtFileFormat::LittleEndianBinary,
+    CompressionType              compressionType  = CompressionType::Gzip,
+    CompressionLevel             compressionLevel = CompressionLevel::Default
 );
 
 NBT_API bool saveSnbtToFile(

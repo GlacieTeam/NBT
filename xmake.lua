@@ -4,7 +4,7 @@ add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo
 
 add_requires("binarystream 2.2.0")
 add_requires("nlohmann_json 3.12.0")
-add_requires("zstr 1.0.7")
+add_requires("zstr 1.0.8")
 
 if is_plat("windows") then
     if not has_config("vs_runtime") then

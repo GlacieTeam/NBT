@@ -5,9 +5,8 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include "NBT.hpp"
-#include <fstream>
-#include <zstr.hpp>
+#include "nbt/NBT.hpp"
+#include <zstr/zstr.hpp>
 
 namespace nbt {
 
@@ -15,7 +14,7 @@ std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtF
     if (std::filesystem::exists(path)) {
         auto mode = std::ios::ate;
         if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-        std::ifstream fRead(path, mode);
+        zstr::ifstream fRead(path, mode);
         if (fRead.is_open()) {
             std::string content;
             auto        size = fRead.tellg();
@@ -49,124 +48,72 @@ std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtF
     return std::nullopt;
 }
 
-std::optional<CompoundTag> parseFromCompressedFile(std::filesystem::path const& path, NbtFileFormat format) {
-    if (std::filesystem::exists(path)) {
-        auto mode = std::ios::ate;
-        if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-        zstr::ifstream fRead(path.string(), mode);
-        if (fRead.is_open()) {
-            std::string content;
-            auto        size = fRead.tellg();
-            fRead.seekg(0);
-            content.resize(size);
-            fRead.read(content.data(), size);
-            switch (format) {
-            case NbtFileFormat::LittleEndianBinary: {
-                return CompoundTag::fromBinaryNbt(content, true);
-            }
-            case NbtFileFormat::LittleEndianBinaryWithHeader: {
-                return CompoundTag::fromBinaryNbtWithHeader(content, true);
-            }
-            case NbtFileFormat::BigEndianBinary: {
-                return CompoundTag::fromBinaryNbt(content, false);
-            }
-            case NbtFileFormat::BigEndianBinaryWithHeader: {
-                return CompoundTag::fromBinaryNbtWithHeader(content, false);
-            }
-            case NbtFileFormat::BedrockNetwork: {
-                return CompoundTag::fromNetworkNbt(content);
-            }
-            case NbtFileFormat::SNBT: {
-                return CompoundTag::fromSnbt(content);
-            }
-            default:
-                return std::nullopt;
-            }
+bool saveToFile(
+    CompoundTag const&           nbt,
+    std::filesystem::path const& path,
+    NbtFileFormat                format,
+    CompressionType              compressionType,
+    CompressionLevel             compressionLevel
+) {
+    std::string content;
+    switch (format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        content = nbt.toBinaryNbt(true);
+        break;
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        content = nbt.toBinaryNbtWithHeader(true);
+        break;
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        content = nbt.toBinaryNbt(false);
+        break;
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        content = nbt.toBinaryNbtWithHeader(false);
+        break;
+    }
+    case NbtFileFormat::BedrockNetwork: {
+        content = nbt.toNetworkNbt();
+        break;
+    }
+    case NbtFileFormat::SNBT: {
+        content = nbt.toSnbt(SnbtFormat::Minimize);
+        break;
+    }
+    default:
+        return false;
+    }
+    auto mode = std::ios::out;
+    if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
+    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
+    switch (compressionType) {
+    case CompressionType::Zlib: {
+        zstr::ofstream fWrite(path, mode, static_cast<int>(compressionLevel), 15);
+        if (fWrite.is_open()) {
+            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
+            fWrite.close();
+            return true;
         }
-    }
-    return std::nullopt;
-}
-
-bool saveToFile(CompoundTag const& nbt, std::filesystem::path const& path, NbtFileFormat format) {
-    std::string content;
-    switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
-        content = nbt.toBinaryNbt(true);
-        break;
-    }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(true);
-        break;
-    }
-    case NbtFileFormat::BigEndianBinary: {
-        content = nbt.toBinaryNbt(false);
-        break;
-    }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(false);
-        break;
-    }
-    case NbtFileFormat::BedrockNetwork: {
-        content = nbt.toNetworkNbt();
-        break;
-    }
-    case NbtFileFormat::SNBT: {
-        content = nbt.toSnbt(SnbtFormat::Minimize);
-        break;
-    }
-    default:
         return false;
     }
-    auto mode = std::ios::out;
-    if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
-    std::ofstream fWrite(path, mode);
-    if (fWrite.is_open()) {
-        fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
-        fWrite.close();
-        return true;
-    }
-    return false;
-}
-
-bool saveToCompressedFile(CompoundTag const& nbt, std::filesystem::path const& path, NbtFileFormat format) {
-    std::string content;
-    switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
-        content = nbt.toBinaryNbt(true);
-        break;
-    }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(true);
-        break;
-    }
-    case NbtFileFormat::BigEndianBinary: {
-        content = nbt.toBinaryNbt(false);
-        break;
-    }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(false);
-        break;
-    }
-    case NbtFileFormat::BedrockNetwork: {
-        content = nbt.toNetworkNbt();
-        break;
-    }
-    case NbtFileFormat::SNBT: {
-        content = nbt.toSnbt(SnbtFormat::Minimize);
-        break;
-    }
-    default:
+    case CompressionType::Gzip: {
+        zstr::ofstream fWrite(path, mode, static_cast<int>(compressionLevel), 31);
+        if (fWrite.is_open()) {
+            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
+            fWrite.close();
+            return true;
+        }
         return false;
     }
-    auto mode = std::ios::out;
-    if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-    if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
-    zstr::ofstream fWrite(path.string(), mode);
-    if (fWrite.is_open()) {
-        fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
-        fWrite.close();
-        return true;
+    default:
+        std::ofstream fWrite(path, mode);
+        if (fWrite.is_open()) {
+            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
+            fWrite.close();
+            return true;
+        }
+        return false;
     }
     return false;
 }

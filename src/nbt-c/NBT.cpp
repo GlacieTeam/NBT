@@ -1,5 +1,5 @@
 #include "nbt-c/NBT.h"
-#include "NBT.hpp"
+#include "nbt/NBT.hpp"
 
 namespace {
 
