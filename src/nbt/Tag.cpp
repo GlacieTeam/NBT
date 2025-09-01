@@ -101,4 +101,13 @@ CompoundTagVariant const& Tag::operator[](std::string_view index) const {
     throw std::runtime_error("tag not hold an object");
 }
 
+Tag::operator std::string&() {
+    if (getType() == Type::String) { return as<StringTag>().storage(); }
+    throw std::runtime_error("tag can not convert to a string");
+}
+Tag::operator std::string const&() const {
+    if (getType() == Type::String) { return as<StringTag>().storage(); }
+    throw std::runtime_error("tag can not convert to a string");
+}
+
 } // namespace nbt

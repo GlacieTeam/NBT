@@ -100,6 +100,15 @@ public:
         return as<std::remove_cvref_t<T> const&>();
     }
 
+    template <typename T>
+        requires std::derived_from<std::remove_cvref_t<T>, Tag>
+    [[nodiscard]] constexpr T& operator=(T const& other) {
+        return as<std::remove_cvref_t<T>&>().T::operator=(other);
+    }
+
+    [[nodiscard]] NBT_API operator std::string&();
+    [[nodiscard]] NBT_API operator std::string const&() const;
+
 public:
     [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
 };

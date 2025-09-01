@@ -123,6 +123,11 @@ void CompoundTagVariant::push_back(Tag const& val) {
     as<ListTag>().push_back(val);
 }
 
+CompoundTagVariant::operator std::byte() const {
+    if (hold(Tag::Type::Byte)) { return as<ByteTag>(); }
+    throw std::runtime_error("tag can not convert to a byte");
+}
+
 CompoundTagVariant::operator std::string const&() const {
     if (!is_string()) { throw std::runtime_error("tag can not convert to a string"); }
     return as<StringTag>().storage();

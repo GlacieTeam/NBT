@@ -339,6 +339,8 @@ public:
         );
     }
 
+    [[nodiscard]] NBT_API operator std::byte() const;
+
     [[nodiscard]] NBT_API operator std::string const&() const;
     [[nodiscard]] NBT_API operator std::string&();
 
