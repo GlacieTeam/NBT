@@ -3,10 +3,10 @@
 [![GitHub License](https://img.shields.io/github/license/GlacieTeam/NBT)](https://www.mozilla.org/en-US/MPL/2.0/)
 [![C++](https://img.shields.io/badge/C++-23-blue?logo=C%2B%2B&logoColor=41a3ed)](https://en.cppreference.com/w/cpp/compiler_support.html) 
 
-A blazing-fast C++ library for parsing, generating, and manipulating Minecraft Named Binary Tag (NBT) data with benchmarked speeds of 210-220 MB/s.
+A blazing-fast C++ library for parsing, generating, and manipulating Minecraft Named Binary Tag (NBT) data with benchmarked speeds of 200 MB/s.
 
 ## Features ⚡
-- **Ultra-fast parsing** - Achieves 210-220 MB/s processing speed on modern CPUs
+- **Ultra-fast parsing** - Achieves 200 MB/s processing speed on modern CPUs
 - **Complete NBT support** - All NBT types (Java and Bedrock)
 - **Zero-copy design** - Minimal memory allocation during parsing
 - **Streaming interface** - Process large NBT files with constant memory footprint
@@ -25,7 +25,7 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 - **String NBT (SNBT)** (Bedrock & Java Edition)
 
 ## Benchmarks 🚀
-Parsing speed: 210-220 MB/s
+Parsing speed: 200 MB/s
 > Tested on Intel i7 14700-HX with 32GB DDR5-5400 using 720MB little-endian binary NBT
 
 ## Quick Start 🚀

@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/NBT.hpp"
+#include <sstream>
 #include <zstr/zstr.hpp>
 
 namespace nbt {
@@ -14,13 +15,23 @@ std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtF
     if (std::filesystem::exists(path)) {
         auto mode = std::ios::ate;
         if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-        zstr::ifstream fRead(path, mode);
+        std::ifstream fRead(path, mode);
         if (fRead.is_open()) {
             std::string content;
             auto        size = fRead.tellg();
             fRead.seekg(0);
             content.resize(size);
             fRead.read(content.data(), size);
+            auto b0 = static_cast<uint8_t>(content[0]);
+            auto b1 = static_cast<uint8_t>(content[1]);
+            if (content.size() > 2
+                && ((b0 == 0x1F && b1 == 0x8B) // gzip header
+                    || (b0 == 0x78 && (b1 == 0x01 || b1 == 0x9C || b1 == 0xDA))// zlib header
+                    )) {
+                std::istringstream stream(content);
+                zstr::istream      decompressor(stream);
+                content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
+            }
             switch (format) {
             case NbtFileFormat::LittleEndianBinary: {
                 return CompoundTag::fromBinaryNbt(content, true);
