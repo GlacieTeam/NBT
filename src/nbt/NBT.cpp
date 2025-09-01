@@ -9,51 +9,104 @@
 #include <sstream>
 #include <zstr/zstr.hpp>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 namespace nbt {
+
+std::string readFileMMap(std::filesystem::path const& path) {
+    std::string content;
+#if defined(_WIN32) || defined(_WIN64)
+    HANDLE hFile = CreateFileA(
+        path.string().c_str(),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+    if (hFile == INVALID_HANDLE_VALUE) { return content; }
+    DWORD size = GetFileSize(hFile, NULL);
+    if (size == INVALID_FILE_SIZE) {
+        CloseHandle(hFile);
+        return content;
+    }
+    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+    if (!hMapping) {
+        CloseHandle(hFile);
+        return content;
+    }
+    LPVOID mapped = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+    if (!mapped) {
+        CloseHandle(hMapping);
+        CloseHandle(hFile);
+        return content;
+    }
+    content.assign(static_cast<char*>(mapped), size);
+    UnmapViewOfFile(mapped);
+    CloseHandle(hMapping);
+    CloseHandle(hFile);
+#else
+    int fd = open(path.string().c_str(), O_RDONLY);
+    if (fd == -1) { return content; }
+    struct stat sb;
+    if (fstat(fd, &sb) == -1) {
+        close(fd);
+        return content;
+    }
+    void* mapped = mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (mapped == MAP_FAILED) {
+        close(fd);
+        return content;
+    }
+    content.assign(static_cast<char*>(mapped), sb.st_size);
+    munmap(mapped, sb.st_size);
+    close(fd);
+#endif
+    return content;
+}
 
 std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtFileFormat format) {
     if (std::filesystem::exists(path)) {
-        auto mode = std::ios::ate;
-        if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
-        std::ifstream fRead(path, mode);
-        if (fRead.is_open()) {
-            std::string content;
-            auto        size = fRead.tellg();
-            fRead.seekg(0);
-            content.resize(size);
-            fRead.read(content.data(), size);
-            auto b0 = static_cast<uint8_t>(content[0]);
-            auto b1 = static_cast<uint8_t>(content[1]);
-            if (content.size() > 2
+        auto        content = readFileMMap(path);
+        const auto& b0      = static_cast<uint8_t const&>(content[0]);
+        const auto& b1      = static_cast<uint8_t const&>(content[1]);
+        if (content.size() > 2
                 && ((b0 == 0x1F && b1 == 0x8B) // gzip header
                     || (b0 == 0x78 && (b1 == 0x01 || b1 == 0x9C || b1 == 0xDA))// zlib header
                     )) {
-                std::istringstream stream(content);
-                zstr::istream      decompressor(stream);
-                content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
-            }
-            switch (format) {
-            case NbtFileFormat::LittleEndianBinary: {
-                return CompoundTag::fromBinaryNbt(content, true);
-            }
-            case NbtFileFormat::LittleEndianBinaryWithHeader: {
-                return CompoundTag::fromBinaryNbtWithHeader(content, true);
-            }
-            case NbtFileFormat::BigEndianBinary: {
-                return CompoundTag::fromBinaryNbt(content, false);
-            }
-            case NbtFileFormat::BigEndianBinaryWithHeader: {
-                return CompoundTag::fromBinaryNbtWithHeader(content, false);
-            }
-            case NbtFileFormat::BedrockNetwork: {
-                return CompoundTag::fromNetworkNbt(content);
-            }
-            case NbtFileFormat::SNBT: {
-                return CompoundTag::fromSnbt(content);
-            }
-            default:
-                return std::nullopt;
-            }
+            std::istringstream stream(content);
+            zstr::istream      decompressor(stream);
+            content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
+        }
+        switch (format) {
+        case NbtFileFormat::LittleEndianBinary: {
+            return CompoundTag::fromBinaryNbt(content, true);
+        }
+        case NbtFileFormat::LittleEndianBinaryWithHeader: {
+            return CompoundTag::fromBinaryNbtWithHeader(content, true);
+        }
+        case NbtFileFormat::BigEndianBinary: {
+            return CompoundTag::fromBinaryNbt(content, false);
+        }
+        case NbtFileFormat::BigEndianBinaryWithHeader: {
+            return CompoundTag::fromBinaryNbtWithHeader(content, false);
+        }
+        case NbtFileFormat::BedrockNetwork: {
+            return CompoundTag::fromNetworkNbt(content);
+        }
+        case NbtFileFormat::SNBT: {
+            return CompoundTag::fromSnbt(content);
+        }
+        default:
+            return std::nullopt;
         }
     }
     return std::nullopt;
