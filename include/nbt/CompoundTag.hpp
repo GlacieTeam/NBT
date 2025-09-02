@@ -69,6 +69,16 @@ public:
     [[nodiscard]] NBT_API CompoundTagVariant&       operator[](std::string_view index);
     [[nodiscard]] NBT_API CompoundTagVariant const& operator[](std::string_view index) const;
 
+    template <size_t N>
+    [[nodiscard]] CompoundTagVariant& operator[](char const (&index)[N]) {
+        return operator[](std::string_view{index, N - 1});
+    }
+
+    template <size_t N>
+    [[nodiscard]] CompoundTagVariant const& operator[](char const (&index)[N]) const {
+        return operator[](std::string_view{index, N - 1});
+    }
+
     [[nodiscard]] NBT_API CompoundTagVariant&       at(std::string_view index);
     [[nodiscard]] NBT_API CompoundTagVariant const& at(std::string_view index) const;
 

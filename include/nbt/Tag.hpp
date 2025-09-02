@@ -120,33 +120,6 @@ public:
     [[nodiscard]] NBT_API float     asFloat() const;
     [[nodiscard]] NBT_API double    asDouble() const;
 
-    template <typename T>
-        requires std::is_arithmetic_v<T>
-    [[nodiscard]] constexpr operator T() const {
-        switch (getType()) {
-        case Type::Byte: {
-            return static_cast<T>(asUnsignedChar());
-        }
-        case Type::Short: {
-            return static_cast<T>(asShort());
-        }
-        case Type::Int: {
-            return static_cast<T>(asInt());
-        }
-        case Type::Int64: {
-            return static_cast<T>(asInt64());
-        }
-        case Type::Float: {
-            return static_cast<T>(asFloat());
-        }
-        case Type::Double: {
-            return static_cast<T>(asDouble());
-        }
-        default:
-            throw std::runtime_error("tag can not convert to a number");
-        }
-    }
-
 public:
     [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
 };
