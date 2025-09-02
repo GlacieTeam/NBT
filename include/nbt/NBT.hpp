@@ -62,4 +62,10 @@ NBT_API bool saveSnbtToFile(
     uint8_t                      indent = 4
 );
 
+[[nodiscard]] NBT_API bool
+validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+
+[[nodiscard]] NBT_API bool
+validate(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+
 } // namespace nbt

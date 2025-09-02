@@ -70,6 +70,8 @@ std::string Tag::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
         return detail::TypedToSnbt(as<CompoundTag>(), indent, snbtFormat);
     case Type::IntArray:
         return detail::TypedToSnbt(as<IntArrayTag>(), indent, snbtFormat);
+    case Type::LongArray:
+        return detail::TypedToSnbt(as<LongArrayTag>(), indent, snbtFormat);
     default:
         return detail::TypedToSnbt(as<EndTag>(), indent, snbtFormat);
     }

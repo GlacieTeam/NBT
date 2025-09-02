@@ -45,6 +45,10 @@ bool BytesDataInput::getBytes(void* target, size_t num) noexcept {
 
 void BytesDataInput::ignoreBytes(size_t length) noexcept { mReadPointer += length; }
 
+size_t BytesDataInput::getPosition() const noexcept { return mReadPointer; }
+
+size_t BytesDataInput::size() const noexcept { return mBufferView.size(); }
+
 void BytesDataInput::getString(std::string& result) {
     auto length = getShort();
     result.assign(mBufferView.substr(mReadPointer, length));

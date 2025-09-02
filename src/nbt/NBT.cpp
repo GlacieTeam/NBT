@@ -79,9 +79,7 @@ std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtF
         const auto& b0      = static_cast<uint8_t const&>(content[0]);
         const auto& b1      = static_cast<uint8_t const&>(content[1]);
         if (content.size() > 2
-                && ((b0 == 0x1F && b1 == 0x8B) // gzip header
-                    || (b0 == 0x78 && (b1 == 0x01 || b1 == 0x9C || b1 == 0xDA))// zlib header
-                    )) {
+            && ((b0 == 0x1F && b1 == 0x8B) || (b0 == 0x78 && (b1 == 0x01 || b1 == 0x9C || b1 == 0xDA)))) {
             std::istringstream stream(content);
             zstr::istream      decompressor(stream);
             content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
@@ -194,6 +192,255 @@ bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, S
     fWrite << nbt.toSnbt(format, indent);
     fWrite.close();
     return true;
+}
+
+extern bool validateCompoundTag(BytesDataInput& stream, size_t streamSize);
+
+bool validateListTag(BytesDataInput& stream, size_t streamSize) {
+    if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
+    auto type = static_cast<Tag::Type>(stream.getByte());
+    if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+    auto size = stream.getInt();
+    switch (type) {
+    case Tag::Type::Byte: {
+        if (stream.getPosition() + (sizeof(std::byte) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(std::byte) * size);
+        break;
+    }
+    case Tag::Type::Short: {
+        if (stream.getPosition() + (sizeof(short) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(short) * size);
+        break;
+    }
+    case Tag::Type::Int: {
+        if (stream.getPosition() + (sizeof(int) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(int) * size);
+        break;
+    }
+    case Tag::Type::Int64: {
+        if (stream.getPosition() + (sizeof(int64_t) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(int64_t) * size);
+        break;
+    }
+    case Tag::Type::Float: {
+        if (stream.getPosition() + (sizeof(float) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(float) * size);
+        break;
+    }
+    case Tag::Type::Double: {
+        if (stream.getPosition() + (sizeof(double) * size) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(double) * size);
+        break;
+    }
+    case Tag::Type::ByteArray: {
+        for (size_t i = 0; i < size; i++) {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto len = stream.getInt();
+            if (stream.getPosition() + (sizeof(std::byte) * len) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(std::byte) * len));
+        }
+        break;
+    }
+    case Tag::Type::String: {
+        for (size_t i = 0; i < size; i++) {
+            if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+            auto strSize = stream.getShort();
+            if (stream.getPosition() + strSize > streamSize) { return false; }
+            stream.ignoreBytes(strSize);
+        }
+        break;
+    }
+    case Tag::Type::List: {
+        for (size_t i = 0; i < size; i++) {
+            if (!validateListTag(stream, streamSize)) { return false; }
+        }
+        break;
+    }
+    case Tag::Type::Compound: {
+        for (size_t i = 0; i < size; i++) {
+            if (!validateCompoundTag(stream, streamSize)) { return false; }
+        }
+        break;
+    }
+    case Tag::Type::IntArray: {
+        for (size_t i = 0; i < size; i++) {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto len = stream.getInt();
+            if (stream.getPosition() + (sizeof(int) * len) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(int) * len));
+        }
+        break;
+    }
+    case Tag::Type::LongArray: {
+        for (size_t i = 0; i < size; i++) {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto len = stream.getInt();
+            if (stream.getPosition() + (sizeof(int64_t) * len) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(int64_t) * len));
+        }
+        break;
+    }
+    default:
+        return false;
+    }
+    return true;
+}
+
+bool validateCompoundTag(BytesDataInput& stream, size_t streamSize) {
+    Tag::Type type = Tag::Type::End;
+    while (true) {
+        if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
+        type = static_cast<Tag::Type>(stream.getByte());
+        if (type == Tag::Type::End) { return true; }
+        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+        auto strLen = stream.getShort();
+        if (stream.getPosition() + strLen > streamSize) { return false; }
+        stream.ignoreBytes(strLen);
+        switch (type) {
+        case Tag::Type::Byte: {
+            if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(std::byte));
+            break;
+        }
+        case Tag::Type::Short: {
+            if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(short));
+            break;
+        }
+        case Tag::Type::Int: {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(int));
+            break;
+        }
+        case Tag::Type::Int64: {
+            if (stream.getPosition() + sizeof(int64_t) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(int64_t));
+            break;
+        }
+        case Tag::Type::Float: {
+            if (stream.getPosition() + sizeof(float) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(float));
+            break;
+        }
+        case Tag::Type::Double: {
+            if (stream.getPosition() + sizeof(double) > streamSize) { return false; }
+            stream.ignoreBytes(sizeof(double));
+            break;
+        }
+        case Tag::Type::ByteArray: {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto size = stream.getInt();
+            if (stream.getPosition() + (sizeof(std::byte) * size) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(std::byte) * size));
+            break;
+        }
+        case Tag::Type::String: {
+            if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+            auto strSize = stream.getShort();
+            if (stream.getPosition() + strSize > streamSize) { return false; }
+            stream.ignoreBytes(strSize);
+            break;
+        }
+        case Tag::Type::List: {
+            if (!validateListTag(stream, streamSize)) { return false; }
+            break;
+        }
+        case Tag::Type::Compound: {
+            if (!validateCompoundTag(stream, streamSize)) { return false; }
+            break;
+        }
+        case Tag::Type::IntArray: {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto size = stream.getInt();
+            if (stream.getPosition() + (sizeof(int) * size) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(int) * size));
+            break;
+        }
+        case Tag::Type::LongArray: {
+            if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
+            auto size = stream.getInt();
+            if (stream.getPosition() + (sizeof(int64_t) * size) > streamSize) { return false; }
+            stream.ignoreBytes((sizeof(int64_t) * size));
+            break;
+        }
+        default:
+            return false;
+        }
+    }
+    return true;
+}
+
+bool validateContent(std::string_view binary, NbtFileFormat format) {
+    switch (format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        BytesDataInput stream(binary, false, true);
+        auto           streamSize = stream.size();
+        if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
+        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+        auto strSize = stream.getShort();
+        if (stream.getPosition() + strSize > streamSize) { return false; }
+        stream.ignoreBytes(strSize);
+        if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
+        break;
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        BytesDataInput stream(binary, false, true);
+        auto           streamSize = stream.size();
+        if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(int));
+        auto nbtSize = stream.getInt();
+        if (stream.getPosition() + nbtSize > streamSize) { return false; }
+        if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
+        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+        auto strSize = stream.getShort();
+        if (stream.getPosition() + strSize > streamSize) { return false; }
+        stream.ignoreBytes(strSize);
+        if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
+        break;
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        BytesDataInput stream(binary, false, false);
+        auto           streamSize = stream.size();
+        if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
+        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+        auto strSize = stream.getShort();
+        if (stream.getPosition() + strSize > streamSize) { return false; }
+        stream.ignoreBytes(strSize);
+        if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
+        break;
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        BytesDataInput stream(binary, false, false);
+        auto           streamSize = stream.size();
+        if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
+        stream.ignoreBytes(sizeof(int));
+        auto nbtSize = stream.getInt();
+        if (stream.getPosition() + nbtSize > streamSize) { return false; }
+        if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
+        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
+        auto strSize = stream.getShort();
+        if (stream.getPosition() + strSize > streamSize) { return false; }
+        stream.ignoreBytes(strSize);
+        if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
+        break;
+    }
+    default:
+        break;
+    }
+    return false;
+}
+
+bool validate(std::filesystem::path const& path, NbtFileFormat format) {
+    auto        content = readFileMMap(path);
+    const auto& b0      = static_cast<uint8_t const&>(content[0]);
+    const auto& b1      = static_cast<uint8_t const&>(content[1]);
+    if (content.size() > 2
+        && ((b0 == 0x1F && b1 == 0x8B) || (b0 == 0x78 && (b1 == 0x01 || b1 == 0x9C || b1 == 0xDA)))) {
+        std::istringstream stream(content);
+        zstr::istream      decompressor(stream);
+        content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
+    }
+    return validateContent(content, format);
 }
 
 } // namespace nbt

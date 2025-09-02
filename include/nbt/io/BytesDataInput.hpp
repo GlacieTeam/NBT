@@ -27,9 +27,13 @@ public:
         bool             isLittleEndian = true
     );
 
-    [[nodiscard]] bool hasDataLeft() const noexcept;
+    [[nodiscard]] NBT_API bool hasDataLeft() const noexcept;
 
-    void ignoreBytes(size_t length) noexcept;
+    NBT_API void ignoreBytes(size_t length) noexcept;
+
+    NBT_API size_t getPosition() const noexcept;
+
+    NBT_API size_t size() const noexcept;
 
     NBT_API bool getBytes(void* target, size_t num) noexcept;
 
