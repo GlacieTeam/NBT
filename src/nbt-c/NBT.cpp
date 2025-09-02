@@ -508,4 +508,15 @@ bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, u
     }
     return false;
 }
+
+bool nbt_validate_file(const char* path, NBT_FileFormat format) {
+    return nbt::validate(path, static_cast<nbt::NbtFileFormat>(format));
+}
+
+bool nbt_validate_buffer(const uint8_t* data, size_t size, NBT_FileFormat format) {
+    return nbt::validateContent(
+        std::string_view(reinterpret_cast<const char*>(data), size),
+        static_cast<nbt::NbtFileFormat>(format)
+    );
+}
 }
