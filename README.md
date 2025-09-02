@@ -1,5 +1,6 @@
 # High-Performance Minecraft NBT Library for Morden C++
 
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/GlacieTeam/NBT/build.yml)](https://github.com/GlacieTeam/NBT/actions)
 [![GitHub License](https://img.shields.io/github/license/GlacieTeam/NBT)](https://www.mozilla.org/en-US/MPL/2.0/)
 [![C++](https://img.shields.io/badge/C++-23-blue?logo=C%2B%2B&logoColor=41a3ed)](https://en.cppreference.com/w/cpp/compiler_support.html) 
 
