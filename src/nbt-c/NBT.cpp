@@ -492,6 +492,11 @@ bool nbt_save_to_file(
     return false;
 }
 
+void* nbt_parse_snbt_from_file(const char* path) {
+    if (auto tag = nbt::parseSnbtFromFile(path)) { return tag->copy().release(); }
+    return nullptr;
+}
+
 bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent) {
     if (handle) {
         return nbt::saveSnbtToFile(

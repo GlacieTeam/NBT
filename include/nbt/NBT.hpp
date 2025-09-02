@@ -19,8 +19,7 @@ enum class NbtFileFormat : uint8_t {
     LittleEndianBinaryWithHeader = 1,
     BigEndianBinary              = 2,
     BigEndianBinaryWithHeader    = 3,
-    BedrockNetwork               = 4,
-    SNBT                         = 5,
+    BedrockNetwork               = 4
 };
 
 enum class CompressionType : uint8_t {
@@ -53,6 +52,8 @@ NBT_API bool saveToFile(
     CompressionType              compressionType  = CompressionType::Gzip,
     CompressionLevel             compressionLevel = CompressionLevel::Default
 );
+
+[[nodiscard]] NBT_API std::optional<CompoundTag> parseSnbtFromFile(std::filesystem::path const& path);
 
 NBT_API bool saveSnbtToFile(
     CompoundTag const&           nbt,

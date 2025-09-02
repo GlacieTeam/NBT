@@ -102,9 +102,6 @@ std::optional<CompoundTag> parseFromFile(std::filesystem::path const& path, NbtF
         case NbtFileFormat::BedrockNetwork: {
             return CompoundTag::fromNetworkNbt(content);
         }
-        case NbtFileFormat::SNBT: {
-            return CompoundTag::fromSnbt(content);
-        }
         default:
             return std::nullopt;
         }
@@ -141,19 +138,13 @@ bool saveToFile(
         content = nbt.toNetworkNbt();
         break;
     }
-    case NbtFileFormat::SNBT: {
-        content = nbt.toSnbt(SnbtFormat::Minimize);
-        break;
-    }
     default:
         return false;
     }
-    auto mode = std::ios::out;
-    if (format != NbtFileFormat::SNBT) mode |= std::ios::binary;
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     switch (compressionType) {
     case CompressionType::Zlib: {
-        zstr::ofstream fWrite(path, mode, static_cast<int>(compressionLevel), 15);
+        zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 15);
         if (fWrite.is_open()) {
             fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
             fWrite.close();
@@ -162,7 +153,7 @@ bool saveToFile(
         return false;
     }
     case CompressionType::Gzip: {
-        zstr::ofstream fWrite(path, mode, static_cast<int>(compressionLevel), 31);
+        zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 31);
         if (fWrite.is_open()) {
             fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
             fWrite.close();
@@ -171,7 +162,7 @@ bool saveToFile(
         return false;
     }
     default:
-        std::ofstream fWrite(path, mode);
+        std::ofstream fWrite(path, std::ios::out | std::ios::binary);
         if (fWrite.is_open()) {
             fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
             fWrite.close();
@@ -180,6 +171,19 @@ bool saveToFile(
         return false;
     }
     return false;
+}
+
+std::optional<CompoundTag> parseSnbtFromFile(std::filesystem::path const& path) {
+    std::ifstream fRead(path, std::ios::ate);
+    if (fRead.is_open()) {
+        std::string content;
+        auto        size = fRead.tellg();
+        fRead.seekg(0);
+        content.resize(size);
+        fRead.read(content.data(), size);
+        return CompoundTag::fromSnbt(content);
+    }
+    return std::nullopt;
 }
 
 bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, SnbtFormat format, uint8_t indent) {

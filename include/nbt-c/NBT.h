@@ -52,8 +52,7 @@ enum NBT_FileFormat {
     NBT_Format_LittleEndianBinaryWithHeader = 1,
     NBT_Format_BigEndianBinary              = 2,
     NBT_Format_BigEndianBinaryWithHeader    = 3,
-    NBT_Format_BedrockNetwork               = 4,
-    NBT_Format_SNBT                         = 5,
+    NBT_Format_BedrockNetwork               = 4
 };
 
 enum NBT_CompressionType {
@@ -171,7 +170,8 @@ NBT_API bool  nbt_save_to_file(
      NBT_CompressionType compressionType,
      int                 compressionLevel
  );
-NBT_API bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
+NBT_API void* nbt_parse_snbt_from_file(const char* path);
+NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
 
 #ifdef __cplusplus
 }
