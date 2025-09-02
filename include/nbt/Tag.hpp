@@ -103,7 +103,7 @@ public:
 
     template <typename T>
         requires std::derived_from<std::remove_cvref_t<T>, Tag>
-    [[nodiscard]] constexpr T& operator=(T const& other) {
+    constexpr T& operator=(T const& other) {
         return as<std::remove_cvref_t<T>&>().T::operator=(other);
     }
 
