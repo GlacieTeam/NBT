@@ -45,3 +45,4 @@ bin
 
 # clangd
 .cache
+llvm.sh

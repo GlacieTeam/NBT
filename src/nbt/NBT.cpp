@@ -233,7 +233,7 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::ByteArray: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
             auto len = stream.getInt();
             if (stream.getPosition() + (sizeof(std::byte) * len) > streamSize) { return false; }
@@ -242,7 +242,7 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::String: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
             auto strSize = stream.getShort();
             if (stream.getPosition() + strSize > streamSize) { return false; }
@@ -251,19 +251,19 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::List: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (!validateListTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::Compound: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (!validateCompoundTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::IntArray: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
             auto len = stream.getInt();
             if (stream.getPosition() + (sizeof(int) * len) > streamSize) { return false; }
@@ -272,7 +272,7 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::LongArray: {
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
             auto len = stream.getInt();
             if (stream.getPosition() + (sizeof(int64_t) * len) > streamSize) { return false; }
