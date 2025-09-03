@@ -102,7 +102,7 @@ public:
 
 public:
     NBT_API void put(std::string_view key, Tag&& tag);
-    NBT_API void put(std::string_view key, std::unique_ptr<Tag> tag);
+    NBT_API void put(std::string_view key, std::unique_ptr<Tag>&& tag);
 
     NBT_API void putByte(std::string_view key, uint8_t value);
     NBT_API void putShort(std::string_view key, int16_t value);
