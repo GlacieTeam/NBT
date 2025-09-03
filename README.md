@@ -22,7 +22,7 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 - **Little Endian Binary with Header** (Bedrock Edition)
 - **Big Endian Binary** (Java Edition)
 - **Big Endian Binary with Header** (Java Edition)
-- **Bedrock Network NBT** (Bedrock Edition)
+- **Bedrock Network NBT** (Bedrock Edition, VarInt encoding)
 - **String NBT (SNBT)** (Bedrock & Java Edition)
 
 ## Benchmarks 🚀
