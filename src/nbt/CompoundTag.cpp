@@ -429,9 +429,8 @@ std::optional<CompoundTag> CompoundTag::fromBinaryNbt(std::string_view binaryDat
 std::optional<CompoundTag>
 CompoundTag::fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian) noexcept try {
     BytesDataInput stream(binaryData, false, isLittleEndian);
-    (void)stream.getInt();
-    auto content = stream.getLongString();
-    return fromBinaryNbt(content, isLittleEndian);
+    stream.ignoreBytes(sizeof(int));
+    return fromBinaryNbt(stream.getLongStringView(), isLittleEndian);
 } catch (...) { return std::nullopt; }
 
 std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const noexcept {
@@ -448,8 +447,7 @@ std::string CompoundTag::toBinaryNbtWithHeader(bool isLittleEndian) const noexce
         if (version.getType() == Type::Int) { storage_version = version; }
     }
     stream.writeInt(storage_version);
-    auto binary = toBinaryNbt(isLittleEndian);
-    stream.writeLongString(binary);
+    stream.writeLongString(toBinaryNbt(isLittleEndian));
     return stream.getAndReleaseData();
 }
 
