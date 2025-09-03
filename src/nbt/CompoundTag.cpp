@@ -49,11 +49,9 @@ std::size_t CompoundTag::hash() const {
 Tag::Type CompoundTag::getType() const { return Type::Compound; }
 
 std::unique_ptr<CompoundTag> CompoundTag::clone() const {
-    auto new_tag = std::make_unique<CompoundTag>();
-    for (const auto& [key, value] : mTagMap) {
-        new_tag->mTagMap[std::string(key)].emplace(std::move(*value.get()->copy()));
-    }
-    return new_tag;
+    auto tag = std::make_unique<CompoundTag>();
+    for (const auto& [key, value] : mTagMap) { tag->mTagMap.emplace(key, value.toUniqueCopy()); }
+    return tag;
 }
 
 void CompoundTag::write(BytesDataOutput& stream) const {
@@ -69,14 +67,13 @@ void CompoundTag::write(BytesDataOutput& stream) const {
 }
 
 void CompoundTag::load(BytesDataInput& stream) {
-    mTagMap.clear();
     while (true) {
         const Type type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { break; }
         auto key    = stream.getStringView();
         auto tagPtr = Tag::newTag(type);
         tagPtr->load(stream);
-        mTagMap.emplace(std::move(key), std::move(tagPtr));
+        mTagMap.emplace(std::move(key), std::move(*tagPtr));
     }
 }
 
@@ -93,7 +90,6 @@ void CompoundTag::write(bstream::BinaryStream& stream) const {
 }
 
 void CompoundTag::load(bstream::ReadOnlyBinaryStream& stream) {
-    mTagMap.clear();
     while (true) {
         const Type type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { break; }

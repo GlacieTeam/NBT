@@ -30,14 +30,14 @@ ListTag::ListTag(std::vector<CompoundTagVariant> tags) {
 
 ListTag& ListTag::operator=(ListTag const& other) {
     mType = other.mType;
-    for (const auto& data : other.mStorage) { mStorage.emplace_back(data.get()->copy()); }
+    for (const auto& data : other.mStorage) { mStorage.emplace_back(data->copy()); }
     return *this;
 }
 
 ListTag& ListTag::operator=(ListTag&& other) = default;
 
 bool ListTag::equals(const Tag& other) const {
-    return (other.getType() == Tag::Type::List) && (mStorage == static_cast<const ListTag&>(other).mStorage);
+    return (other.getType() == Type::List) && (mStorage == static_cast<const ListTag&>(other).mStorage);
 }
 
 Tag::Type ListTag::getType() const { return Type::List; }
@@ -56,7 +56,7 @@ std::size_t ListTag::hash() const {
 std::unique_ptr<ListTag> ListTag::copyList() const {
     auto copy   = std::make_unique<ListTag>();
     copy->mType = mType;
-    for (const auto& data : mStorage) { copy->mStorage.emplace_back(data.get()->copy()); }
+    for (const auto& data : mStorage) { copy->mStorage.emplace_back(data->copy()); }
     return copy;
 }
 
@@ -67,14 +67,12 @@ void ListTag::write(BytesDataOutput& stream) const {
 }
 
 void ListTag::load(BytesDataInput& stream) {
-    mType     = Tag::Type(stream.getByte());
+    mType     = static_cast<Type>(stream.getByte());
     auto size = stream.getInt();
-    mStorage.clear();
-    for (int i = 0; i < size; ++i) {
-        if (auto tag = newTag(mType)) {
-            tag->load(stream);
-            mStorage.push_back(std::move(tag));
-        }
+    for (int i = 0; i < size; i++) {
+        auto tag = Tag::newTag(mType);
+        tag->load(stream);
+        mStorage.push_back(std::move(tag));
     }
 }
 
@@ -85,14 +83,12 @@ void ListTag::write(bstream::BinaryStream& stream) const {
 }
 
 void ListTag::load(bstream::ReadOnlyBinaryStream& stream) {
-    mType     = Tag::Type(stream.getUnsignedChar());
+    mType     = static_cast<Type>(stream.getUnsignedChar());
     auto size = stream.getVarInt();
-    mStorage.clear();
-    for (int i = 0; i < size; ++i) {
-        if (auto tag = newTag(mType)) {
-            tag->load(stream);
-            mStorage.push_back(std::move(tag));
-        }
+    for (int i = 0; i < size; i++) {
+        auto tag = Tag::newTag(mType);
+        tag->load(stream);
+        mStorage.push_back(std::move(tag));
     }
 }
 
@@ -148,7 +144,7 @@ ListTag::TagList&       ListTag::storage() noexcept { return mStorage; }
 ListTag::TagList const& ListTag::storage() const noexcept { return mStorage; }
 
 void ListTag::forEachCompoundTag(std::function<void(CompoundTag const& tag)> func) {
-    if (mType == Tag::Type::Compound) {
+    if (mType == Type::Compound) {
         for (auto& tag : mStorage) { func(tag->as<CompoundTag>()); }
     }
 }

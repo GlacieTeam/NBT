@@ -136,7 +136,7 @@ public:
 
 public:
     [[nodiscard]] NBT_API CompoundTagVariant(Tag&& tag);
-    [[nodiscard]] NBT_API CompoundTagVariant(std::unique_ptr<Tag> tag);
+    [[nodiscard]] NBT_API CompoundTagVariant(std::unique_ptr<Tag>&& tag);
 
     [[nodiscard]] NBT_API CompoundTagVariant()                          = default;
     [[nodiscard]] NBT_API CompoundTagVariant(CompoundTagVariant&&)      = default;

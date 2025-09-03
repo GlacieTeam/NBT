@@ -15,7 +15,7 @@ namespace nbt {
 
 CompoundTagVariant::CompoundTagVariant(Tag&& tag) { emplace(std::move(tag)); }
 
-CompoundTagVariant::CompoundTagVariant(std::unique_ptr<Tag> tag) { emplace(std::move(*tag)); }
+CompoundTagVariant::CompoundTagVariant(std::unique_ptr<Tag>&& tag) { emplace(std::move(*tag)); }
 
 CompoundTagVariant::CompoundTagVariant(std::nullptr_t) {}
 
