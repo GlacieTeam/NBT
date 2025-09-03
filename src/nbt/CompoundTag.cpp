@@ -73,8 +73,7 @@ void CompoundTag::load(BytesDataInput& stream) {
     while (true) {
         const Type type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { break; }
-        std::string key;
-        stream.getString(key);
+        auto key    = stream.getStringView();
         auto tagPtr = Tag::newTag(type);
         tagPtr->load(stream);
         mTagMap.emplace(std::move(key), std::move(tagPtr));
@@ -420,7 +419,7 @@ void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
 
 void CompoundTag::deserialize(BytesDataInput& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    (void)stream.getString();
+    (void)stream.getStringView();
     if (tagType == Type::Compound) { load(stream); }
 }
 

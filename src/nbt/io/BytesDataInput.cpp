@@ -31,16 +31,16 @@ BytesDataInput::BytesDataInput(std::string_view buffer, bool copyBuffer, bool is
 
 bool BytesDataInput::hasDataLeft() const noexcept { return mReadPointer < mBufferView.size(); }
 
-bool BytesDataInput::getBytes(void* target, size_t num) noexcept {
-    if (mHasOverflowed) { return false; }
-    size_t newPointer = mReadPointer + num;
-    if (newPointer < mReadPointer || newPointer > mBufferView.size()) {
-        mHasOverflowed = true;
-        return false;
+void BytesDataInput::getBytes(void* target, size_t num) noexcept {
+    if (!mHasOverflowed) {
+        size_t newPointer = mReadPointer + num;
+        if (newPointer > mBufferView.size()) {
+            mHasOverflowed = true;
+        } else {
+            memcpy(target, mBufferView.data() + mReadPointer, num);
+            mReadPointer = newPointer;
+        }
     }
-    std::copy(mBufferView.begin() + mReadPointer, mBufferView.begin() + newPointer, static_cast<char*>(target));
-    mReadPointer = newPointer;
-    return true;
 }
 
 void BytesDataInput::ignoreBytes(size_t length) noexcept { mReadPointer += length; }
@@ -61,15 +61,29 @@ std::string BytesDataInput::getString() {
     return result;
 }
 
+std::string_view BytesDataInput::getStringView() noexcept {
+    auto length   = getShort();
+    auto result   = mBufferView.substr(mReadPointer, length);
+    mReadPointer += length;
+    return result;
+}
+
 void BytesDataInput::getLongString(std::string& result) {
-    auto size = getInt();
-    result.resize(size);
-    getBytes(result.data(), size);
+    auto length = getInt();
+    result.assign(mBufferView.substr(mReadPointer, length));
+    mReadPointer += length;
 }
 
 std::string BytesDataInput::getLongString() {
     std::string result;
     getLongString(result);
+    return result;
+}
+
+std::string_view BytesDataInput::getLongStringView() noexcept {
+    auto length   = getShort();
+    auto result   = mBufferView.substr(mReadPointer, length);
+    mReadPointer += length;
     return result;
 }
 

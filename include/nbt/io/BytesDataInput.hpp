@@ -35,15 +35,19 @@ public:
 
     NBT_API size_t size() const noexcept;
 
-    NBT_API bool getBytes(void* target, size_t num) noexcept;
+    NBT_API void getBytes(void* target, size_t num) noexcept;
 
     NBT_API void getString(std::string& result);
 
     [[nodiscard]] NBT_API std::string getString();
 
+    NBT_API std::string_view getStringView() noexcept;
+
     NBT_API void getLongString(std::string& result);
 
     [[nodiscard]] NBT_API std::string getLongString();
+
+    NBT_API std::string_view getLongStringView() noexcept;
 
     [[nodiscard]] NBT_API float getFloat() noexcept;
 
