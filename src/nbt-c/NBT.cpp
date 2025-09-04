@@ -315,7 +315,7 @@ void* nbt_compound_tag_get_tag(void* handle, const char* key) {
 nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
     if (handle) {
         auto nbt = toTag(handle)->as<nbt::CompoundTag>();
-        auto it  = std::next(nbt.begin(), index);
+        auto it  = std::next(nbt.begin(), static_cast<nbt::CompoundTag::TagMap::difference_type>(index));
         if (it != nbt.end()) {
             auto     value = it->first;
             uint8_t* data  = new uint8_t[value.size()];
@@ -332,7 +332,7 @@ nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
 void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
     if (handle) {
         auto nbt = toTag(handle)->as<nbt::CompoundTag>();
-        auto it  = std::next(nbt.begin(), index);
+        auto it  = std::next(nbt.begin(), static_cast<nbt::CompoundTag::TagMap::difference_type>(index));
         if (it != nbt.end()) { return it->second.toUniqueCopy().release(); }
     }
     return nullptr;

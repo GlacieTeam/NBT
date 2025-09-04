@@ -47,7 +47,7 @@ size_t BytesDataInput::getPosition() const noexcept { return mReadPointer; }
 size_t BytesDataInput::size() const noexcept { return mBufferView.size(); }
 
 void BytesDataInput::getString(std::string& result) {
-    auto length = getShort();
+    auto length = static_cast<size_t>(getShort());
     result.assign(mBufferView.substr(mReadPointer, length));
     mReadPointer += length;
 }
@@ -59,14 +59,14 @@ std::string BytesDataInput::getString() {
 }
 
 std::string_view BytesDataInput::getStringView() noexcept {
-    auto length   = getShort();
+    auto length   = static_cast<size_t>(getShort());
     auto result   = mBufferView.substr(mReadPointer, length);
     mReadPointer += length;
     return result;
 }
 
 void BytesDataInput::getLongString(std::string& result) {
-    auto length = getInt();
+    auto length = static_cast<size_t>(getInt());
     result.assign(mBufferView.substr(mReadPointer, length));
     mReadPointer += length;
 }
@@ -78,7 +78,7 @@ std::string BytesDataInput::getLongString() {
 }
 
 std::string_view BytesDataInput::getLongStringView() noexcept {
-    auto length   = getShort();
+    auto length   = static_cast<size_t>(getShort());
     auto result   = mBufferView.substr(mReadPointer, length);
     mReadPointer += length;
     return result;

@@ -65,7 +65,7 @@ void ByteArrayTag::write(BytesDataOutput& stream) const {
 }
 
 void ByteArrayTag::load(BytesDataInput& stream) {
-    auto size = stream.getInt();
+    auto size = static_cast<size_t>(stream.getInt());
     mStorage.resize(size);
     stream.getBytes(mStorage.data(), size);
 }
@@ -92,7 +92,7 @@ void ByteArrayTag::reserve(size_t size) { mStorage.reserve(size); }
 
 bool ByteArrayTag::remove(size_t index) {
     if (index < mStorage.size()) {
-        mStorage.erase(mStorage.begin() + index);
+        mStorage.erase(mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(index));
         return true;
     }
     return false;
@@ -100,7 +100,10 @@ bool ByteArrayTag::remove(size_t index) {
 
 bool ByteArrayTag::remove(size_t startIndex, size_t endIndex) {
     if (startIndex < endIndex && endIndex < mStorage.size()) {
-        mStorage.erase(mStorage.begin() + startIndex, mStorage.begin() + endIndex);
+        mStorage.erase(
+            mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(startIndex),
+            mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(endIndex)
+        );
         return true;
     }
     return false;

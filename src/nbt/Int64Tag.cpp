@@ -19,7 +19,7 @@ Tag::Type Int64Tag::getType() const { return Type::Int64; }
 
 std::unique_ptr<Tag> Int64Tag::copy() const { return std::make_unique<Int64Tag>(mStorage); }
 
-std::size_t Int64Tag::hash() const { return mStorage; }
+std::size_t Int64Tag::hash() const { return static_cast<size_t>(mStorage); }
 
 void Int64Tag::write(BytesDataOutput& stream) const { stream.writeInt64(mStorage); }
 

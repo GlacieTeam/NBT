@@ -61,13 +61,13 @@ std::string readFileMMap(std::filesystem::path const& path) {
         close(fd);
         return content;
     }
-    void* mapped = mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    void* mapped = mmap(nullptr, static_cast<size_t>(sb.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
     if (mapped == MAP_FAILED) {
         close(fd);
         return content;
     }
-    content.assign(static_cast<char*>(mapped), sb.st_size);
-    munmap(mapped, sb.st_size);
+    content.assign(static_cast<char*>(mapped), static_cast<size_t>(sb.st_size));
+    munmap(mapped, static_cast<size_t>(sb.st_size));
     close(fd);
 #endif
     return content;
@@ -177,7 +177,7 @@ std::optional<CompoundTag> parseSnbtFromFile(std::filesystem::path const& path) 
         std::string content;
         auto        size = fRead.tellg();
         fRead.seekg(0);
-        content.resize(size);
+        content.resize(static_cast<size_t>(size));
         fRead.read(content.data(), size);
         return CompoundTag::fromSnbt(content);
     }
@@ -200,7 +200,7 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
     if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
     auto type = static_cast<Tag::Type>(stream.getByte());
     if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-    auto size = stream.getInt();
+    auto size = static_cast<size_t>(stream.getInt());
     switch (type) {
     case Tag::Type::Byte: {
         if (stream.getPosition() + (sizeof(std::byte) * size) > streamSize) { return false; }
@@ -233,48 +233,48 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::ByteArray: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto len = stream.getInt();
+            auto len = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(std::byte) * len) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(std::byte) * len));
         }
         break;
     }
     case Tag::Type::String: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-            auto strSize = stream.getShort();
+            auto strSize = static_cast<size_t>(stream.getShort());
             if (stream.getPosition() + strSize > streamSize) { return false; }
             stream.ignoreBytes(strSize);
         }
         break;
     }
     case Tag::Type::List: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (!validateListTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::Compound: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (!validateCompoundTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::IntArray: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto len = stream.getInt();
+            auto len = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(int) * len) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(int) * len));
         }
         break;
     }
     case Tag::Type::LongArray: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto len = stream.getInt();
+            auto len = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(int64_t) * len) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(int64_t) * len));
         }
@@ -293,7 +293,7 @@ bool validateCompoundTag(BytesDataInput& stream, size_t streamSize) {
         type = static_cast<Tag::Type>(stream.getByte());
         if (type == Tag::Type::End) { return true; }
         if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strLen = stream.getShort();
+        auto strLen = static_cast<size_t>(stream.getShort());
         if (stream.getPosition() + strLen > streamSize) { return false; }
         stream.ignoreBytes(strLen);
         switch (type) {
@@ -329,14 +329,14 @@ bool validateCompoundTag(BytesDataInput& stream, size_t streamSize) {
         }
         case Tag::Type::ByteArray: {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto size = stream.getInt();
+            auto size = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(std::byte) * size) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(std::byte) * size));
             break;
         }
         case Tag::Type::String: {
             if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-            auto strSize = stream.getShort();
+            auto strSize = static_cast<size_t>(stream.getShort());
             if (stream.getPosition() + strSize > streamSize) { return false; }
             stream.ignoreBytes(strSize);
             break;
@@ -351,14 +351,14 @@ bool validateCompoundTag(BytesDataInput& stream, size_t streamSize) {
         }
         case Tag::Type::IntArray: {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto size = stream.getInt();
+            auto size = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(int) * size) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(int) * size));
             break;
         }
         case Tag::Type::LongArray: {
             if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
-            auto size = stream.getInt();
+            auto size = static_cast<size_t>(stream.getInt());
             if (stream.getPosition() + (sizeof(int64_t) * size) > streamSize) { return false; }
             stream.ignoreBytes((sizeof(int64_t) * size));
             break;
@@ -375,7 +375,7 @@ extern bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t st
 bool validateListTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize) {
     if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
     auto type = static_cast<Tag::Type>(stream.getByte());
-    auto size = stream.getVarInt();
+    auto size = static_cast<size_t>(stream.getVarInt());
     if (stream.isOverflowed()) { return false; }
     switch (type) {
     case Tag::Type::Byte: {
@@ -409,8 +409,8 @@ bool validateListTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::ByteArray: {
-        for (int i = 0; i < size; i++) {
-            auto len = stream.getVarInt();
+        for (size_t i = 0; i < size; i++) {
+            auto len = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(std::byte) * len) > streamSize) {
                 return false;
             }
@@ -419,30 +419,30 @@ bool validateListTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::String: {
-        for (int i = 0; i < size; i++) {
-            auto strSize = stream.getUnsignedVarInt();
+        for (size_t i = 0; i < size; i++) {
+            auto strSize = static_cast<size_t>(stream.getUnsignedVarInt());
             if (stream.isOverflowed() || stream.getPosition() + strSize > streamSize) { return false; }
             stream.ignoreBytes(strSize);
         }
         break;
     }
     case Tag::Type::List: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (!validateListTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::Compound: {
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (!validateCompoundTag(stream, streamSize)) { return false; }
         }
         break;
     }
     case Tag::Type::IntArray: {
-        for (int i = 0; i < size; i++) {
-            auto len = stream.getVarInt();
+        for (size_t i = 0; i < size; i++) {
+            auto len = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(int) * len) > streamSize) { return false; }
-            for (int j = 0; j < len; j++) {
+            for (size_t j = 0; j < len; j++) {
                 (void)stream.getVarInt();
                 if (stream.isOverflowed()) { return false; }
             }
@@ -450,10 +450,10 @@ bool validateListTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize) {
         break;
     }
     case Tag::Type::LongArray: {
-        for (int i = 0; i < size; i++) {
-            auto len = stream.getVarInt();
+        for (size_t i = 0; i < size; i++) {
+            auto len = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(int64_t) * len) > streamSize) { return false; }
-            for (int j = 0; j < len; j++) {
+            for (size_t j = 0; j < len; j++) {
                 (void)stream.getVarInt64();
                 if (stream.isOverflowed()) { return false; }
             }
@@ -507,7 +507,7 @@ bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSiz
             break;
         }
         case Tag::Type::ByteArray: {
-            auto size = stream.getVarInt();
+            auto size = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(std::byte) * size) > streamSize) {
                 return false;
             }
@@ -515,7 +515,7 @@ bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSiz
             break;
         }
         case Tag::Type::String: {
-            auto strSize = stream.getUnsignedVarInt();
+            auto strSize = static_cast<size_t>(stream.getUnsignedVarInt());
             if (stream.isOverflowed() || stream.getPosition() + strSize > streamSize) { return false; }
             stream.ignoreBytes(strSize);
             break;
@@ -529,18 +529,18 @@ bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSiz
             break;
         }
         case Tag::Type::IntArray: {
-            auto size = stream.getVarInt();
+            auto size = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(int) * size) > streamSize) { return false; }
-            for (int i = 0; i < size; i++) {
+            for (size_t i = 0; i < size; i++) {
                 (void)stream.getVarInt();
                 if (stream.isOverflowed()) { return false; }
             }
             break;
         }
         case Tag::Type::LongArray: {
-            auto size = stream.getVarInt();
+            auto size = static_cast<size_t>(stream.getVarInt());
             if (stream.isOverflowed() || stream.getPosition() + (sizeof(int64_t) * size) > streamSize) { return false; }
-            for (int i = 0; i < size; i++) {
+            for (size_t i = 0; i < size; i++) {
                 (void)stream.getVarInt64();
                 if (stream.isOverflowed()) { return false; }
             }
@@ -560,7 +560,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         auto           streamSize = stream.size();
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
         if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strSize = stream.getShort();
+        auto strSize = static_cast<size_t>(stream.getShort());
         if (stream.getPosition() + strSize > streamSize) { return false; }
         stream.ignoreBytes(strSize);
         if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
@@ -571,11 +571,11 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         auto           streamSize = stream.size();
         if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
         stream.ignoreBytes(sizeof(int));
-        auto nbtSize = stream.getInt();
+        auto nbtSize = static_cast<size_t>(stream.getInt());
         if (stream.getPosition() + nbtSize > streamSize) { return false; }
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
         if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strSize = stream.getShort();
+        auto strSize = static_cast<size_t>(stream.getShort());
         if (stream.getPosition() + strSize > streamSize) { return false; }
         stream.ignoreBytes(strSize);
         if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
@@ -586,7 +586,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         auto           streamSize = stream.size();
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
         if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strSize = stream.getShort();
+        auto strSize = static_cast<size_t>(stream.getShort());
         if (stream.getPosition() + strSize > streamSize) { return false; }
         stream.ignoreBytes(strSize);
         if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
@@ -597,11 +597,11 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         auto           streamSize = stream.size();
         if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
         stream.ignoreBytes(sizeof(int));
-        auto nbtSize = stream.getInt();
+        auto nbtSize = static_cast<size_t>(stream.getInt());
         if (stream.getPosition() + nbtSize > streamSize) { return false; }
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
         if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strSize = stream.getShort();
+        auto strSize = static_cast<size_t>(stream.getShort());
         if (stream.getPosition() + strSize > streamSize) { return false; }
         stream.ignoreBytes(strSize);
         if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
@@ -611,7 +611,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         bstream::ReadOnlyBinaryStream stream(binary, false, false);
         auto                          streamSize = stream.size();
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
-        auto strSize = stream.getUnsignedVarInt();
+        auto strSize = static_cast<size_t>(stream.getUnsignedVarInt());
         if (stream.isOverflowed() || stream.getPosition() + strSize > streamSize) { return false; }
         stream.ignoreBytes(strSize);
         if (validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }

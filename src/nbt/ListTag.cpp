@@ -124,7 +124,7 @@ void ListTag::reserve(size_t size) { mStorage.reserve(size); }
 
 bool ListTag::remove(size_t index) {
     if (index < mStorage.size()) {
-        mStorage.erase(mStorage.begin() + index);
+        mStorage.erase(mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(index));
         return true;
     }
     return false;
@@ -132,7 +132,10 @@ bool ListTag::remove(size_t index) {
 
 bool ListTag::remove(size_t startIndex, size_t endIndex) {
     if (startIndex < endIndex && endIndex < mStorage.size()) {
-        mStorage.erase(mStorage.begin() + startIndex, mStorage.begin() + endIndex);
+        mStorage.erase(
+            mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(startIndex),
+            mStorage.begin() + static_cast<decltype(mStorage)::difference_type>(endIndex)
+        );
         return true;
     }
     return false;

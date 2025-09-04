@@ -39,8 +39,8 @@ std::size_t CompoundTag::hash() const {
     size_t           hash   = 0x811c9dc5;
     constexpr size_t prime  = 0x01000193;
     auto             binary = toBinaryNbt();
-    for (uint8_t byte : binary) {
-        hash ^= byte;
+    for (char byte : binary) {
+        hash ^= static_cast<size_t>(byte);
         hash  = hash * prime;
     }
     return hash;

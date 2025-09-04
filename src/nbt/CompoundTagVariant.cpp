@@ -238,7 +238,7 @@ std::optional<CompoundTagVariant>
 CompoundTagVariant::parse(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
     auto begin{snbt.begin()};
     auto result = detail::parseSnbtValue(snbt);
-    if (parsedLength) { *parsedLength = snbt.begin() - begin; }
+    if (parsedLength) { *parsedLength = static_cast<size_t>(snbt.begin() - begin); }
     return result;
 }
 

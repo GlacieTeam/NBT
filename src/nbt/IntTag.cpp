@@ -19,7 +19,7 @@ Tag::Type IntTag::getType() const { return Type::Int; }
 
 std::unique_ptr<Tag> IntTag::copy() const { return std::make_unique<IntTag>(mStorage); }
 
-std::size_t IntTag::hash() const { return mStorage; }
+std::size_t IntTag::hash() const { return static_cast<size_t>(mStorage); }
 
 void IntTag::write(BytesDataOutput& stream) const { stream.writeInt(mStorage); }
 

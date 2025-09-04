@@ -22,7 +22,7 @@ replaceAll(std::string const& str, std::string_view oldValue, std::string_view n
     size_t           hash  = 0xcbf29ce484222325;
     constexpr size_t prime = 0x100000001b3;
     for (char c : x) {
-        hash ^= c;
+        hash ^= static_cast<size_t>(c);
         hash *= prime;
     }
     return hash;
