@@ -110,14 +110,4 @@ Tag::operator std::string const&() const {
     throw std::runtime_error("tag can not convert to a string");
 }
 
-Tag::operator std::byte() const { return asByte(); }
-
-uint8_t   Tag::asUnsignedChar() const { return as<ByteTag>().storage(); }
-std::byte Tag::asByte() const { return as<ByteTag>(); }
-short     Tag::asShort() const { return as<ShortTag>().storage(); }
-int       Tag::asInt() const { return as<IntTag>().storage(); }
-int64_t   Tag::asInt64() const { return as<Int64Tag>().storage(); }
-float     Tag::asFloat() const { return as<FloatTag>().storage(); }
-double    Tag::asDouble() const { return as<DoubleTag>().storage(); }
-
 } // namespace nbt

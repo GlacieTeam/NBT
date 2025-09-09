@@ -220,7 +220,7 @@ std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) co
 std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
     try {
         return nlohmann::ordered_json::parse(toSnbt(SnbtFormat::Jsonify), nullptr, true, true).dump(indent);
-    } catch (...) { return {}; }
+    } catch (...) { return "null"; }
 }
 
 void CompoundTagVariant::merge(CompoundTagVariant const& other, bool mergeList) {

@@ -63,6 +63,7 @@ target("NBT")
         add_cxflags(
             "-Wall",
             "-Wextra",
+            "-Wconversion",
             "-pedantic",
             "-fexceptions",
             "-stdlib=libc++"

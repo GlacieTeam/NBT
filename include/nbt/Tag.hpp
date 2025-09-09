@@ -112,14 +112,6 @@ public:
 
     [[nodiscard]] NBT_API operator std::byte() const;
 
-    [[nodiscard]] NBT_API uint8_t asUnsignedChar() const;
-    [[nodiscard]] NBT_API std::byte asByte() const;
-    [[nodiscard]] NBT_API short     asShort() const;
-    [[nodiscard]] NBT_API int       asInt() const;
-    [[nodiscard]] NBT_API int64_t   asInt64() const;
-    [[nodiscard]] NBT_API float     asFloat() const;
-    [[nodiscard]] NBT_API double    asDouble() const;
-
 public:
     [[nodiscard]] NBT_API static std::unique_ptr<Tag> newTag(Type type);
 };

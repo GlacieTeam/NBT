@@ -5,15 +5,30 @@ namespace {
 
 inline nbt::Tag* toTag(void* handle) { return reinterpret_cast<nbt::Tag*>(handle); }
 
+inline nbtio_buffer* make_nbtio_buffer(std::string_view buffer) {
+    auto result  = new nbtio_buffer();
+    result->data = new uint8_t[buffer.size()];
+    std::copy_n(buffer.data(), buffer.size(), result->data);
+    result->size = buffer.size();
+    return result;
+}
+
+inline nbtio_buffer* make_nbtio_buffer(std::vector<uint8_t> const& buffer) {
+    auto result  = new nbtio_buffer();
+    result->data = new uint8_t[buffer.size()];
+    std::copy_n(buffer.data(), buffer.size(), result->data);
+    result->size = buffer.size();
+    return result;
+}
+
 } // namespace
 
 extern "C" {
 
 void nbtio_buffer_destroy(nbtio_buffer* buffer) {
-    if (buffer && buffer->data) {
-        delete[] buffer->data;
-        buffer->data = nullptr;
-        buffer->size = 0;
+    if (buffer) {
+        if (buffer->data) { delete[] buffer->data; }
+        delete buffer;
     }
 }
 
@@ -103,30 +118,19 @@ void nbt_any_tag_destroy(void* handle) {
     }
 }
 
-nbtio_buffer nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t indent) {
+nbtio_buffer* nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t indent) {
     if (handle) {
         std::string value = toTag(handle)->as<nbt::Tag>().toSnbt(static_cast<nbt::SnbtFormat>(format), indent);
-        uint8_t*    data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
-
-nbtio_buffer nbt_any_tag_to_json(void* handle, uint8_t indent) {
+nbtio_buffer* nbt_any_tag_to_json(void* handle, uint8_t indent) {
     if (handle) {
         std::string value = toTag(handle)->as<nbt::Tag>().toJson(indent);
-        uint8_t*    data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
 // EndTag
@@ -214,17 +218,12 @@ void nbt_byte_array_tag_set_value(void* handle, const uint8_t* data, size_t size
     if (handle) { toTag(handle)->as<nbt::ByteArrayTag>().reinit(data, size); }
 }
 
-nbtio_buffer nbt_byte_array_tag_get_value(void* handle) {
+nbtio_buffer* nbt_byte_array_tag_get_value(void* handle) {
     if (handle) {
         std::vector<uint8_t> value = toTag(handle)->as<nbt::ByteArrayTag>();
-        uint8_t*             data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
 // StringTag
@@ -237,17 +236,12 @@ void nbt_string_tag_set_value(void* handle, const char* data, size_t size) {
     if (handle && data) { toTag(handle)->as<nbt::StringTag>() = std::string(data, size); }
 }
 
-nbtio_buffer nbt_string_tag_get_value(void* handle) {
+nbtio_buffer* nbt_string_tag_get_value(void* handle) {
     if (handle) {
         std::string value = toTag(handle)->as<nbt::StringTag>();
-        uint8_t*    data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
 // ListTag
@@ -312,21 +306,16 @@ void* nbt_compound_tag_get_tag(void* handle, const char* key) {
     return nullptr;
 }
 
-nbtio_buffer nbt_compound_tag_get_key_index(void* handle, size_t index) {
+nbtio_buffer* nbt_compound_tag_get_key_index(void* handle, size_t index) {
     if (handle) {
         auto nbt = toTag(handle)->as<nbt::CompoundTag>();
         auto it  = std::next(nbt.begin(), static_cast<nbt::CompoundTag::TagMap::difference_type>(index));
         if (it != nbt.end()) {
-            auto     value = it->first;
-            uint8_t* data  = new uint8_t[value.size()];
-            std::memcpy(data, value.data(), value.size());
-            nbtio_buffer result;
-            result.data = data;
-            result.size = value.size();
-            return result;
+            auto value = it->first;
+            return make_nbtio_buffer(value);
         }
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
 void* nbt_compound_tag_get_tag_index(void* handle, size_t index) {
@@ -347,31 +336,21 @@ void nbt_compound_tag_clear(void* handle) {
     if (handle) { toTag(handle)->as<nbt::CompoundTag>().clear(); }
 }
 
-nbtio_buffer nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian, bool write_header) {
+nbtio_buffer* nbt_compound_tag_to_binary_nbt(void* handle, bool little_endian, bool write_header) {
     if (handle) {
         std::string value = write_header ? toTag(handle)->as<nbt::CompoundTag>().toBinaryNbtWithHeader(little_endian)
                                          : toTag(handle)->as<nbt::CompoundTag>().toBinaryNbt(little_endian);
-        uint8_t*    data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
-nbtio_buffer nbt_compound_tag_to_network_nbt(void* handle) {
+nbtio_buffer* nbt_compound_tag_to_network_nbt(void* handle) {
     if (handle) {
         std::string value = toTag(handle)->as<nbt::CompoundTag>().toNetworkNbt();
-        uint8_t*    data  = new uint8_t[value.size()];
-        std::memcpy(data, value.data(), value.size());
-        nbtio_buffer result;
-        result.data = data;
-        result.size = value.size();
-        return result;
+        return make_nbtio_buffer(value);
     }
-    return nbtio_buffer();
+    return nullptr;
 }
 
 void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian, bool read_header) {
