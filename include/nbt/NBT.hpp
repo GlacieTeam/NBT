@@ -42,8 +42,16 @@ enum class CompressionLevel : int {
     BestCompression = 9,
 };
 
-[[nodiscard]] NBT_API std::optional<CompoundTag>
-parseFromFile(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+[[nodiscard]] NBT_API std::optional<NbtFileFormat> checkNbtContentFormat(std::string_view content);
+
+[[nodiscard]] NBT_API std::optional<NbtFileFormat>
+                      checkNbtFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false);
+
+[[nodiscard]] NBT_API std::optional<CompoundTag> parseFromFile(
+    std::filesystem::path const& path,
+    std::optional<NbtFileFormat> format        = std::nullopt,
+    bool                         fileMemoryMap = false
+);
 
 NBT_API bool saveToFile(
     CompoundTag const&           nbt,
@@ -65,7 +73,10 @@ NBT_API bool saveSnbtToFile(
 [[nodiscard]] NBT_API bool
 validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
 
-[[nodiscard]] NBT_API bool
-validate(std::filesystem::path const& path, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+[[nodiscard]] NBT_API bool validateFile(
+    std::filesystem::path const& path,
+    NbtFileFormat                format        = NbtFileFormat::LittleEndianBinary,
+    bool                         fileMemoryMap = false
+);
 
 } // namespace nbt

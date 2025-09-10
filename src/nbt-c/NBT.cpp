@@ -488,14 +488,29 @@ bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, u
     return false;
 }
 
-bool nbt_validate_file(const char* path, NBT_FileFormat format) {
-    return nbt::validate(path, static_cast<nbt::NbtFileFormat>(format));
+bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap) {
+    return nbt::validateFile(path, static_cast<nbt::NbtFileFormat>(format), fmmap);
 }
 
-bool nbt_validate_buffer(const uint8_t* data, size_t size, NBT_FileFormat format) {
+bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format) {
     return nbt::validateContent(
         std::string_view(reinterpret_cast<const char*>(data), size),
         static_cast<nbt::NbtFileFormat>(format)
     );
+}
+
+NBT_FileFormat nbt_check_file_format(const char* path, bool fmmap) {
+    if (auto result = nbt::checkNbtFileFormat(path, fmmap)) {
+        return static_cast<NBT_FileFormat>(*result);
+    } else {
+        return NBT_FileFormat::NBT_Format_Invalid;
+    }
+}
+NBT_FileFormat nbt_check_content_format(const uint8_t* data, size_t size) {
+    if (auto result = nbt::checkNbtContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
+        return static_cast<NBT_FileFormat>(*result);
+    } else {
+        return NBT_FileFormat::NBT_Format_Invalid;
+    }
 }
 }
