@@ -57,7 +57,7 @@ std::unique_ptr<CompoundTag> CompoundTag::clone() const {
 void CompoundTag::write(BytesDataOutput& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
-        stream.writeByte((uint8_t)type);
+        stream.writeByte(static_cast<uint8_t>(type));
         if (type != Type::End) {
             stream.writeString(key);
             tag->write(stream);
@@ -80,7 +80,7 @@ void CompoundTag::load(BytesDataInput& stream) {
 void CompoundTag::write(bstream::BinaryStream& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
-        stream.writeUnsignedChar((uint8_t)type);
+        stream.writeUnsignedChar(static_cast<uint8_t>(type));
         if (type != Type::End) {
             stream.writeString(key);
             tag->write(stream);
@@ -93,8 +93,7 @@ void CompoundTag::load(bstream::ReadOnlyBinaryStream& stream) {
     while (true) {
         const Type type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { return; }
-        std::string key;
-        stream.getString(key);
+        auto key    = stream.getStringView();
         auto tagPtr = Tag::newTag(type);
         tagPtr->load(stream);
         mTagMap.emplace(std::move(key), std::move(*tagPtr));
@@ -403,7 +402,7 @@ void CompoundTag::serialize(BytesDataOutput& stream) const {
 
 void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
-    (void)stream.getString();
+    (void)stream.getStringView();
     if (tagType == Type::Compound) { load(stream); }
 }
 
