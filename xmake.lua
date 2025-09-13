@@ -2,16 +2,14 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("binarystream 2.3.1")
-add_requires("nlohmann_json 3.12.0")
-add_requires("zstr 1.0.8")
+add_requires(
+    "binarystream 2.3.2",
+    "nlohmann_json 3.12.0",
+    "zstr 1.0.8"
+)
 
-if is_plat("windows") then
-    if not has_config("vs_runtime") then
-        set_runtimes("MD")
-    end
-elseif is_plat("linux") or is_plat("macosx") then
-    set_toolchains("clang")
+if is_plat("windows") and not has_config("vs_runtime") then
+    set_runtimes("MD")
 end
 
 option("kind")
@@ -65,11 +63,7 @@ target("NBT")
             "-Wextra",
             "-Wconversion",
             "-pedantic",
-            "-fexceptions",
-            "-stdlib=libc++"
-        )
-        add_ldflags(
-            "-stdlib=libc++"
+            "-fexceptions"
         )
         if is_mode("release") then
             add_cxflags(
@@ -82,13 +76,10 @@ target("NBT")
                 "-fvisibility-inlines-hidden"
             )
             add_shflags(
-                "-stdlib=libc++",
                 "-static-libstdc++",
                 "-static-libgcc"
             )
-            if is_plat("linux") then
-                add_syslinks("libc++.a", "libc++abi.a")
-            elseif is_plat("macosx") then
+            if is_plat("macosx") then
                 add_shflags("-dynamiclib")
             end
         end
