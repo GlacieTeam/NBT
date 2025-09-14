@@ -47,10 +47,20 @@ enum class CompressionLevel : int {
 [[nodiscard]] NBT_API std::optional<NbtFileFormat>
                       checkNbtFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false);
 
+[[nodiscard]] NBT_API std::optional<CompoundTag>
+                      parseFromBinary(std::string_view content, std::optional<NbtFileFormat> format = std::nullopt);
+
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseFromFile(
     std::filesystem::path const& path,
     std::optional<NbtFileFormat> format        = std::nullopt,
     bool                         fileMemoryMap = false
+);
+
+NBT_API std::string saveAsBinary(
+    CompoundTag const& nbt,
+    NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
+    CompressionType    compressionType  = CompressionType::Gzip,
+    CompressionLevel   compressionLevel = CompressionLevel::Default
 );
 
 NBT_API bool saveToFile(
@@ -77,6 +87,20 @@ validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::L
     std::filesystem::path const& path,
     NbtFileFormat                format        = NbtFileFormat::LittleEndianBinary,
     bool                         fileMemoryMap = false
+);
+
+[[nodiscard]] NBT_API std::string encodeBsae64(std::string_view content);
+
+[[nodiscard]] NBT_API std::string decodeBsae64(std::string_view content);
+
+[[nodiscard]] NBT_API std::optional<CompoundTag>
+                      parseFromBsae64(std::string_view content, std::optional<NbtFileFormat> format = std::nullopt);
+
+[[nodiscard]] NBT_API std::string saveAsBase64(
+    CompoundTag const& nbt,
+    NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
+    CompressionType    compressionType  = CompressionType::Gzip,
+    CompressionLevel   compressionLevel = CompressionLevel::Default
 );
 
 } // namespace nbt

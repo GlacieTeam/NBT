@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/NBT.hpp"
+#include "detail/Base64.hpp"
 #include "nbt/Literals.hpp"
 #include "nbt/detail/Validate.hpp"
 #include <sstream>
@@ -120,6 +121,45 @@ std::optional<NbtFileFormat> checkNbtFileFormat(std::filesystem::path const& pat
     return std::nullopt;
 }
 
+std::optional<CompoundTag> _parseFromBinary(std::string& content, std::optional<NbtFileFormat> format) {
+    if (content.size() > 2) {
+        const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
+        const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
+        if ((b0 == 0x1F_byte && b1 == 0x8B_byte)
+            || (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte))) {
+            std::istringstream stream(content);
+            zstr::istream      decompressor(stream);
+            content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
+        }
+    }
+    if (!format.has_value()) { format = checkNbtContentFormat(content); }
+    if (!format.has_value()) { return std::nullopt; }
+    switch (*format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        return CompoundTag::fromBinaryNbt(content, true);
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        return CompoundTag::fromBinaryNbtWithHeader(content, true);
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        return CompoundTag::fromBinaryNbt(content, false);
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        return CompoundTag::fromBinaryNbtWithHeader(content, false);
+    }
+    case NbtFileFormat::BedrockNetwork: {
+        return CompoundTag::fromNetworkNbt(content);
+    }
+    default:
+        return std::nullopt;
+    }
+}
+
+std::optional<CompoundTag> parseFromBinary(std::string_view content, std::optional<NbtFileFormat> format) {
+    std::string input(content);
+    return _parseFromBinary(input, format);
+}
+
 std::optional<CompoundTag>
 parseFromFile(std::filesystem::path const& path, std::optional<NbtFileFormat> format, bool fileMemoryMap) {
     if (std::filesystem::exists(path)) {
@@ -135,39 +175,61 @@ parseFromFile(std::filesystem::path const& path, std::optional<NbtFileFormat> fo
                 fRead.read(content.data(), size);
             }
         }
-        if (content.size() > 2) {
-            const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
-            const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
-            if ((b0 == 0x1F_byte && b1 == 0x8B_byte)
-                || (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte))) {
-                std::istringstream stream(content);
-                zstr::istream      decompressor(stream);
-                content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
-            }
-        }
-        if (!format.has_value()) { format = checkNbtContentFormat(content); }
-        if (!format.has_value()) { return std::nullopt; }
-        switch (*format) {
-        case NbtFileFormat::LittleEndianBinary: {
-            return CompoundTag::fromBinaryNbt(content, true);
-        }
-        case NbtFileFormat::LittleEndianBinaryWithHeader: {
-            return CompoundTag::fromBinaryNbtWithHeader(content, true);
-        }
-        case NbtFileFormat::BigEndianBinary: {
-            return CompoundTag::fromBinaryNbt(content, false);
-        }
-        case NbtFileFormat::BigEndianBinaryWithHeader: {
-            return CompoundTag::fromBinaryNbtWithHeader(content, false);
-        }
-        case NbtFileFormat::BedrockNetwork: {
-            return CompoundTag::fromNetworkNbt(content);
-        }
-        default:
-            return std::nullopt;
-        }
+        return _parseFromBinary(content, format);
     }
     return std::nullopt;
+}
+
+std::string saveAsBinary(
+    CompoundTag const& nbt,
+    NbtFileFormat      format,
+    CompressionType    compressionType,
+    CompressionLevel   compressionLevel
+) {
+    std::string content;
+    switch (format) {
+    case NbtFileFormat::LittleEndianBinary: {
+        content = nbt.toBinaryNbt(true);
+        break;
+    }
+    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+        content = nbt.toBinaryNbtWithHeader(true);
+        break;
+    }
+    case NbtFileFormat::BigEndianBinary: {
+        content = nbt.toBinaryNbt(false);
+        break;
+    }
+    case NbtFileFormat::BigEndianBinaryWithHeader: {
+        content = nbt.toBinaryNbtWithHeader(false);
+        break;
+    }
+    case NbtFileFormat::BedrockNetwork: {
+        content = nbt.toNetworkNbt();
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+    static constexpr auto BUFFER_SIZE = 1048576ull;
+    std::ostringstream    outstream;
+    switch (compressionType) {
+    case CompressionType::Zlib: {
+        zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 15);
+        zstream << content;
+        zstream.flush();
+        return outstream.str();
+    }
+    case CompressionType::Gzip: {
+        zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 31);
+        zstream << content;
+        zstream.flush();
+        return outstream.str();
+    }
+    default:
+        return content;
+    }
 }
 
 bool saveToFile(
@@ -199,8 +261,9 @@ bool saveToFile(
         content = nbt.toNetworkNbt();
         break;
     }
-    default:
+    default: {
         return false;
+    }
     }
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     switch (compressionType) {
@@ -354,6 +417,25 @@ bool validateFile(std::filesystem::path const& path, NbtFileFormat format, bool 
         return validateContent(content, format);
     }
     return false;
+}
+
+std::string encodeBsae64(std::string_view content) { return base64_utils::encode(content); }
+
+std::string decodeBsae64(std::string_view content) { return base64_utils::decode(content); }
+
+std::optional<CompoundTag> parseFromBsae64(std::string_view content, std::optional<NbtFileFormat> format) {
+    auto input = base64_utils::decode(content);
+    return _parseFromBinary(input, format);
+}
+
+std::string saveAsBase64(
+    CompoundTag const& nbt,
+    NbtFileFormat      format,
+    CompressionType    compressionType,
+    CompressionLevel   compressionLevel
+) {
+    auto content = saveAsBinary(nbt, format, compressionType, compressionLevel);
+    return base64_utils::encode(content);
 }
 
 } // namespace nbt

@@ -21,13 +21,15 @@ namespace nbt {
 
 namespace {
 
+static constexpr auto CHAR_EOF = static_cast<char>(std::char_traits<char>::eof());
+
 bool ignoreComment(std::string_view& s) noexcept {
     size_t i = 0;
     switch (s[i++]) {
     case '*': {
         while (i < s.size()) {
             switch (s[i++]) {
-            case std::char_traits<char>::eof():
+            case CHAR_EOF:
             case '\0':
                 return false;
             case '*': {
@@ -51,7 +53,7 @@ bool ignoreComment(std::string_view& s) noexcept {
             switch (s[i++]) {
             case '\n':
             case '\r':
-            case std::char_traits<char>::eof():
+            case CHAR_EOF:
             case '\0':
                 s.remove_prefix(std::min(i, s.size()));
                 return false;
@@ -523,7 +525,7 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
     case '}':
         s.remove_prefix(1);
         return std::nullopt;
-    case std::char_traits<char>::eof():
+    case CHAR_EOF:
     case '\0':
         return std::nullopt;
     case '-':
