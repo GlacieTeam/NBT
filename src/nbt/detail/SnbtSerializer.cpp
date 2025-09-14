@@ -14,6 +14,7 @@
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
 #include <format>
+#include <limits>
 #include <nlohmann/json.hpp>
 
 namespace nbt {

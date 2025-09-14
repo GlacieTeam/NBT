@@ -404,7 +404,10 @@ void nbt_int_array_tag_clear(void* handle) {
 bool nbt_int_array_tag_set_value(void* handle, size_t index, int value) {
     if (handle) {
         auto& intArrayTag = toTag(handle)->as<nbt::IntArrayTag>();
-        if (index < intArrayTag.size()) { return intArrayTag[index] = value; }
+        if (index < intArrayTag.size()) {
+            intArrayTag[index] = value;
+            return true;
+        }
     }
     return false;
 }
@@ -441,7 +444,10 @@ void nbt_long_array_tag_clear(void* handle) {
 bool nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value) {
     if (handle) {
         auto& longArrayTag = toTag(handle)->as<nbt::LongArrayTag>();
-        if (index < longArrayTag.size()) { return longArrayTag[index] = value; }
+        if (index < longArrayTag.size()) {
+            longArrayTag[index] = value;
+            return true;
+        }
     }
     return false;
 }

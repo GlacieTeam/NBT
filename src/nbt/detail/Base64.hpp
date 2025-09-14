@@ -61,14 +61,14 @@ inline std::string decode(std::string_view str) {
     std::string out;
     out.resize(output_size);
     for (size_t i = 0, j = 0; i < input_size;) {
-        uint32_t c1 =
-            (i > input_size || str[i] == '=') ? 0 & i++ : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
-        uint32_t c2 =
-            (i > input_size || str[i] == '=') ? 0 & i++ : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
-        uint32_t c3 =
-            (i > input_size || str[i] == '=') ? 0 & i++ : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
-        uint32_t c4 =
-            (i > input_size || str[i] == '=') ? 0 & i++ : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
+        uint32_t c1 = (i > input_size || str[i] == '=') ? 0 & static_cast<uint32_t>(i++)
+                                                        : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
+        uint32_t c2 = (i > input_size || str[i] == '=') ? 0 & static_cast<uint32_t>(i++)
+                                                        : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
+        uint32_t c3 = (i > input_size || str[i] == '=') ? 0 & static_cast<uint32_t>(i++)
+                                                        : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
+        uint32_t c4 = (i > input_size || str[i] == '=') ? 0 & static_cast<uint32_t>(i++)
+                                                        : static_cast<uint32_t>(detail::decodeLookup(str[i++]));
 
         uint32_t data = (c1 << 3 * 6) + (c2 << 2 * 6) + (c3 << 1 * 6) + (c4 << 0 * 6);
 

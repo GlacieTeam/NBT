@@ -34,7 +34,7 @@ void BytesDataInput::getBytes(void* target, size_t num) noexcept {
         if (newPointer > mBufferView.size()) {
             mHasOverflowed = true;
         } else {
-            memcpy(target, mBufferView.data() + mReadPointer, num);
+            std::copy_n(mBufferView.data() + mReadPointer, num, static_cast<char*>(target));
             mReadPointer = newPointer;
         }
     }

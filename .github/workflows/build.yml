@@ -147,7 +147,7 @@ jobs:
     name: Build on Linux ARM64 (GCC)
     runs-on: ubuntu-24.04
     container:
-      image: ubuntu:22.04
+      image: ubuntu:24.04
       options: --privileged
     steps:
     - name: Checkout repository
