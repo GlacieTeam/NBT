@@ -78,7 +78,7 @@ std::string BytesDataInput::getLongString() {
 }
 
 std::string_view BytesDataInput::getLongStringView() noexcept {
-    auto length   = static_cast<size_t>(getShort());
+    auto length   = static_cast<size_t>(getInt());
     auto result   = mBufferView.substr(mReadPointer, length);
     mReadPointer += length;
     return result;
