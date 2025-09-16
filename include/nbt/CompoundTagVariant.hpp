@@ -51,11 +51,8 @@ public:
     template <bool Const>
     class Iterator {
     public:
-        using iterator_category = std::bidirectional_iterator_tag;
-        using difference_type   = ptrdiff_t;
-        using value_type        = Tag;
-        using reference         = std::conditional_t<Const, value_type const, value_type>&;
-        using pointer           = std::add_pointer_t<reference>;
+        using reference = std::conditional_t<Const, Tag const, Tag>&;
+        using pointer   = std::add_pointer_t<reference>;
 
         std::conditional_t<
             Const,

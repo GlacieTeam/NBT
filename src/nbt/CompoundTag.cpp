@@ -115,48 +115,129 @@ void CompoundTag::merge(CompoundTag const& other, bool mergeList) {
     }
 }
 
-void CompoundTag::put(std::string_view key, Tag&& tag) { mTagMap.emplace(key, std::forward<Tag>(tag)); }
-
-void CompoundTag::put(std::string_view key, std::unique_ptr<Tag>&& tag) {
-    if (tag) { mTagMap.emplace(key, std::move(*tag)); }
+bool CompoundTag::put(std::string_view key, Tag&& tag) {
+    auto [_, result] = mTagMap.emplace(key, std::forward<Tag>(tag));
+    return result;
 }
 
-void CompoundTag::putByte(std::string_view key, uint8_t value) { mTagMap.emplace(key, ByteTag(value)); }
-
-void CompoundTag::putShort(std::string_view key, int16_t value) { mTagMap.emplace(key, ShortTag(value)); }
-
-void CompoundTag::putInt(std::string_view key, int32_t value) { mTagMap.emplace(key, IntTag(value)); }
-
-void CompoundTag::putInt64(std::string_view key, int64_t value) { mTagMap.emplace(key, Int64Tag(value)); }
-
-void CompoundTag::putFloat(std::string_view key, float value) { mTagMap.emplace(key, FloatTag(value)); }
-
-void CompoundTag::putDouble(std::string_view key, double value) { mTagMap.emplace(key, DoubleTag(value)); }
-
-void CompoundTag::putString(std::string_view key, std::string_view value) { mTagMap.emplace(key, StringTag(value)); }
-
-void CompoundTag::putByteArray(std::string_view key, std::vector<uint8_t> const& value) {
-    mTagMap.emplace(key, ByteArrayTag(value));
+bool CompoundTag::put(std::string_view key, std::unique_ptr<Tag>&& tag) {
+    if (tag) {
+        auto [_, result] = mTagMap.emplace(key, std::move(*tag));
+        return result;
+    }
+    return false;
 }
 
-void CompoundTag::putIntArray(std::string_view key, std::vector<int> const& value) {
-    mTagMap.emplace(key, IntArrayTag(value));
+bool CompoundTag::putByte(std::string_view key, uint8_t value) {
+    auto [_, result] = mTagMap.emplace(key, ByteTag(value));
+    return result;
 }
 
-void CompoundTag::putLongArray(std::string_view key, std::vector<int64_t> const& value) {
-    mTagMap.emplace(key, LongArrayTag(value));
+bool CompoundTag::putShort(std::string_view key, int16_t value) {
+    auto [_, result] = mTagMap.emplace(key, ShortTag(value));
+    return result;
 }
 
-void CompoundTag::putCompound(std::string_view key, CompoundTag&& value) { mTagMap.emplace(key, std::move(value)); }
-
-void CompoundTag::putCompound(std::string_view key, std::unique_ptr<CompoundTag> value) {
-    if (value) { mTagMap.emplace(key, std::move(*value)); }
+bool CompoundTag::putInt(std::string_view key, int32_t value) {
+    auto [_, result] = mTagMap.emplace(key, IntTag(value));
+    return result;
 }
 
-void CompoundTag::putList(std::string_view key, ListTag&& value) { mTagMap.emplace(key, std::move(value)); }
+bool CompoundTag::putInt64(std::string_view key, int64_t value) {
+    auto [_, result] = mTagMap.emplace(key, Int64Tag(value));
+    return result;
+}
 
-void CompoundTag::putList(std::string_view key, std::unique_ptr<ListTag> value) {
-    if (value) { mTagMap.emplace(key, std::move(*value)); }
+bool CompoundTag::putFloat(std::string_view key, float value) {
+    auto [_, result] = mTagMap.emplace(key, FloatTag(value));
+    return result;
+}
+
+bool CompoundTag::putDouble(std::string_view key, double value) {
+    auto [_, result] = mTagMap.emplace(key, DoubleTag(value));
+    return result;
+}
+
+bool CompoundTag::putString(std::string_view key, std::string_view value) {
+    auto [_, result] = mTagMap.emplace(key, StringTag(value));
+    return result;
+}
+
+bool CompoundTag::putByteArray(std::string_view key, std::vector<uint8_t> const& value) {
+    auto [_, result] = mTagMap.emplace(key, ByteArrayTag(value));
+    return result;
+}
+
+bool CompoundTag::putIntArray(std::string_view key, std::vector<int> const& value) {
+    auto [_, result] = mTagMap.emplace(key, IntArrayTag(value));
+    return result;
+}
+
+bool CompoundTag::putLongArray(std::string_view key, std::vector<int64_t> const& value) {
+    auto [_, result] = mTagMap.emplace(key, LongArrayTag(value));
+    return result;
+}
+
+bool CompoundTag::putCompound(std::string_view key, CompoundTag&& value) {
+    auto [_, result] = mTagMap.emplace(key, std::move(value));
+    return result;
+}
+
+bool CompoundTag::putCompound(std::string_view key, std::unique_ptr<CompoundTag>&& value) {
+    if (value) {
+        auto [_, result] = mTagMap.emplace(key, std::move(*value));
+        return result;
+    }
+    return false;
+}
+
+bool CompoundTag::putList(std::string_view key, ListTag&& value) {
+    auto [_, result] = mTagMap.emplace(key, std::move(value));
+    return result;
+}
+
+bool CompoundTag::putList(std::string_view key, std::unique_ptr<ListTag>&& value) {
+    if (value) {
+        auto [_, result] = mTagMap.emplace(key, std::move(*value));
+        return result;
+    }
+    return false;
+}
+
+void CompoundTag::set(std::string_view key, Tag&& tag) { operator[](key) = tag; }
+
+void CompoundTag::set(std::string_view key, std::unique_ptr<Tag>&& tag) { operator[](key) = std::move(tag); }
+
+void CompoundTag::setByte(std::string_view key, uint8_t value) { operator[](key) = value; }
+
+void CompoundTag::setShort(std::string_view key, int16_t value) { operator[](key) = value; }
+
+void CompoundTag::setInt(std::string_view key, int32_t value) { operator[](key) = value; }
+
+void CompoundTag::setInt64(std::string_view key, int64_t value) { operator[](key) = value; }
+
+void CompoundTag::setFloat(std::string_view key, float value) { operator[](key) = value; }
+
+void CompoundTag::setDouble(std::string_view key, double value) { operator[](key) = value; }
+
+void CompoundTag::setString(std::string_view key, std::string_view value) { operator[](key) = value; }
+
+void CompoundTag::setByteArray(std::string_view key, std::vector<uint8_t> const& value) { operator[](key) = value; }
+
+void CompoundTag::setIntArray(std::string_view key, std::vector<int> const& value) { operator[](key) = value; }
+
+void CompoundTag::setLongArray(std::string_view key, std::vector<int64_t> const& value) { operator[](key) = value; }
+
+void CompoundTag::setCompound(std::string_view key, CompoundTag&& value) { operator[](key) = value; }
+
+void CompoundTag::setCompound(std::string_view key, std::unique_ptr<CompoundTag>&& value) {
+    operator[](key) = std::move(*value);
+}
+
+void CompoundTag::setList(std::string_view key, ListTag&& value) { operator[](key) = value; }
+
+void CompoundTag::setList(std::string_view key, std::unique_ptr<ListTag>&& value) {
+    operator[](key) = std::move(*value);
 }
 
 const Tag* CompoundTag::get(std::string_view key) const {
@@ -477,6 +558,5 @@ std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::opt
             }
         });
 }
-
 
 } // namespace nbt

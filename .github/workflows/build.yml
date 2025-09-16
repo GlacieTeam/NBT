@@ -52,7 +52,7 @@ jobs:
 
   build-windows-arm64:
     name: Build on Windows ARM64 (MSVC)
-    runs-on: windows-2022
+    runs-on: windows-11-arm
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -145,7 +145,7 @@ jobs:
 
   build-linux-arm64:
     name: Build on Linux ARM64 (GCC)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     container:
       image: ubuntu:24.04
       options: --privileged
@@ -165,30 +165,28 @@ jobs:
         apt-get install -y --no-install-recommends gcc-13 g++-13
         update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
         update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
-        apt-get update -y
-        apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-      
+
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
 
     - name: Build NBT Static (Debug)
       run: |
-        xmake f --mode=debug --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cc=aarch64-linux-gnu-gcc --cxx=aarch64-linux-gnu-g++ --ld=aarch64-linux-gnu-g++ --sh=aarch64-linux-gnu-g++ -y --root
+        xmake f --mode=debug --kind=static -y --root
         xmake --all -y --root
 
     - name: Build NBT Shared (Debug)
       run: |
-        xmake f --mode=debug --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cc=aarch64-linux-gnu-gcc --cxx=aarch64-linux-gnu-g++ --ld=aarch64-linux-gnu-g++ --sh=aarch64-linux-gnu-g++ -y --root
+        xmake f --mode=debug --kind=shared -y --root
         xmake --all -y --root
 
     - name: Build NBT Static (Release)
       run: |
-        xmake f --mode=release --kind=static --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cc=aarch64-linux-gnu-gcc --cxx=aarch64-linux-gnu-g++ --ld=aarch64-linux-gnu-g++ --sh=aarch64-linux-gnu-g++ -y --root
+        xmake f --mode=release --kind=static -y --root
         xmake --all -y --root
 
     - name: Build NBT Shared (Release)
       run: |
-        xmake f --mode=release --kind=shared --arch=arm64 --sdk=/usr/aarch64-linux-gnu --bin=/usr/bin --cc=aarch64-linux-gnu-gcc --cxx=aarch64-linux-gnu-g++ --ld=aarch64-linux-gnu-g++ --sh=aarch64-linux-gnu-g++ -y --root
+        xmake f --mode=release --kind=shared -y --root
         xmake --all -y --root
 
     - name: Upload Artifact
@@ -196,42 +194,6 @@ jobs:
       with:
         name: NBT-linux-arm64-${{ github.sha }}
         path: artifacts/NBT-linux-arm64.zip
-
-  build-macos-x86_64:
-    name: Build on MacOS X86_64 (Clang)
-    runs-on: macos-14
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Install xmake
-      uses: xmake-io/github-action-setup-xmake@v1
-
-    - name: Build NBT Static (Debug)
-      run: |
-        xmake f --mode=debug --arch=x86_64 --kind=static -y
-        xmake --all -y
-
-    - name: Build NBT Shared (Debug)
-      run: |
-        xmake f --mode=debug --arch=x86_64 --kind=shared -y
-        xmake --all -y
-
-    - name: Build NBT Static (Release)
-      run: |
-        xmake f --mode=release --arch=x86_64 --kind=static -y
-        xmake --all -y
-
-    - name: Build NBT Shared (Release)
-      run: |
-        xmake f --mode=release --arch=x86_64 --kind=shared -y
-        xmake --all -y
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: NBT-macosx-x86_64-${{ github.sha }}
-        path: artifacts/NBT-macosx-x86_64.zip
 
   build-macos-arm64:
     name: Build on MacOS ARM64 (Clang)

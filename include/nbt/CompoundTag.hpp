@@ -101,23 +101,41 @@ public:
     NBT_API iterator erase(const_iterator first, const_iterator last) noexcept;
 
 public:
-    NBT_API void put(std::string_view key, Tag&& tag);
-    NBT_API void put(std::string_view key, std::unique_ptr<Tag>&& tag);
+    NBT_API bool put(std::string_view key, Tag&& tag);
+    NBT_API bool put(std::string_view key, std::unique_ptr<Tag>&& tag);
 
-    NBT_API void putByte(std::string_view key, uint8_t value);
-    NBT_API void putShort(std::string_view key, int16_t value);
-    NBT_API void putInt(std::string_view key, int32_t value);
-    NBT_API void putInt64(std::string_view key, int64_t value);
-    NBT_API void putFloat(std::string_view key, float value);
-    NBT_API void putDouble(std::string_view key, double value);
-    NBT_API void putString(std::string_view key, std::string_view value);
-    NBT_API void putByteArray(std::string_view key, std::vector<uint8_t> const& value);
-    NBT_API void putIntArray(std::string_view key, std::vector<int> const& value);
-    NBT_API void putLongArray(std::string_view key, std::vector<int64_t> const& value);
-    NBT_API void putCompound(std::string_view key, CompoundTag&& value);
-    NBT_API void putCompound(std::string_view key, std::unique_ptr<CompoundTag> value);
-    NBT_API void putList(std::string_view key, ListTag&& value);
-    NBT_API void putList(std::string_view key, std::unique_ptr<ListTag> value);
+    NBT_API bool putByte(std::string_view key, uint8_t value);
+    NBT_API bool putShort(std::string_view key, int16_t value);
+    NBT_API bool putInt(std::string_view key, int32_t value);
+    NBT_API bool putInt64(std::string_view key, int64_t value);
+    NBT_API bool putFloat(std::string_view key, float value);
+    NBT_API bool putDouble(std::string_view key, double value);
+    NBT_API bool putString(std::string_view key, std::string_view value);
+    NBT_API bool putByteArray(std::string_view key, std::vector<uint8_t> const& value);
+    NBT_API bool putIntArray(std::string_view key, std::vector<int> const& value);
+    NBT_API bool putLongArray(std::string_view key, std::vector<int64_t> const& value);
+    NBT_API bool putCompound(std::string_view key, CompoundTag&& value);
+    NBT_API bool putCompound(std::string_view key, std::unique_ptr<CompoundTag>&& value);
+    NBT_API bool putList(std::string_view key, ListTag&& value);
+    NBT_API bool putList(std::string_view key, std::unique_ptr<ListTag>&& value);
+
+    NBT_API void set(std::string_view key, Tag&& tag);
+    NBT_API void set(std::string_view key, std::unique_ptr<Tag>&& tag);
+
+    NBT_API void setByte(std::string_view key, uint8_t value);
+    NBT_API void setShort(std::string_view key, int16_t value);
+    NBT_API void setInt(std::string_view key, int32_t value);
+    NBT_API void setInt64(std::string_view key, int64_t value);
+    NBT_API void setFloat(std::string_view key, float value);
+    NBT_API void setDouble(std::string_view key, double value);
+    NBT_API void setString(std::string_view key, std::string_view value);
+    NBT_API void setByteArray(std::string_view key, std::vector<uint8_t> const& value);
+    NBT_API void setIntArray(std::string_view key, std::vector<int> const& value);
+    NBT_API void setLongArray(std::string_view key, std::vector<int64_t> const& value);
+    NBT_API void setCompound(std::string_view key, CompoundTag&& value);
+    NBT_API void setCompound(std::string_view key, std::unique_ptr<CompoundTag>&& value);
+    NBT_API void setList(std::string_view key, ListTag&& value);
+    NBT_API void setList(std::string_view key, std::unique_ptr<ListTag>&& value);
 
     [[nodiscard]] NBT_API const Tag* get(std::string_view key) const;
     [[nodiscard]] NBT_API Tag*       get(std::string_view key);
