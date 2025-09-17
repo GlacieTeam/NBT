@@ -21,9 +21,9 @@ std::unique_ptr<Tag> Int64Tag::copy() const { return std::make_unique<Int64Tag>(
 
 std::size_t Int64Tag::hash() const { return static_cast<size_t>(mStorage); }
 
-void Int64Tag::write(BytesDataOutput& stream) const { stream.writeInt64(mStorage); }
+void Int64Tag::write(io::BytesDataOutput& stream) const { stream.writeInt64(mStorage); }
 
-void Int64Tag::load(BytesDataInput& stream) { mStorage = stream.getInt64(); }
+void Int64Tag::load(io::BytesDataInput& stream) { mStorage = stream.getInt64(); }
 
 void Int64Tag::write(bstream::BinaryStream& stream) const { stream.writeVarInt64(mStorage); }
 

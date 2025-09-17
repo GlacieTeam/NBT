@@ -12,7 +12,7 @@
 #include <nbt/Literals.hpp>
 #include <optional>
 
-namespace nbt {
+namespace nbt::io {
 
 enum class NbtFileFormat : uint8_t {
     LittleEndianBinary           = 0,
@@ -60,7 +60,8 @@ NBT_API std::string saveAsBinary(
     CompoundTag const& nbt,
     NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
     CompressionType    compressionType  = CompressionType::Gzip,
-    CompressionLevel   compressionLevel = CompressionLevel::Default
+    CompressionLevel   compressionLevel = CompressionLevel::Default,
+    std::optional<int> headerVersion    = std::nullopt
 );
 
 NBT_API bool saveToFile(
@@ -68,7 +69,8 @@ NBT_API bool saveToFile(
     std::filesystem::path const& path,
     NbtFileFormat                format           = NbtFileFormat::LittleEndianBinary,
     CompressionType              compressionType  = CompressionType::Gzip,
-    CompressionLevel             compressionLevel = CompressionLevel::Default
+    CompressionLevel             compressionLevel = CompressionLevel::Default,
+    std::optional<int>           headerVersion    = std::nullopt
 );
 
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseSnbtFromFile(std::filesystem::path const& path);
@@ -100,7 +102,12 @@ validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::L
     CompoundTag const& nbt,
     NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
     CompressionType    compressionType  = CompressionType::Gzip,
-    CompressionLevel   compressionLevel = CompressionLevel::Default
+    CompressionLevel   compressionLevel = CompressionLevel::Default,
+    std::optional<int> headerVersion    = std::nullopt
 );
 
-} // namespace nbt
+[[nodiscard]] NBT_API int parseHeaderVersionFromContent(std::string_view content);
+
+[[nodiscard]] NBT_API int parseHeaderVersionFromFile(std::filesystem::path const& path);
+
+} // namespace nbt::io

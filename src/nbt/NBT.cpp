@@ -21,7 +21,7 @@
 #include <unistd.h>
 #endif
 
-namespace nbt {
+namespace nbt::io {
 
 constexpr std::byte operator""_byte(unsigned long long value) noexcept { return static_cast<std::byte>(value); }
 
@@ -184,7 +184,8 @@ std::string saveAsBinary(
     CompoundTag const& nbt,
     NbtFileFormat      format,
     CompressionType    compressionType,
-    CompressionLevel   compressionLevel
+    CompressionLevel   compressionLevel,
+    std::optional<int> headerVersion
 ) {
     std::string content;
     switch (format) {
@@ -193,7 +194,7 @@ std::string saveAsBinary(
         break;
     }
     case NbtFileFormat::LittleEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(true);
+        content = nbt.toBinaryNbtWithHeader(true, headerVersion);
         break;
     }
     case NbtFileFormat::BigEndianBinary: {
@@ -201,7 +202,7 @@ std::string saveAsBinary(
         break;
     }
     case NbtFileFormat::BigEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(false);
+        content = nbt.toBinaryNbtWithHeader(false, headerVersion);
         break;
     }
     case NbtFileFormat::BedrockNetwork: {
@@ -237,7 +238,8 @@ bool saveToFile(
     std::filesystem::path const& path,
     NbtFileFormat                format,
     CompressionType              compressionType,
-    CompressionLevel             compressionLevel
+    CompressionLevel             compressionLevel,
+    std::optional<int>           headerVersion
 ) {
     std::string content;
     switch (format) {
@@ -246,7 +248,7 @@ bool saveToFile(
         break;
     }
     case NbtFileFormat::LittleEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(true);
+        content = nbt.toBinaryNbtWithHeader(true, headerVersion);
         break;
     }
     case NbtFileFormat::BigEndianBinary: {
@@ -254,7 +256,7 @@ bool saveToFile(
         break;
     }
     case NbtFileFormat::BigEndianBinaryWithHeader: {
-        content = nbt.toBinaryNbtWithHeader(false);
+        content = nbt.toBinaryNbtWithHeader(false, headerVersion);
         break;
     }
     case NbtFileFormat::BedrockNetwork: {
@@ -432,10 +434,24 @@ std::string saveAsBase64(
     CompoundTag const& nbt,
     NbtFileFormat      format,
     CompressionType    compressionType,
-    CompressionLevel   compressionLevel
+    CompressionLevel   compressionLevel,
+    std::optional<int> headerVersion
 ) {
-    auto content = saveAsBinary(nbt, format, compressionType, compressionLevel);
+    auto content = saveAsBinary(nbt, format, compressionType, compressionLevel, headerVersion);
     return base64_utils::encode(content);
 }
 
-} // namespace nbt
+int parseHeaderVersionFromContent(std::string_view content) { return CompoundTag::readHeaderVersion(content); }
+
+int parseHeaderVersionFromFile(std::filesystem::path const& path) {
+    std::ifstream file(path, std::ios::binary);
+    if (file) {
+        std::string buffer(4, '\0');
+        file.read(buffer.data(), 4);
+        file.close();
+        return CompoundTag::readHeaderVersion(buffer);
+    }
+    return 0;
+}
+
+} // namespace nbt::io

@@ -17,9 +17,9 @@ std::unique_ptr<Tag> EndTag::copy() const { return std::make_unique<EndTag>(); }
 
 std::size_t EndTag::hash() const { return 0; }
 
-void EndTag::write(BytesDataOutput&) const {}
+void EndTag::write(io::BytesDataOutput&) const {}
 
-void EndTag::load(BytesDataInput&) {}
+void EndTag::load(io::BytesDataInput&) {}
 
 void EndTag::write(bstream::BinaryStream&) const {}
 

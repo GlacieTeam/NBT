@@ -33,12 +33,12 @@ std::size_t LongArrayTag::hash() const {
     return hash;
 }
 
-void LongArrayTag::write(BytesDataOutput& stream) const {
+void LongArrayTag::write(io::BytesDataOutput& stream) const {
     stream.writeInt((int)mStorage.size());
     for (const int64_t i : mStorage) { stream.writeInt64(i); }
 }
 
-void LongArrayTag::load(BytesDataInput& stream) {
+void LongArrayTag::load(io::BytesDataInput& stream) {
     auto size = stream.getInt();
     mStorage.clear();
     for (int64_t i = 0; i < size; ++i) { mStorage.push_back(stream.getInt64()); }

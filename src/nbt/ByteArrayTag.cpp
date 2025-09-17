@@ -59,12 +59,12 @@ std::size_t ByteArrayTag::hash() const {
     return hash;
 }
 
-void ByteArrayTag::write(BytesDataOutput& stream) const {
+void ByteArrayTag::write(io::BytesDataOutput& stream) const {
     stream.writeInt((int)mStorage.size());
     stream.writeBytes(mStorage.data(), mStorage.size());
 }
 
-void ByteArrayTag::load(BytesDataInput& stream) {
+void ByteArrayTag::load(io::BytesDataInput& stream) {
     auto size = static_cast<size_t>(stream.getInt());
     mStorage.resize(size);
     stream.getBytes(mStorage.data(), size);

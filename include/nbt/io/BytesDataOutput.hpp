@@ -8,7 +8,7 @@
 #pragma once
 #include <nbt/io/BytesDataInput.hpp>
 
-namespace nbt {
+namespace nbt::io {
 
 class BytesDataOutput : public BytesDataInput {
 protected:

@@ -21,9 +21,9 @@ std::unique_ptr<Tag> ShortTag::copy() const { return std::make_unique<ShortTag>(
 
 std::size_t ShortTag::hash() const { return static_cast<size_t>(mStorage); }
 
-void ShortTag::write(BytesDataOutput& stream) const { stream.writeShort(mStorage); }
+void ShortTag::write(io::BytesDataOutput& stream) const { stream.writeShort(mStorage); }
 
-void ShortTag::load(BytesDataInput& stream) { mStorage = stream.getShort(); }
+void ShortTag::load(io::BytesDataInput& stream) { mStorage = stream.getShort(); }
 
 void ShortTag::write(bstream::BinaryStream& stream) const { stream.writeSignedShort(mStorage); }
 

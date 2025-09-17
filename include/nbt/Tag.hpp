@@ -45,9 +45,9 @@ public:
 
     [[nodiscard]] virtual std::size_t hash() const = 0;
 
-    virtual void write(BytesDataOutput& stream) const = 0;
+    virtual void write(io::BytesDataOutput& stream) const = 0;
 
-    virtual void load(BytesDataInput& stream) = 0;
+    virtual void load(io::BytesDataInput& stream) = 0;
 
     virtual void write(bstream::BinaryStream& stream) const = 0;
 

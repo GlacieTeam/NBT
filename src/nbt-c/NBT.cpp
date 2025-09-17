@@ -454,7 +454,9 @@ bool nbt_long_array_tag_set_value(void* handle, size_t index, int64_t value) {
 
 // File IO
 void* nbt_parse_from_file(const char* path, NBT_FileFormat format) {
-    if (auto tag = nbt::parseFromFile(path, static_cast<nbt::NbtFileFormat>(format))) { return tag->copy().release(); }
+    if (auto tag = nbt::io::parseFromFile(path, static_cast<nbt::io::NbtFileFormat>(format))) {
+        return tag->copy().release();
+    }
     return nullptr;
 }
 
@@ -466,25 +468,25 @@ bool nbt_save_to_file(
     int                 compressionLevel
 ) {
     if (handle) {
-        return nbt::saveToFile(
+        return nbt::io::saveToFile(
             toTag(handle)->as<nbt::CompoundTag>(),
             path,
-            static_cast<nbt::NbtFileFormat>(format),
-            static_cast<nbt::CompressionType>(compressionType),
-            static_cast<nbt::CompressionLevel>(compressionLevel)
+            static_cast<nbt::io::NbtFileFormat>(format),
+            static_cast<nbt::io::CompressionType>(compressionType),
+            static_cast<nbt::io::CompressionLevel>(compressionLevel)
         );
     }
     return false;
 }
 
 void* nbt_parse_snbt_from_file(const char* path) {
-    if (auto tag = nbt::parseSnbtFromFile(path)) { return tag->copy().release(); }
+    if (auto tag = nbt::io::parseSnbtFromFile(path)) { return tag->copy().release(); }
     return nullptr;
 }
 
 bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent) {
     if (handle) {
-        return nbt::saveSnbtToFile(
+        return nbt::io::saveSnbtToFile(
             toTag(handle)->as<nbt::CompoundTag>(),
             path,
             static_cast<nbt::SnbtFormat>(format),
@@ -495,25 +497,25 @@ bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, u
 }
 
 bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap) {
-    return nbt::validateFile(path, static_cast<nbt::NbtFileFormat>(format), fmmap);
+    return nbt::io::validateFile(path, static_cast<nbt::io::NbtFileFormat>(format), fmmap);
 }
 
 bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format) {
-    return nbt::validateContent(
+    return nbt::io::validateContent(
         std::string_view(reinterpret_cast<const char*>(data), size),
-        static_cast<nbt::NbtFileFormat>(format)
+        static_cast<nbt::io::NbtFileFormat>(format)
     );
 }
 
 NBT_FileFormat nbt_check_file_format(const char* path, bool fmmap) {
-    if (auto result = nbt::checkNbtFileFormat(path, fmmap)) {
+    if (auto result = nbt::io::checkNbtFileFormat(path, fmmap)) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
         return NBT_FileFormat::NBT_Format_Invalid;
     }
 }
 NBT_FileFormat nbt_check_content_format(const uint8_t* data, size_t size) {
-    if (auto result = nbt::checkNbtContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
+    if (auto result = nbt::io::checkNbtContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
         return NBT_FileFormat::NBT_Format_Invalid;

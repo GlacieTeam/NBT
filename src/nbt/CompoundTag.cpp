@@ -54,7 +54,7 @@ std::unique_ptr<CompoundTag> CompoundTag::clone() const {
     return tag;
 }
 
-void CompoundTag::write(BytesDataOutput& stream) const {
+void CompoundTag::write(io::BytesDataOutput& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
         stream.writeByte(static_cast<uint8_t>(type));
@@ -66,7 +66,7 @@ void CompoundTag::write(BytesDataOutput& stream) const {
     stream.writeByte(static_cast<uint8_t>(Type::End));
 }
 
-void CompoundTag::load(BytesDataInput& stream) {
+void CompoundTag::load(io::BytesDataInput& stream) {
     while (true) {
         const Type type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { return; }
@@ -475,7 +475,7 @@ void CompoundTag::serialize(bstream::BinaryStream& stream) const {
     write(stream);
 }
 
-void CompoundTag::serialize(BytesDataOutput& stream) const {
+void CompoundTag::serialize(io::BytesDataOutput& stream) const {
     stream.writeByte(static_cast<uint8_t>(Type::Compound));
     stream.writeString("");
     write(stream);
@@ -487,37 +487,39 @@ void CompoundTag::deserialize(bstream::ReadOnlyBinaryStream& stream) {
     if (tagType == Type::Compound) { load(stream); }
 }
 
-void CompoundTag::deserialize(BytesDataInput& stream) {
+void CompoundTag::deserialize(io::BytesDataInput& stream) {
     auto tagType = static_cast<Type>(stream.getByte());
     (void)stream.getStringView();
     if (tagType == Type::Compound) { load(stream); }
 }
 
 std::optional<CompoundTag> CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) noexcept try {
-    BytesDataInput stream(binaryData, false, isLittleEndian);
-    CompoundTag    result;
+    io::BytesDataInput stream(binaryData, false, isLittleEndian);
+    CompoundTag        result;
     result.deserialize(stream);
     return result;
 } catch (...) { return std::nullopt; }
 
 std::optional<CompoundTag>
 CompoundTag::fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian) noexcept try {
-    BytesDataInput stream(binaryData, false, isLittleEndian);
+    io::BytesDataInput stream(binaryData, false, isLittleEndian);
     stream.ignoreBytes(sizeof(int));
     return fromBinaryNbt(stream.getLongStringView(), isLittleEndian);
 } catch (...) { return std::nullopt; }
 
 std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const noexcept {
-    BytesDataOutput stream(isLittleEndian);
+    io::BytesDataOutput stream(isLittleEndian);
     serialize(stream);
     return stream.getAndReleaseData();
 }
 
-std::string CompoundTag::toBinaryNbtWithHeader(bool isLittleEndian) const noexcept {
-    BytesDataOutput stream(isLittleEndian);
-    int             storage_version = 0;
-    if (contains("StorageVersion")) {
-        auto version = at("StorageVersion");
+std::string CompoundTag::toBinaryNbtWithHeader(bool isLittleEndian, std::optional<int> storageVersion) const noexcept {
+    io::BytesDataOutput stream(isLittleEndian);
+    int                 storage_version = 0;
+    if (storageVersion.has_value()) {
+        storage_version = *storageVersion;
+    } else if (contains("StorageVersion")) {
+        auto& version = at("StorageVersion");
         if (version.getType() == Type::Int) { storage_version = version; }
     }
     stream.writeInt(storage_version);
@@ -557,6 +559,11 @@ std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::opt
                 return std::nullopt;
             }
         });
+}
+
+int CompoundTag::readHeaderVersion(std::string_view content, bool isLittleEndian) noexcept {
+    io::BytesDataInput stream(content, isLittleEndian);
+    return stream.getInt();
 }
 
 } // namespace nbt

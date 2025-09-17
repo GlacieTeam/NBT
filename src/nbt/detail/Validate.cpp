@@ -2,7 +2,7 @@
 
 namespace nbt::detail {
 
-bool validateListTag(BytesDataInput& stream, size_t streamSize) {
+bool validateListTag(io::BytesDataInput& stream, size_t streamSize) {
     if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
     auto type = static_cast<Tag::Type>(stream.getByte());
     if (stream.getPosition() + sizeof(int) > streamSize) { return false; }
@@ -92,16 +92,12 @@ bool validateListTag(BytesDataInput& stream, size_t streamSize) {
     return true;
 }
 
-bool validateCompoundTag(BytesDataInput& stream, size_t streamSize) {
+bool validateCompoundTag(io::BytesDataInput& stream, size_t streamSize) {
     Tag::Type type = Tag::Type::End;
     while (true) {
         if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
         type = static_cast<Tag::Type>(stream.getByte());
         if (type == Tag::Type::End) { return true; }
-        if (stream.getPosition() + sizeof(short) > streamSize) { return false; }
-        auto strLen = static_cast<size_t>(stream.getShort());
-        if (stream.getPosition() + strLen > streamSize) { return false; }
-        stream.ignoreBytes(strLen);
         switch (type) {
         case Tag::Type::Byte: {
             if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
@@ -276,9 +272,6 @@ bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSiz
         if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }
         type = static_cast<Tag::Type>(stream.getByte());
         if (type == Tag::Type::End) { return true; }
-        auto strLen = stream.getUnsignedVarInt();
-        if (stream.isOverflowed() || stream.getPosition() + strLen > streamSize) { return false; }
-        stream.ignoreBytes(strLen);
         switch (type) {
         case Tag::Type::Byte: {
             if (stream.getPosition() + sizeof(std::byte) > streamSize) { return false; }

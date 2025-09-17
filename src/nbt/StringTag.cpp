@@ -25,9 +25,9 @@ std::unique_ptr<Tag> StringTag::copy() const { return std::make_unique<StringTag
 
 std::size_t StringTag::hash() const { return std::hash<std::string>{}(mStorage); }
 
-void StringTag::write(BytesDataOutput& stream) const { stream.writeString(mStorage); }
+void StringTag::write(io::BytesDataOutput& stream) const { stream.writeString(mStorage); }
 
-void StringTag::load(BytesDataInput& stream) { stream.getString(mStorage); }
+void StringTag::load(io::BytesDataInput& stream) { stream.getString(mStorage); }
 
 void StringTag::write(bstream::BinaryStream& stream) const { stream.writeString(mStorage); }
 

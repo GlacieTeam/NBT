@@ -22,9 +22,9 @@ public:
 
     [[nodiscard]] NBT_API std::size_t hash() const override;
 
-    NBT_API void write(BytesDataOutput& stream) const override;
+    NBT_API void write(io::BytesDataOutput& stream) const override;
 
-    NBT_API void load(BytesDataInput& stream) override;
+    NBT_API void load(io::BytesDataInput& stream) override;
 
     NBT_API void write(bstream::BinaryStream& stream) const override;
 

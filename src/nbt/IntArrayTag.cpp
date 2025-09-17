@@ -33,12 +33,12 @@ std::size_t IntArrayTag::hash() const {
     return hash;
 }
 
-void IntArrayTag::write(BytesDataOutput& stream) const {
+void IntArrayTag::write(io::BytesDataOutput& stream) const {
     stream.writeInt((int)mStorage.size());
     for (const int i : mStorage) { stream.writeInt(i); }
 }
 
-void IntArrayTag::load(BytesDataInput& stream) {
+void IntArrayTag::load(io::BytesDataInput& stream) {
     auto size = stream.getInt();
     mStorage.clear();
     for (int i = 0; i < size; ++i) { mStorage.push_back(stream.getInt()); }

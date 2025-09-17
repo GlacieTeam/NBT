@@ -52,9 +52,9 @@ public:
 
     [[nodiscard]] NBT_API std::size_t hash() const override;
 
-    NBT_API void write(BytesDataOutput& stream) const override;
+    NBT_API void write(io::BytesDataOutput& stream) const override;
 
-    NBT_API void load(BytesDataInput& stream) override;
+    NBT_API void load(io::BytesDataInput& stream) override;
 
     NBT_API void write(bstream::BinaryStream& stream) const override;
 
@@ -191,14 +191,15 @@ public:
 
 public:
     NBT_API void serialize(bstream::BinaryStream& stream) const;
-    NBT_API void serialize(BytesDataOutput& stream) const;
+    NBT_API void serialize(io::BytesDataOutput& stream) const;
 
     NBT_API void deserialize(bstream::ReadOnlyBinaryStream& stream);
-    NBT_API void deserialize(BytesDataInput& stream);
+    NBT_API void deserialize(io::BytesDataInput& stream);
 
     [[nodiscard]] NBT_API std::string toNetworkNbt() const noexcept;
     [[nodiscard]] NBT_API std::string toBinaryNbt(bool isLittleEndian = true) const noexcept;
-    [[nodiscard]] NBT_API std::string toBinaryNbtWithHeader(bool isLittleEndian = true) const noexcept;
+    [[nodiscard]] NBT_API             std::string
+    toBinaryNbtWithHeader(bool isLittleEndian = true, std::optional<int> storageVersion = std::nullopt) const noexcept;
 
 public:
     [[nodiscard]] NBT_API static std::optional<CompoundTag> fromNetworkNbt(std::string_view binaryData) noexcept;
@@ -208,6 +209,8 @@ public:
     fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian = true) noexcept;
     [[nodiscard]] NBT_API static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
+
+    [[nodiscard]] NBT_API static int readHeaderVersion(std::string_view content, bool isLittleEndian = true) noexcept;
 };
 
 } // namespace nbt

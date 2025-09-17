@@ -3,7 +3,7 @@
 
 namespace nbt::detail {
 
-bool validateCompoundTag(BytesDataInput& stream, size_t streamSize);
+bool validateCompoundTag(io::BytesDataInput& stream, size_t streamSize);
 
 bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize);
 

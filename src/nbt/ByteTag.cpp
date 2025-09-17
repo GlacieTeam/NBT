@@ -21,9 +21,9 @@ std::unique_ptr<Tag> ByteTag::copy() const { return std::make_unique<ByteTag>(mS
 
 std::size_t ByteTag::hash() const { return mStorage; }
 
-void ByteTag::write(BytesDataOutput& stream) const { stream.writeByte(mStorage); }
+void ByteTag::write(io::BytesDataOutput& stream) const { stream.writeByte(mStorage); }
 
-void ByteTag::load(BytesDataInput& stream) { mStorage = stream.getByte(); }
+void ByteTag::load(io::BytesDataInput& stream) { mStorage = stream.getByte(); }
 
 void ByteTag::write(bstream::BinaryStream& stream) const { stream.writeUnsignedChar(mStorage); }
 

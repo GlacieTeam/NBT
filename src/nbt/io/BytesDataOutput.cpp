@@ -7,7 +7,7 @@
 
 #include "nbt/io/BytesDataOutput.hpp"
 
-namespace nbt {
+namespace nbt::io {
 
 BytesDataOutput::BytesDataOutput(bool isLittleEndian)
 : BytesDataInput({}, true, isLittleEndian),
@@ -61,4 +61,4 @@ void BytesDataOutput::writeInt64(int64_t value) {
     writeBytes(&value, sizeof(int64_t));
 }
 
-} // namespace nbt
+} // namespace nbt::io

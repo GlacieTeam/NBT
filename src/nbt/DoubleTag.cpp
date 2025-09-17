@@ -19,9 +19,9 @@ std::unique_ptr<Tag> DoubleTag::copy() const { return std::make_unique<DoubleTag
 
 std::size_t DoubleTag::hash() const { return std::hash<double>{}(mStorage); }
 
-void DoubleTag::write(BytesDataOutput& stream) const { stream.writeDouble(mStorage); }
+void DoubleTag::write(io::BytesDataOutput& stream) const { stream.writeDouble(mStorage); }
 
-void DoubleTag::load(BytesDataInput& stream) { mStorage = stream.getDouble(); }
+void DoubleTag::load(io::BytesDataInput& stream) { mStorage = stream.getDouble(); }
 
 void DoubleTag::write(bstream::BinaryStream& stream) const { stream.writeDouble(mStorage); }
 

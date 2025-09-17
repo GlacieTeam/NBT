@@ -9,7 +9,7 @@
 #include <binarystream/ReadOnlyBinaryStream.hpp>
 #include <nbt-c/Macros.h>
 
-namespace nbt {
+namespace nbt::io {
 
 class BytesDataInput {
 protected:

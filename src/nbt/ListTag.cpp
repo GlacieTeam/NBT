@@ -60,13 +60,13 @@ std::unique_ptr<ListTag> ListTag::copyList() const {
     return copy;
 }
 
-void ListTag::write(BytesDataOutput& stream) const {
+void ListTag::write(io::BytesDataOutput& stream) const {
     stream.writeByte((uint8_t)mType);
     stream.writeInt((int)mStorage.size());
     for (const auto& data : mStorage) { data->write(stream); }
 }
 
-void ListTag::load(BytesDataInput& stream) {
+void ListTag::load(io::BytesDataInput& stream) {
     mType     = static_cast<Type>(stream.getByte());
     auto size = stream.getInt();
     for (int i = 0; i < size; i++) {

@@ -19,9 +19,9 @@ std::unique_ptr<Tag> FloatTag::copy() const { return std::make_unique<FloatTag>(
 
 std::size_t FloatTag::hash() const { return std::hash<float>{}(mStorage); }
 
-void FloatTag::write(BytesDataOutput& stream) const { stream.writeFloat(mStorage); }
+void FloatTag::write(io::BytesDataOutput& stream) const { stream.writeFloat(mStorage); }
 
-void FloatTag::load(BytesDataInput& stream) { mStorage = stream.getFloat(); }
+void FloatTag::load(io::BytesDataInput& stream) { mStorage = stream.getFloat(); }
 
 void FloatTag::write(bstream::BinaryStream& stream) const { stream.writeFloat(mStorage); }
 

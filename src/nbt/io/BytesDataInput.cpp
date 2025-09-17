@@ -8,7 +8,7 @@
 #include "nbt/io/BytesDataInput.hpp"
 #include <algorithm>
 
-namespace nbt {
+namespace nbt::io {
 
 BytesDataInput::BytesDataInput(bool isLittleEndian)
 : mReadPointer(0),
