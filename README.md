@@ -2,9 +2,20 @@
 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/GlacieTeam/NBT/build.yml)](https://github.com/GlacieTeam/NBT/actions)
 [![GitHub License](https://img.shields.io/github/license/GlacieTeam/NBT)](https://www.mozilla.org/en-US/MPL/2.0/)
-[![C++](https://img.shields.io/badge/C++-23-blue?logo=C%2B%2B&logoColor=41a3ed)](https://en.cppreference.com/w/cpp/compiler_support.html) 
+[![C++23](https://img.shields.io/badge/C++-23-blue?logo=C%2B%2B&logoColor=41a3ed)](https://en.cppreference.com/w/cpp/compiler_support.html) 
 
-A blazing-fast C++ library for parsing, generating, and manipulating Minecraft Named Binary Tag (NBT) data with benchmarked speeds of 200 MB/s.
+A blazing-fast C++ library for parsing, generating, and manipulating Minecraft Named Binary Tag (NBT) data with benchmarked speeds of 200 MB/s on modern CPUs.
+
+## Supported NBT format 📖
+
+| NBT Format                        | Minecraft Edition      | Support Status     |
+| --------------------------------- | ---------------------- | ------------------ |
+| Little Endian Binary              | Bedrock Edition        | :white_check_mark: |
+| Little Endian Binary with Header  | Bedrock Edition        | :white_check_mark: |
+| Big Endian Binary                 | Java Edition           | :white_check_mark: |
+| Big Endian Binary with Header     | Java Edition           | :white_check_mark: |
+| Bedrock Network (VarInt Encoding) | Bedrock Edition        | :white_check_mark: |
+| Formatted String (SNBT)           | Bedrock & Java Edition | :white_check_mark: |
 
 ## Features ⚡
 - **Ultra-fast parsing** - Achieves 200 MB/s processing speed on modern CPUs
@@ -16,18 +27,6 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 - **Zlib/Gzip support** - Built-in compression handling
 - **Simple API** - Intuitive interface inspired by standard libraries
 - **CFFI** - Pure C API support.
-
-## Supported NBT format 📖
-- **Little Endian Binary** (Bedrock Edition)
-- **Little Endian Binary with Header** (Bedrock Edition)
-- **Big Endian Binary** (Java Edition)
-- **Big Endian Binary with Header** (Java Edition)
-- **Bedrock Network NBT** (Bedrock Edition, VarInt encoding)
-- **String NBT (SNBT)** (Bedrock & Java Edition)
-
-## Benchmarks 🚀
-Parsing speed: 200 MB/s
-> Tested on Intel i7 14700-HX with 32GB DDR5-5400 using 720MB little-endian binary NBT
 
 ## Quick Start 🚀
 ```C++
