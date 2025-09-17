@@ -15,11 +15,11 @@
 namespace nbt::io {
 
 enum class NbtFileFormat : uint8_t {
-    LittleEndianBinary           = 0,
-    LittleEndianBinaryWithHeader = 1,
-    BigEndianBinary              = 2,
-    BigEndianBinaryWithHeader    = 3,
-    BedrockNetwork               = 4
+    LittleEndian           = 0,
+    LittleEndianWithHeader = 1,
+    BigEndian              = 2,
+    BigEndianWithHeader    = 3,
+    BedrockNetwork         = 4
 };
 
 enum class CompressionType : uint8_t {
@@ -58,7 +58,7 @@ enum class CompressionLevel : int {
 
 NBT_API std::string saveAsBinary(
     CompoundTag const& nbt,
-    NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
+    NbtFileFormat      format           = NbtFileFormat::LittleEndian,
     CompressionType    compressionType  = CompressionType::Gzip,
     CompressionLevel   compressionLevel = CompressionLevel::Default,
     std::optional<int> headerVersion    = std::nullopt
@@ -67,7 +67,7 @@ NBT_API std::string saveAsBinary(
 NBT_API bool saveToFile(
     CompoundTag const&           nbt,
     std::filesystem::path const& path,
-    NbtFileFormat                format           = NbtFileFormat::LittleEndianBinary,
+    NbtFileFormat                format           = NbtFileFormat::LittleEndian,
     CompressionType              compressionType  = CompressionType::Gzip,
     CompressionLevel             compressionLevel = CompressionLevel::Default,
     std::optional<int>           headerVersion    = std::nullopt
@@ -82,12 +82,11 @@ NBT_API bool saveSnbtToFile(
     uint8_t                      indent = 4
 );
 
-[[nodiscard]] NBT_API bool
-validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::LittleEndianBinary);
+[[nodiscard]] NBT_API bool validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::LittleEndian);
 
 [[nodiscard]] NBT_API bool validateFile(
     std::filesystem::path const& path,
-    NbtFileFormat                format        = NbtFileFormat::LittleEndianBinary,
+    NbtFileFormat                format        = NbtFileFormat::LittleEndian,
     bool                         fileMemoryMap = false
 );
 
@@ -100,7 +99,7 @@ validateContent(std::string_view binary, NbtFileFormat format = NbtFileFormat::L
 
 [[nodiscard]] NBT_API std::string saveAsBase64(
     CompoundTag const& nbt,
-    NbtFileFormat      format           = NbtFileFormat::LittleEndianBinary,
+    NbtFileFormat      format           = NbtFileFormat::LittleEndian,
     CompressionType    compressionType  = CompressionType::Gzip,
     CompressionLevel   compressionLevel = CompressionLevel::Default,
     std::optional<int> headerVersion    = std::nullopt

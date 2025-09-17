@@ -30,10 +30,15 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 
 ## Quick Start 🚀
 ```C++
-using namespace nbt;
 using namespace nbt::literals;
 
-CompoundTag nbt = {
+// Parsing NBT from file (Automatically detect NBT format and decompress)
+auto nbt1 = nbt::io::parseFromFile("./level.dat");
+// You can also specify the NBT format
+// auto nbtRead = nbt::io::parseFromFile("./level.dat", NbtFileFormat::LittleEndian);
+
+// Craate a CompoundTag in memory
+nbt::CompoundTag nbt2 = {
     {"Byte",      64_b                                   },
     {"Short",     16384_s                                },
     {"Int",       12345678                               },
@@ -48,8 +53,12 @@ CompoundTag nbt = {
     {"LongArray", LongArrayTag({45, 432, 244, 524})      },
 };
 
-nbt.toBinaryNbt();   // to binary nbt format
-nbt.toNetworkNbt();  // to network nbt format
+nbt2.toBinaryNbt();   // to binary nbt format
+nbt2.toNetworkNbt();  // to network nbt format
+
+// Save NBT to file
+nbt::io::saveToFile(nbt2, NbtFileFormat::LittleEndian);
+
 ```
 
 ## Install and Using 🔧
@@ -74,11 +83,14 @@ xmake --all
 xmake project -k cmake
 ```
 
-## Adopted By 🏆
+## Projects Using This Library 🏆
 | Project          | Link                                         |
 | ---------------- | -------------------------------------------- |
 | ProtocolLib      | <https://github.com/GlacieTeam/ProtocolLib>  |
 | AntiXray         | <https://github.com/GlacieTeam/AntiXray>     |
+| RapidNBT         | <https://github.com/GlacieTeam/RapidNBT>     |
+
+_If you would like to add your project here, please create a pull request._
 
 ## Contributing 🤝
 Contributions are welcome! Please follow these steps:

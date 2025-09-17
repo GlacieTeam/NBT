@@ -77,14 +77,14 @@ void readFileMMap(std::filesystem::path const& path, std::string& content) {
 }
 
 std::optional<NbtFileFormat> checkNbtContentFormat(std::string_view content) {
-    if (validateContent(content, NbtFileFormat::LittleEndianBinaryWithHeader)) {
-        return NbtFileFormat::LittleEndianBinaryWithHeader;
-    } else if (validateContent(content, NbtFileFormat::LittleEndianBinary)) {
-        return NbtFileFormat::LittleEndianBinary;
-    } else if (validateContent(content, NbtFileFormat::BigEndianBinaryWithHeader)) {
-        return NbtFileFormat::BigEndianBinaryWithHeader;
-    } else if (validateContent(content, NbtFileFormat::BigEndianBinary)) {
-        return NbtFileFormat::BigEndianBinary;
+    if (validateContent(content, NbtFileFormat::LittleEndianWithHeader)) {
+        return NbtFileFormat::LittleEndianWithHeader;
+    } else if (validateContent(content, NbtFileFormat::LittleEndian)) {
+        return NbtFileFormat::LittleEndian;
+    } else if (validateContent(content, NbtFileFormat::BigEndianWithHeader)) {
+        return NbtFileFormat::BigEndianWithHeader;
+    } else if (validateContent(content, NbtFileFormat::BigEndian)) {
+        return NbtFileFormat::BigEndian;
     } else if (validateContent(content, NbtFileFormat::BedrockNetwork)) {
         return NbtFileFormat::BedrockNetwork;
     } else {
@@ -135,16 +135,16 @@ std::optional<CompoundTag> _parseFromBinary(std::string& content, std::optional<
     if (!format.has_value()) { format = checkNbtContentFormat(content); }
     if (!format.has_value()) { return std::nullopt; }
     switch (*format) {
-    case NbtFileFormat::LittleEndianBinary: {
+    case NbtFileFormat::LittleEndian: {
         return CompoundTag::fromBinaryNbt(content, true);
     }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+    case NbtFileFormat::LittleEndianWithHeader: {
         return CompoundTag::fromBinaryNbtWithHeader(content, true);
     }
-    case NbtFileFormat::BigEndianBinary: {
+    case NbtFileFormat::BigEndian: {
         return CompoundTag::fromBinaryNbt(content, false);
     }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
+    case NbtFileFormat::BigEndianWithHeader: {
         return CompoundTag::fromBinaryNbtWithHeader(content, false);
     }
     case NbtFileFormat::BedrockNetwork: {
@@ -189,19 +189,19 @@ std::string saveAsBinary(
 ) {
     std::string content;
     switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
+    case NbtFileFormat::LittleEndian: {
         content = nbt.toBinaryNbt(true);
         break;
     }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+    case NbtFileFormat::LittleEndianWithHeader: {
         content = nbt.toBinaryNbtWithHeader(true, headerVersion);
         break;
     }
-    case NbtFileFormat::BigEndianBinary: {
+    case NbtFileFormat::BigEndian: {
         content = nbt.toBinaryNbt(false);
         break;
     }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
+    case NbtFileFormat::BigEndianWithHeader: {
         content = nbt.toBinaryNbtWithHeader(false, headerVersion);
         break;
     }
@@ -243,19 +243,19 @@ bool saveToFile(
 ) {
     std::string content;
     switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
+    case NbtFileFormat::LittleEndian: {
         content = nbt.toBinaryNbt(true);
         break;
     }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+    case NbtFileFormat::LittleEndianWithHeader: {
         content = nbt.toBinaryNbtWithHeader(true, headerVersion);
         break;
     }
-    case NbtFileFormat::BigEndianBinary: {
+    case NbtFileFormat::BigEndian: {
         content = nbt.toBinaryNbt(false);
         break;
     }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
+    case NbtFileFormat::BigEndianWithHeader: {
         content = nbt.toBinaryNbtWithHeader(false, headerVersion);
         break;
     }
@@ -324,7 +324,7 @@ bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, S
 
 bool validateContent(std::string_view binary, NbtFileFormat format) {
     switch (format) {
-    case NbtFileFormat::LittleEndianBinary: {
+    case NbtFileFormat::LittleEndian: {
         BytesDataInput stream(binary, false, true);
         auto           streamSize = stream.size();
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
@@ -335,7 +335,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         if (detail::validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
         break;
     }
-    case NbtFileFormat::LittleEndianBinaryWithHeader: {
+    case NbtFileFormat::LittleEndianWithHeader: {
         BytesDataInput stream(binary, false, true);
         auto           streamSize = stream.size();
         if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
@@ -350,7 +350,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         if (detail::validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
         break;
     }
-    case NbtFileFormat::BigEndianBinary: {
+    case NbtFileFormat::BigEndian: {
         BytesDataInput stream(binary, false, false);
         auto           streamSize = stream.size();
         if (static_cast<Tag::Type>(stream.getByte()) != Tag::Type::Compound) { return false; }
@@ -361,7 +361,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format) {
         if (detail::validateCompoundTag(stream, streamSize) && !stream.hasDataLeft()) { return true; }
         break;
     }
-    case NbtFileFormat::BigEndianBinaryWithHeader: {
+    case NbtFileFormat::BigEndianWithHeader: {
         BytesDataInput stream(binary, false, false);
         auto           streamSize = stream.size();
         if (stream.getPosition() + (2 * sizeof(int)) > streamSize) { return false; }
