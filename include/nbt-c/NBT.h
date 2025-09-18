@@ -174,8 +174,8 @@ NBT_API bool  nbt_save_to_file(
 NBT_API void* nbt_parse_snbt_from_file(const char* path);
 NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
 
-NBT_API bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap);
-NBT_API bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format);
+NBT_API bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap, bool strictMatchSize);
+NBT_API bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format, bool strictMatchSize);
 
 NBT_API NBT_FileFormat nbt_check_file_format(const char* path, bool fmmap);
 NBT_API NBT_FileFormat nbt_check_content_format(const uint8_t* data, size_t size);

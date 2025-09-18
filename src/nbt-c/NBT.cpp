@@ -496,14 +496,15 @@ bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, u
     return false;
 }
 
-bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap) {
-    return nbt::io::validateFile(path, static_cast<nbt::io::NbtFileFormat>(format), fmmap);
+bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap, bool strictMatchSize) {
+    return nbt::io::validateFile(path, static_cast<nbt::io::NbtFileFormat>(format), fmmap, strictMatchSize);
 }
 
-bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format) {
+bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format, bool strictMatchSize) {
     return nbt::io::validateContent(
         std::string_view(reinterpret_cast<const char*>(data), size),
-        static_cast<nbt::io::NbtFileFormat>(format)
+        static_cast<nbt::io::NbtFileFormat>(format),
+        strictMatchSize
     );
 }
 
