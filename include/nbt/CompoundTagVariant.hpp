@@ -139,8 +139,8 @@ public:
     [[nodiscard]] NBT_API CompoundTagVariant(CompoundTagVariant&&)      = default;
     [[nodiscard]] NBT_API CompoundTagVariant(CompoundTagVariant const&) = default;
 
-    NBT_API CompoundTagVariant& operator=(CompoundTagVariant&&)      = default;
-    NBT_API CompoundTagVariant& operator=(CompoundTagVariant const&) = default;
+    CompoundTagVariant& operator=(CompoundTagVariant&&)      = default;
+    CompoundTagVariant& operator=(CompoundTagVariant const&) = default;
 
     template <class T>
         requires(requires(T o) { mStorage = std::move(o); })

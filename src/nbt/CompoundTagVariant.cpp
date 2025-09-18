@@ -11,6 +11,8 @@
 #include "nbt/detail/SnbtSerializer.hpp"
 #include <nlohmann/json.hpp>
 
+#include <iostream>
+
 namespace nbt {
 
 CompoundTagVariant::CompoundTagVariant(Tag&& tag) { emplace(std::move(tag)); }
@@ -224,14 +226,13 @@ std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
 }
 
 void CompoundTagVariant::merge(CompoundTagVariant const& other, bool mergeList) {
-    if (getType() == other.getType()) {
-        if (is_object()) {
-            return as<CompoundTag>().merge(other.as<CompoundTag>(), mergeList);
-        } else if (is_array() && mergeList) {
-            return as<ListTag>().merge(other.as<ListTag>());
-        }
+    if (is_object() && other.is_object()) {
+        as<CompoundTag>().merge(other.as<CompoundTag>(), mergeList);
+    } else if (is_array() && other.is_array() && mergeList) {
+        as<ListTag>().merge(other.as<ListTag>());
+    } else {
+        operator=(other);
     }
-    mStorage = other.mStorage;
 }
 
 std::optional<CompoundTagVariant>

@@ -29,6 +29,7 @@ ListTag::ListTag(std::vector<CompoundTagVariant> tags) {
 }
 
 ListTag& ListTag::operator=(ListTag const& other) {
+    mStorage.clear();
     mType = other.mType;
     for (const auto& data : other.mStorage) { mStorage.emplace_back(data->copy()); }
     return *this;
@@ -96,14 +97,18 @@ void ListTag::merge(ListTag const& other) {
     if (other.size() == 0) { return; }
     if (mType == other.mType) {
         for (auto const& val : other.mStorage) {
-            if (std::any_of(mStorage.begin(), mStorage.end(), [&val](std::unique_ptr<Tag> const& tag) {
-                    return !tag->equals(*val);
-                })) {
-                push_back(val->copy());
+            bool isEqual = false;
+            for (const auto& tag : mStorage) {
+                if (tag->equals(*val)) {
+                    isEqual = true;
+                    break;
+                }
             }
+            if (!isEqual) { push_back(val->copy()); }
         }
     } else {
         mType = other.mType;
+        mStorage.clear();
         for (const auto& data : other.mStorage) { mStorage.emplace_back(data.get()->copy()); }
     }
 }
