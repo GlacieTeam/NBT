@@ -115,7 +115,7 @@ std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format) {
 std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format) {
     std::string res;
 
-    std::string lbracket{"["}, rbracket{"]"};
+    static constexpr std::string_view lbracket{"["}, rbracket{"]"};
 
     res += lbracket;
 
@@ -150,7 +150,7 @@ std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat form
 
     std::string res;
 
-    std::string lbracket{"{"}, rbracket{"}"};
+    static constexpr std::string_view lbracket{"{"}, rbracket{"}"};
 
     res += lbracket;
 
@@ -158,7 +158,7 @@ std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat form
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::PrettyFilePrint) && (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
 

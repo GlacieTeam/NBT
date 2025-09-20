@@ -43,8 +43,9 @@ enum Snbt_Format {
     Snbt_AlwaysLineFeed  = 3,
     Snbt_ForceAscii      = 4,
     Snbt_ForceQuote      = 8,
+    Snbt_Classic         = 9,
     Snbt_CommentMarks    = 16,
-    Snbt_Jsonify         = 24,
+    Snbt_Jsonify         = 27,
 };
 
 enum NBT_FileFormat {
