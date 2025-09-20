@@ -123,7 +123,7 @@ std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format) 
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
     for (auto& tag : self) {
@@ -158,7 +158,7 @@ std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat form
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (int)format & (int)SnbtFormat::PrettyFilePrint;
+    bool isNewLine   = (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
 
@@ -202,7 +202,7 @@ std::string TypedToSnbt(ByteArrayTag const& self, uint8_t indent, SnbtFormat for
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
     std::string back{"b"};
@@ -237,7 +237,7 @@ std::string TypedToSnbt(IntArrayTag const& self, uint8_t indent, SnbtFormat form
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
 
@@ -272,7 +272,7 @@ std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat for
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = (int)format & (int)SnbtFormat::ArrayLineFeed;
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
     std::string back{"l"};

@@ -11,8 +11,9 @@ enum class SnbtFormat : uint8_t {
     ForceAscii      = 1 << 2,
     ForceQuote      = 1 << 3,
     CommentMarks    = 1 << 4,
-    Classic         = ForceQuote | ArrayLineFeed,
-    Jsonify         = ForceQuote | CommentMarks,
+    Default         = PrettyFilePrint,
+    Classic         = PrettyFilePrint | ForceQuote,
+    Jsonify         = PrettyFilePrint | ForceQuote | ArrayLineFeed | CommentMarks,
     AlwaysLineFeed  = PrettyFilePrint | ArrayLineFeed
 };
 

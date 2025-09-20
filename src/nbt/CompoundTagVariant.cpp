@@ -11,8 +11,6 @@
 #include "nbt/detail/SnbtSerializer.hpp"
 #include <nlohmann/json.hpp>
 
-#include <iostream>
-
 namespace nbt {
 
 CompoundTagVariant::CompoundTagVariant(Tag&& tag) { emplace(std::move(tag)); }

@@ -83,7 +83,7 @@ NBT_API bool saveToFile(
 NBT_API bool saveSnbtToFile(
     CompoundTag const&           nbt,
     std::filesystem::path const& path,
-    SnbtFormat                   format = SnbtFormat::PrettyFilePrint,
+    SnbtFormat                   format = SnbtFormat::Default,
     uint8_t                      indent = 4
 );
 
@@ -91,7 +91,7 @@ NBT_API bool saveSnbtToFile(
                       parseSnbtFromContent(std::string_view content, std::optional<size_t> parsedLength = std::nullopt);
 
 [[nodiscard]] NBT_API std::string
-dumpSnbt(CompoundTag const& nbt, SnbtFormat format = SnbtFormat::PrettyFilePrint, uint8_t indent = 4);
+                      dumpSnbt(CompoundTag const& nbt, SnbtFormat format = SnbtFormat::Default, uint8_t indent = 4);
 
 [[nodiscard]] NBT_API bool validateContent(
     std::string_view binary,

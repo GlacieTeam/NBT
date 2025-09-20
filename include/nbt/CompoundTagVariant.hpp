@@ -363,7 +363,7 @@ public:
     }
 
     [[nodiscard]] NBT_API std::string
-    toSnbt(SnbtFormat snbtFormat = SnbtFormat::PrettyFilePrint, uint8_t indent = 4) const noexcept;
+    toSnbt(SnbtFormat snbtFormat = SnbtFormat::Default, uint8_t indent = 4) const noexcept;
 
     [[nodiscard]] NBT_API std::string toJson(uint8_t indent = 4) const noexcept;
 
