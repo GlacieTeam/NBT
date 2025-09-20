@@ -11,10 +11,10 @@ enum class SnbtFormat : uint8_t {
     ForceAscii      = 1 << 2,
     ForceQuote      = 1 << 3,
     CommentMarks    = 1 << 4,
+    AlwaysLineFeed  = PrettyFilePrint | ArrayLineFeed,
     Default         = PrettyFilePrint,
     Classic         = PrettyFilePrint | ForceQuote,
-    Jsonify         = PrettyFilePrint | ForceQuote | ArrayLineFeed | CommentMarks,
-    AlwaysLineFeed  = PrettyFilePrint | ArrayLineFeed
+    Jsonify         = AlwaysLineFeed | ForceQuote | CommentMarks,
 };
 
 [[nodiscard]] constexpr SnbtFormat operator|(const SnbtFormat l, const SnbtFormat r) noexcept {
