@@ -37,15 +37,20 @@ enum TagType {
 };
 
 enum Snbt_Format {
-    Snbt_Minimize        = 0,
-    Snbt_PrettyFilePrint = 1,
-    Snbt_ArrayLineFeed   = 2,
-    Snbt_AlwaysLineFeed  = 3,
-    Snbt_ForceAscii      = 4,
-    Snbt_ForceQuote      = 8,
-    Snbt_Classic         = 9,
-    Snbt_CommentMarks    = 16,
-    Snbt_Jsonify         = 27,
+    Snbt_Minimize                  = 0,
+    Snbt_CompoundLineFeed          = 1,
+    Snbt_ListArrayLineFeed         = 2,
+    Snbt_PrettyFilePrint           = 3,
+    Snbt_BinaryArrayLineFeed       = 4,
+    Snbt_ArrayLineFeed             = 6,
+    Snbt_AlwaysLineFeed            = 7,
+    Snbt_ForceLineFeedIgnoreIndent = 8,
+    Snbt_ForceAscii                = 16,
+    Snbt_ForceQuote                = 32,
+    Snbt_Classic                   = 35,
+    Snbt_ForceUppercase            = 64,
+    Snbt_CommentMarks              = 128,
+    Snbt_Jsonify                   = 167,
 };
 
 enum NBT_FileFormat {

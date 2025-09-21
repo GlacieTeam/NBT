@@ -35,7 +35,9 @@ std::string toString(T value) {
 
 bool isMinimize(SnbtFormat format) {
     return !(
-        static_cast<bool>(format & SnbtFormat::PrettyFilePrint) || static_cast<bool>(format & SnbtFormat::ArrayLineFeed)
+        static_cast<bool>(format & SnbtFormat::CompoundLineFeed)
+        || static_cast<bool>(format & SnbtFormat::ListArrayLineFeed)
+        || static_cast<bool>(format & SnbtFormat::BinaryArrayLineFeed)
     );
 }
 
@@ -85,31 +87,39 @@ std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
 
 namespace detail {
 
+template <typename T>
+constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark) {
+    bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
+    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
+        return std::format("{0} /*{1}*/", value, upper ? mark : std::toupper(mark));
+    }
+    return std::format("{0}{1}", value, upper ? mark : std::toupper(mark));
+}
+
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat) { return "null"; }
 
 std::string TypedToSnbt(ByteTag const& self, uint8_t, SnbtFormat format) {
-    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*b*/" : "b");
+    return makeSnbtTagValue(self.storage(), format, 'b');
 }
 
 std::string TypedToSnbt(ShortTag const& self, uint8_t, SnbtFormat format) {
-    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*s*/" : "s");
+    return makeSnbtTagValue(self.storage(), format, 's');
 }
 
 std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
 
 std::string TypedToSnbt(Int64Tag const& self, uint8_t, SnbtFormat format) {
-    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*l*/" : "l");
+    return makeSnbtTagValue(self.storage(), format, 'l');
 }
 
 std::string TypedToSnbt(FloatTag const& self, uint8_t, SnbtFormat format) {
-    return toString(self.storage()) + (static_cast<bool>(format & SnbtFormat::CommentMarks) ? " /*f*/" : "f");
+    return makeSnbtTagValue(self.storage(), format, 'f');
 }
 
 std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
 
 std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format) {
-    std::string res = toDumpString(self.storage(), format, false);
-    return res;
+    return toDumpString(self.storage(), format, false);
 }
 
 std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format) {
@@ -123,7 +133,8 @@ std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format) 
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ListArrayLineFeed)
+                  && (static_cast<bool>(format & SnbtFormat::ForceLineFeedIgnoreIndent) || (indent > 0));
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
     for (auto& tag : self) {
@@ -158,7 +169,8 @@ std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat form
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = static_cast<bool>(format & SnbtFormat::PrettyFilePrint) && (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::CompoundLineFeed)
+                  && (static_cast<bool>(format & SnbtFormat::ForceLineFeedIgnoreIndent) || (indent > 0));
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
 
@@ -202,15 +214,15 @@ std::string TypedToSnbt(ByteArrayTag const& self, uint8_t indent, SnbtFormat for
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::BinaryArrayLineFeed)
+                  && (static_cast<bool>(format & SnbtFormat::ForceLineFeedIgnoreIndent) || (indent > 0));
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
-    std::string back{"b"};
-    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) { back = " /*b*/"; }
+
     for (auto& tag : self.storage()) {
         i--;
         if (isNewLine) { res += indentSpace; }
-        res += toString(tag) + back;
+        res += makeSnbtTagValue(tag, format, 'b');
 
         if (i > 0) {
             res += ',';
@@ -237,7 +249,8 @@ std::string TypedToSnbt(IntArrayTag const& self, uint8_t indent, SnbtFormat form
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::BinaryArrayLineFeed)
+                  && (static_cast<bool>(format & SnbtFormat::ForceLineFeedIgnoreIndent) || (indent > 0));
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
 
@@ -272,15 +285,15 @@ std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat for
     std::string indentSpace(indent, ' ');
 
     bool isMinimized = isMinimize(format);
-    bool isNewLine   = static_cast<bool>(format & SnbtFormat::ArrayLineFeed) && (indent > 0);
+    bool isNewLine   = static_cast<bool>(format & SnbtFormat::BinaryArrayLineFeed)
+                  && (static_cast<bool>(format & SnbtFormat::ForceLineFeedIgnoreIndent) || (indent > 0));
 
     if (isNewLine && self.size() > 0) { res += '\n'; }
-    std::string back{"l"};
-    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) { back = " /*l*/"; }
+
     for (auto& tag : self.storage()) {
         i--;
         if (isNewLine) { res += indentSpace; }
-        res += toString(tag) + back;
+        res += res += makeSnbtTagValue(tag, format, 'l');
 
         if (i > 0) {
             res += ',';
