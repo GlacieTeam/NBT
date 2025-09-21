@@ -91,9 +91,9 @@ template <typename T>
 constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark) {
     bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
     if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
-        return std::format("{0} /*{1}*/", value, upper ? mark : std::toupper(mark));
+        return std::format("{0} /*{1:c}*/", value, upper ? std::toupper(mark) : mark);
     }
-    return std::format("{0}{1}", value, upper ? mark : std::toupper(mark));
+    return std::format("{0}{1:c}", value, upper ? std::toupper(mark) : mark);
 }
 
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat) { return "null"; }
