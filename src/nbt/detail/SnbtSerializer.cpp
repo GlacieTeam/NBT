@@ -293,7 +293,7 @@ std::string TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat for
     for (auto& tag : self.storage()) {
         i--;
         if (isNewLine) { res += indentSpace; }
-        res += res += makeSnbtTagValue(tag, format, 'l');
+        res += makeSnbtTagValue(tag, format, 'l');
 
         if (i > 0) {
             res += ',';
