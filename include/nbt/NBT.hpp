@@ -43,10 +43,15 @@ enum class CompressionLevel : int {
 };
 
 [[nodiscard]] NBT_API std::optional<NbtFileFormat>
-                      checkNbtContentFormat(std::string_view content, bool strictMatchSize = true);
+                      detectContentFormat(std::string_view content, bool strictMatchSize = true);
 
 [[nodiscard]] NBT_API std::optional<NbtFileFormat>
-checkNbtFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false, bool strictMatchSize = true);
+detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false, bool strictMatchSize = true);
+
+[[nodiscard]] NBT_API CompressionType
+detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap = false);
+
+[[nodiscard]] NBT_API CompressionType detectContentCompressionType(std::string_view content);
 
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseFromContent(
     std::string_view             content,

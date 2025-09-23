@@ -508,18 +508,28 @@ bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat forma
     );
 }
 
-NBT_FileFormat nbt_check_file_format(const char* path, bool fmmap) {
-    if (auto result = nbt::io::checkNbtFileFormat(path, fmmap)) {
+NBT_FileFormat nbt_detect_file_format(const char* path, bool fmmap) {
+    if (auto result = nbt::io::detectFileFormat(path, fmmap)) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
         return NBT_FileFormat::NBT_Format_Invalid;
     }
 }
-NBT_FileFormat nbt_check_content_format(const uint8_t* data, size_t size) {
-    if (auto result = nbt::io::checkNbtContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
+NBT_FileFormat nbt_detect_content_format(const uint8_t* data, size_t size) {
+    if (auto result = nbt::io::detectContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
         return NBT_FileFormat::NBT_Format_Invalid;
     }
+}
+
+NBT_CompressionType nbt_detect_file_compression_type(const char* path, bool fmmap) {
+    return static_cast<NBT_CompressionType>(nbt::io::detectFileCompressionType(path, fmmap));
+}
+
+NBT_CompressionType nbt_detect_content_compression_type(const uint8_t* data, size_t size) {
+    return static_cast<NBT_CompressionType>(
+        nbt::io::detectContentCompressionType(std::string_view(reinterpret_cast<const char*>(data), size))
+    );
 }
 }

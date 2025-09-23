@@ -183,8 +183,11 @@ NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format 
 NBT_API bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap, bool strictMatchSize);
 NBT_API bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format, bool strictMatchSize);
 
-NBT_API NBT_FileFormat nbt_check_file_format(const char* path, bool fmmap);
-NBT_API NBT_FileFormat nbt_check_content_format(const uint8_t* data, size_t size);
+NBT_API NBT_FileFormat nbt_detect_file_format(const char* path, bool fmmap);
+NBT_API NBT_FileFormat nbt_detect_content_format(const uint8_t* data, size_t size);
+
+NBT_API NBT_CompressionType nbt_detect_file_compression_type(const char* path, bool fmmap);
+NBT_API NBT_CompressionType nbt_detect_content_compression_type(const uint8_t* data, size_t size);
 
 #ifdef __cplusplus
 }

@@ -76,7 +76,7 @@ void readFileMMap(std::filesystem::path const& path, std::string& content) {
 #endif
 }
 
-std::optional<NbtFileFormat> checkNbtContentFormat(std::string_view content, bool strictMatchSize) {
+std::optional<NbtFileFormat> detectContentFormat(std::string_view content, bool strictMatchSize) {
     if (validateContent(content, NbtFileFormat::LittleEndianWithHeader, strictMatchSize)) {
         return NbtFileFormat::LittleEndianWithHeader;
     } else if (validateContent(content, NbtFileFormat::LittleEndian, strictMatchSize)) {
@@ -93,7 +93,7 @@ std::optional<NbtFileFormat> checkNbtContentFormat(std::string_view content, boo
 }
 
 std::optional<NbtFileFormat>
-checkNbtFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool strictMatchSize) {
+detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool strictMatchSize) {
     if (std::filesystem::exists(path)) {
         std::string content;
         if (fileMemoryMap) {
@@ -117,9 +117,49 @@ checkNbtFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool s
                 content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
             }
         }
-        return checkNbtContentFormat(content, strictMatchSize);
+        return detectContentFormat(content, strictMatchSize);
     }
     return std::nullopt;
+}
+
+CompressionType detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap) {
+    if (std::filesystem::exists(path)) {
+        std::string content;
+        if (fileMemoryMap) {
+            readFileMMap(path, content);
+        } else {
+            std::ifstream fRead(path, std::ios::ate | std::ios::binary);
+            if (fRead.is_open()) {
+                auto size = fRead.tellg();
+                fRead.seekg(0);
+                content.resize(static_cast<size_t>(size));
+                fRead.read(content.data(), size);
+            }
+        }
+        if (content.size() > 2) {
+            const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
+            const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
+            if (b0 == 0x1F_byte && b1 == 0x8B_byte) {
+                return CompressionType::Gzip;
+            } else if (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte)) {
+                return CompressionType::Zlib;
+            }
+        }
+    }
+    return CompressionType::None;
+}
+
+CompressionType detectContentCompressionType(std::string_view content) {
+    if (content.size() > 2) {
+        const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
+        const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
+        if (b0 == 0x1F_byte && b1 == 0x8B_byte) {
+            return CompressionType::Gzip;
+        } else if (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte)) {
+            return CompressionType::Zlib;
+        }
+    }
+    return CompressionType::None;
 }
 
 std::optional<CompoundTag>
@@ -134,7 +174,7 @@ _parseFromBinary(std::string& content, std::optional<NbtFileFormat> format, bool
             content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
         }
     }
-    if (!format.has_value()) { format = checkNbtContentFormat(content, strictMatchSize); }
+    if (!format.has_value()) { format = detectContentFormat(content, strictMatchSize); }
     if (!format.has_value()) { return std::nullopt; }
     switch (*format) {
     case NbtFileFormat::LittleEndian: {
