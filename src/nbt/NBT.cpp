@@ -122,7 +122,7 @@ detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool str
     return std::nullopt;
 }
 
-CompressionType detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap) {
+NbtCompressionType detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap) {
     if (std::filesystem::exists(path)) {
         std::string content;
         if (fileMemoryMap) {
@@ -140,26 +140,26 @@ CompressionType detectFileCompressionType(std::filesystem::path const& path, boo
             const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
             const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
             if (b0 == 0x1F_byte && b1 == 0x8B_byte) {
-                return CompressionType::Gzip;
+                return NbtCompressionType::Gzip;
             } else if (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte)) {
-                return CompressionType::Zlib;
+                return NbtCompressionType::Zlib;
             }
         }
     }
-    return CompressionType::None;
+    return NbtCompressionType::None;
 }
 
-CompressionType detectContentCompressionType(std::string_view content) {
+NbtCompressionType detectContentCompressionType(std::string_view content) {
     if (content.size() > 2) {
         const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
         const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
         if (b0 == 0x1F_byte && b1 == 0x8B_byte) {
-            return CompressionType::Gzip;
+            return NbtCompressionType::Gzip;
         } else if (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte)) {
-            return CompressionType::Zlib;
+            return NbtCompressionType::Zlib;
         }
     }
-    return CompressionType::None;
+    return NbtCompressionType::None;
 }
 
 std::optional<CompoundTag>
@@ -228,11 +228,11 @@ std::optional<CompoundTag> parseFromFile(
 }
 
 std::string saveAsBinary(
-    CompoundTag const& nbt,
-    NbtFileFormat      format,
-    CompressionType    compressionType,
-    CompressionLevel   compressionLevel,
-    std::optional<int> headerVersion
+    CompoundTag const&  nbt,
+    NbtFileFormat       format,
+    NbtCompressionType  compressionType,
+    NbtCompressionLevel compressionLevel,
+    std::optional<int>  headerVersion
 ) {
     std::string content;
     switch (format) {
@@ -263,13 +263,13 @@ std::string saveAsBinary(
     static constexpr auto BUFFER_SIZE = 1048576ull;
     std::ostringstream    outstream;
     switch (compressionType) {
-    case CompressionType::Zlib: {
+    case NbtCompressionType::Zlib: {
         zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 15);
         zstream << content;
         zstream.flush();
         return outstream.str();
     }
-    case CompressionType::Gzip: {
+    case NbtCompressionType::Gzip: {
         zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 31);
         zstream << content;
         zstream.flush();
@@ -284,8 +284,8 @@ bool saveToFile(
     CompoundTag const&           nbt,
     std::filesystem::path const& path,
     NbtFileFormat                format,
-    CompressionType              compressionType,
-    CompressionLevel             compressionLevel,
+    NbtCompressionType           compressionType,
+    NbtCompressionLevel          compressionLevel,
     std::optional<int>           headerVersion
 ) {
     std::string content;
@@ -316,7 +316,7 @@ bool saveToFile(
     }
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     switch (compressionType) {
-    case CompressionType::Zlib: {
+    case NbtCompressionType::Zlib: {
         zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 15);
         if (fWrite.is_open()) {
             fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
@@ -325,7 +325,7 @@ bool saveToFile(
         }
         return false;
     }
-    case CompressionType::Gzip: {
+    case NbtCompressionType::Gzip: {
         zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 31);
         if (fWrite.is_open()) {
             fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
@@ -490,11 +490,11 @@ parseFromBsae64(std::string_view content, std::optional<NbtFileFormat> format, b
 }
 
 std::string saveAsBase64(
-    CompoundTag const& nbt,
-    NbtFileFormat      format,
-    CompressionType    compressionType,
-    CompressionLevel   compressionLevel,
-    std::optional<int> headerVersion
+    CompoundTag const&  nbt,
+    NbtFileFormat       format,
+    NbtCompressionType  compressionType,
+    NbtCompressionLevel compressionLevel,
+    std::optional<int>  headerVersion
 ) {
     auto content = saveAsBinary(nbt, format, compressionType, compressionLevel, headerVersion);
     return base64_utils::encode(content);
@@ -511,6 +511,12 @@ int parseHeaderVersionFromFile(std::filesystem::path const& path) {
         return CompoundTag::readHeaderVersion(buffer);
     }
     return 0;
+}
+
+std::optional<NbtFile> open(std::filesystem::path const& path) {
+    if (auto result = NbtFile::openFile(path)) { return result; }
+    if (auto result = NbtFile::openSnbtFile(path)) { return result; }
+    return std::nullopt;
 }
 
 } // namespace nbt::io
