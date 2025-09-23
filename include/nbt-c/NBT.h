@@ -49,8 +49,11 @@ enum Snbt_Format {
     Snbt_ForceQuote                = 32,
     Snbt_Classic                   = 35,
     Snbt_ForceUppercase            = 64,
-    Snbt_CommentMarks              = 128,
-    Snbt_Jsonify                   = 167,
+    Snbt_MarkIntTag                = 128,
+    Snbt_MarkDoubleTag             = 256,
+    Snbt_MarkExtra                 = 384,
+    Snbt_CommentMarks              = 512,
+    Snbt_Jsonify                   = 551,
 };
 
 enum NBT_FileFormat {

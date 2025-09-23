@@ -33,6 +33,28 @@ std::string toString(T value) {
     return std::format("{}", value);
 }
 
+template <std::integral T>
+constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark) {
+    bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
+    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
+        return std::format("{0} /*{1:c}*/", value, upper ? std::toupper(mark) : mark);
+    }
+    return std::format("{0}{1:c}", value, upper ? std::toupper(mark) : mark);
+}
+
+template <std::floating_point T>
+constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark) {
+    bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
+    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
+        if (std::round(value) == value) {
+            return std::format("{0:.1f} /*{1:c}*/", value, upper ? std::toupper(mark) : mark);
+        }
+        return std::format("{0} /*{1:c}*/", value, upper ? std::toupper(mark) : mark);
+    }
+    if (std::round(value) == value) { return std::format("{0:.1f}{1:c}", value, upper ? std::toupper(mark) : mark); }
+    return std::format("{0}{1:c}", value, upper ? std::toupper(mark) : mark);
+}
+
 bool isMinimize(SnbtFormat format) {
     return !(
         static_cast<bool>(format & SnbtFormat::CompoundLineFeed)
@@ -87,15 +109,6 @@ std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
 
 namespace detail {
 
-template <typename T>
-constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark) {
-    bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
-    if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
-        return std::format("{0} /*{1:c}*/", value, upper ? std::toupper(mark) : mark);
-    }
-    return std::format("{0}{1:c}", value, upper ? std::toupper(mark) : mark);
-}
-
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat) { return "null"; }
 
 std::string TypedToSnbt(ByteTag const& self, uint8_t, SnbtFormat format) {
@@ -106,7 +119,10 @@ std::string TypedToSnbt(ShortTag const& self, uint8_t, SnbtFormat format) {
     return makeSnbtTagValue(self.storage(), format, 's');
 }
 
-std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
+std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat format) {
+    if (static_cast<bool>(format & SnbtFormat::MarkIntTag)) { return makeSnbtTagValue(self.storage(), format, 'i'); }
+    return toString(self.storage());
+}
 
 std::string TypedToSnbt(Int64Tag const& self, uint8_t, SnbtFormat format) {
     return makeSnbtTagValue(self.storage(), format, 'l');
@@ -116,7 +132,10 @@ std::string TypedToSnbt(FloatTag const& self, uint8_t, SnbtFormat format) {
     return makeSnbtTagValue(self.storage(), format, 'f');
 }
 
-std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat) { return toString(self.storage()); }
+std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat format) {
+    if (static_cast<bool>(format & SnbtFormat::MarkDoubleTag)) { return makeSnbtTagValue(self.storage(), format, 'd'); }
+    return toString(self.storage());
+}
 
 std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format) {
     return toDumpString(self.storage(), format, false);

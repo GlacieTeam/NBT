@@ -3,7 +3,7 @@
 
 namespace nbt {
 
-enum class SnbtFormat : uint8_t {
+enum class SnbtFormat : uint16_t {
     Minimize                  = 0,
     CompoundLineFeed          = 1 << 0,
     ListArrayLineFeed         = 1 << 1,
@@ -12,9 +12,12 @@ enum class SnbtFormat : uint8_t {
     ForceAscii                = 1 << 4,
     ForceQuote                = 1 << 5,
     ForceUppercase            = 1 << 6,
-    CommentMarks              = 1 << 7,
+    MarkIntTag                = 1 << 7,
+    MarkDoubleTag             = 1 << 8,
+    CommentMarks              = 1 << 9,
     ArrayLineFeed             = ListArrayLineFeed | BinaryArrayLineFeed,
     AlwaysLineFeed            = CompoundLineFeed | ArrayLineFeed,
+    MarkExtra                 = MarkIntTag | MarkDoubleTag,
     PrettyFilePrint           = CompoundLineFeed | ListArrayLineFeed,
     Classic                   = PrettyFilePrint | ForceQuote,
     Jsonify                   = AlwaysLineFeed | ForceQuote | CommentMarks,
