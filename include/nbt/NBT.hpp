@@ -102,6 +102,6 @@ NBT_API bool saveSnbtToFile(
 
 [[nodiscard]] NBT_API int parseHeaderVersionFromFile(std::filesystem::path const& path);
 
-[[nodiscard]] NBT_API std::optional<NbtFile> open(std::filesystem::path const& path);
+[[nodiscard]] NBT_API std::optional<NbtFile> openFile(std::filesystem::path const& path);
 
 } // namespace nbt::io

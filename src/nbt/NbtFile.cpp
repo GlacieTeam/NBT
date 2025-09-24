@@ -28,9 +28,12 @@ NbtFile::NbtFile(
   mCompressionType(compressionType),
   mCompressionLevel(compressionLevel),
   mSnbtFormat(snbtFormat),
-  mSnbtIndent(snbtIndent) {}
+  mSnbtIndent(snbtIndent),
+  mAutoSave(true) {}
 
-NbtFile::~NbtFile() { save(); }
+NbtFile::~NbtFile() {
+    if (mAutoSave) { save(); }
+}
 
 void NbtFile::setFilePath(std::filesystem::path const& filePath) { mFilePath = filePath; }
 
@@ -56,6 +59,8 @@ void NbtFile::setSnbtFormat(SnbtFormat format) {
 }
 
 void NbtFile::setSnbtIndent(uint8_t indent) { mSnbtIndent = indent; }
+
+void NbtFile::setAutoSave(bool value) { mAutoSave = value; }
 
 void NbtFile::save() const {
     if (mIsSnbtFile) {

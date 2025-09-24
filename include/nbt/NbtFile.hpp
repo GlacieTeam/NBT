@@ -49,6 +49,7 @@ public:
     std::optional<NbtCompressionLevel> mCompressionLevel;
     std::optional<SnbtFormat>          mSnbtFormat;
     std::optional<uint8_t>             mSnbtIndent;
+    bool                               mAutoSave;
 
 public:
     using iterator               = CompoundTag::TagMap::iterator;
@@ -87,6 +88,8 @@ public:
     NBT_API void setSnbtFormat(SnbtFormat format);
 
     NBT_API void setSnbtIndent(uint8_t indent);
+
+    NBT_API void setAutoSave(bool value);
 
     NBT_API void save() const;
 

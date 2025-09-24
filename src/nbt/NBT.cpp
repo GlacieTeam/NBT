@@ -513,7 +513,7 @@ int parseHeaderVersionFromFile(std::filesystem::path const& path) {
     return 0;
 }
 
-std::optional<NbtFile> open(std::filesystem::path const& path) {
+std::optional<NbtFile> openFile(std::filesystem::path const& path) {
     if (auto result = NbtFile::openFile(path)) { return result; }
     if (auto result = NbtFile::openSnbtFile(path)) { return result; }
     return std::nullopt;
