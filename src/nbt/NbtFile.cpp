@@ -5,9 +5,10 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
+#include "nbt/NbtFile.hpp"
+#include "nbt/NBT.hpp"
+#include "nbt/detail/FileUtils.hpp"
 #include <fstream>
-#include <nbt/NBT.hpp>
-#include <nbt/NbtFile.hpp>
 
 namespace nbt {
 
@@ -131,28 +132,24 @@ std::string NbtFile::toJson(uint8_t indent) const noexcept { return mFileData.to
 std::optional<NbtFile> NbtFile::openFile(
     std::filesystem::path const& filePath,
     std::optional<NbtFileFormat> fileFormat,
+    bool                         fileMemoryMap,
     bool                         strictMatchSize
 ) {
-    std::ifstream fRead(filePath, std::ios::ate | std::ios::binary);
-    if (fRead.is_open()) {
-        auto size = fRead.tellg();
-        fRead.seekg(0);
-        std::string content(static_cast<size_t>(size), '\0');
-        fRead.read(content.data(), size);
-        if (!fileFormat.has_value()) { fileFormat = io::detectContentFormat(content, strictMatchSize); }
-        if (auto data = io::parseFromContent(content, fileFormat, strictMatchSize)) {
-            auto compressionType = io::detectContentCompressionType(content);
-            return NbtFile(
-                filePath,
-                std::move(data).value(),
-                false,
-                fileFormat,
-                compressionType,
-                NbtCompressionLevel::Default,
-                std::nullopt,
-                std::nullopt
-            );
-        }
+    std::string content;
+    detail::readFile(filePath, content, fileMemoryMap);
+    if (!fileFormat.has_value()) { fileFormat = io::detectContentFormat(content, strictMatchSize); }
+    if (auto data = io::parseFromContent(content, fileFormat, strictMatchSize)) {
+        auto compressionType = io::detectContentCompressionType(content);
+        return NbtFile(
+            filePath,
+            std::move(data).value(),
+            false,
+            fileFormat,
+            compressionType,
+            NbtCompressionLevel::Default,
+            std::nullopt,
+            std::nullopt
+        );
     }
     return std::nullopt;
 }
@@ -160,9 +157,10 @@ std::optional<NbtFile> NbtFile::openFile(
 std::optional<NbtFile> NbtFile::openSnbtFile(std::filesystem::path const& filePath) {
     std::ifstream fRead(filePath, std::ios::ate);
     if (fRead.is_open()) {
-        auto size = fRead.tellg();
+        std::string content;
+        auto        size = fRead.tellg();
         fRead.seekg(0);
-        std::string content(static_cast<size_t>(size), '\0');
+        content.resize(static_cast<size_t>(size));
         fRead.read(content.data(), size);
         if (auto data = CompoundTag::fromSnbt(content)) {
             return NbtFile(

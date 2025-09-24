@@ -6,75 +6,16 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/NBT.hpp"
-#include "detail/Base64.hpp"
 #include "nbt/Literals.hpp"
+#include "nbt/detail/Base64.hpp"
+#include "nbt/detail/FileUtils.hpp"
 #include "nbt/detail/Validate.hpp"
 #include <sstream>
 #include <zstr/zstr.hpp>
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-
 namespace nbt::io {
 
 constexpr std::byte operator""_byte(unsigned long long value) noexcept { return static_cast<std::byte>(value); }
-
-void readFileMMap(std::filesystem::path const& path, std::string& content) {
-#ifdef _WIN32
-    HANDLE hFile = CreateFileA(
-        path.string().c_str(),
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL
-    );
-    if (hFile == INVALID_HANDLE_VALUE) { return; }
-    DWORD size = GetFileSize(hFile, NULL);
-    if (size == INVALID_FILE_SIZE) {
-        CloseHandle(hFile);
-        return;
-    }
-    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-    if (!hMapping) {
-        CloseHandle(hFile);
-        return;
-    }
-    LPVOID mapped = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
-    if (!mapped) {
-        CloseHandle(hMapping);
-        CloseHandle(hFile);
-        return;
-    }
-    content.assign(static_cast<char*>(mapped), size);
-    UnmapViewOfFile(mapped);
-    CloseHandle(hMapping);
-    CloseHandle(hFile);
-#else
-    int fd = open(path.string().c_str(), O_RDONLY);
-    if (fd == -1) { return; }
-    struct stat sb;
-    if (fstat(fd, &sb) == -1) {
-        close(fd);
-        return;
-    }
-    void* mapped = mmap(nullptr, static_cast<size_t>(sb.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
-    if (mapped == MAP_FAILED) {
-        close(fd);
-        return;
-    }
-    content.assign(static_cast<char*>(mapped), static_cast<size_t>(sb.st_size));
-    munmap(mapped, static_cast<size_t>(sb.st_size));
-    close(fd);
-#endif
-}
 
 std::optional<NbtFileFormat> detectContentFormat(std::string_view content, bool strictMatchSize) {
     if (validateContent(content, NbtFileFormat::LittleEndianWithHeader, strictMatchSize)) {
@@ -96,17 +37,7 @@ std::optional<NbtFileFormat>
 detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool strictMatchSize) {
     if (std::filesystem::exists(path)) {
         std::string content;
-        if (fileMemoryMap) {
-            readFileMMap(path, content);
-        } else {
-            std::ifstream fRead(path, std::ios::ate | std::ios::binary);
-            if (fRead.is_open()) {
-                auto size = fRead.tellg();
-                fRead.seekg(0);
-                content.resize(static_cast<size_t>(size));
-                fRead.read(content.data(), size);
-            }
-        }
+        detail::readFile(path, content, fileMemoryMap);
         if (content.size() > 2) {
             const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
             const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
@@ -125,17 +56,7 @@ detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool str
 NbtCompressionType detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap) {
     if (std::filesystem::exists(path)) {
         std::string content;
-        if (fileMemoryMap) {
-            readFileMMap(path, content);
-        } else {
-            std::ifstream fRead(path, std::ios::ate | std::ios::binary);
-            if (fRead.is_open()) {
-                auto size = fRead.tellg();
-                fRead.seekg(0);
-                content.resize(static_cast<size_t>(size));
-                fRead.read(content.data(), size);
-            }
-        }
+        detail::readFile(path, content, fileMemoryMap);
         if (content.size() > 2) {
             const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
             const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
@@ -211,17 +132,7 @@ std::optional<CompoundTag> parseFromFile(
 ) {
     if (std::filesystem::exists(path)) {
         std::string content;
-        if (fileMemoryMap) {
-            readFileMMap(path, content);
-        } else {
-            std::ifstream fRead(path, std::ios::ate | std::ios::binary);
-            if (fRead.is_open()) {
-                auto size = fRead.tellg();
-                fRead.seekg(0);
-                content.resize(static_cast<size_t>(size));
-                fRead.read(content.data(), size);
-            }
-        }
+        detail::readFile(path, content, fileMemoryMap);
         return _parseFromBinary(content, format, strictMatchSize);
     }
     return std::nullopt;
@@ -453,17 +364,7 @@ bool validateContent(std::string_view binary, NbtFileFormat format, bool strictM
 bool validateFile(std::filesystem::path const& path, NbtFileFormat format, bool fileMemoryMap, bool strictMatchSize) {
     if (std::filesystem::exists(path)) {
         std::string content;
-        if (fileMemoryMap) {
-            readFileMMap(path, content);
-        } else {
-            std::ifstream fRead(path, std::ios::ate | std::ios::binary);
-            if (fRead.is_open()) {
-                auto size = fRead.tellg();
-                fRead.seekg(0);
-                content.resize(static_cast<size_t>(size));
-                fRead.read(content.data(), size);
-            }
-        }
+        detail::readFile(path, content, fileMemoryMap);
         if (content.size() > 2) {
             const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
             const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));

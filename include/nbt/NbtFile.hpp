@@ -156,7 +156,8 @@ public:
     [[nodiscard]] NBT_API static std::optional<NbtFile> openFile(
         std::filesystem::path const& filePath,
         std::optional<NbtFileFormat> fileFormat      = std::nullopt,
-        bool                         strictMatchSize = false
+        bool                         fileMemoryMap   = false,
+        bool                         strictMatchSize = true
     );
 
     [[nodiscard]] NBT_API static std::optional<NbtFile> openSnbtFile(std::filesystem::path const& filePath);

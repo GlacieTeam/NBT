@@ -5,18 +5,10 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#pragma once
+#include <filesystem>
 
-#ifdef _NBT_EXPORT
-#ifdef _WIN32
-#ifdef _NBT_DLL
-#define NBT_API __declspec(dllimport)
-#else
-#define NBT_API __declspec(dllexport)
-#endif
-#else
-#define NBT_API __attribute__((visibility("default"), used))
-#endif
-#else
-#define NBT_API
-#endif
+namespace nbt::detail {
+
+void readFile(std::filesystem::path const& path, std::string& content, bool fileMemoryMap);
+
+} // namespace nbt::detail
