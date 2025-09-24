@@ -57,8 +57,8 @@ std::unique_ptr<CompoundTag> CompoundTag::clone() const {
 void CompoundTag::write(io::BytesDataOutput& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
-        stream.writeByte(static_cast<uint8_t>(type));
         if (type != Type::End) {
+            stream.writeByte(static_cast<uint8_t>(type));
             stream.writeString(key);
             tag->write(stream);
         }
@@ -68,20 +68,21 @@ void CompoundTag::write(io::BytesDataOutput& stream) const {
 
 void CompoundTag::load(io::BytesDataInput& stream) {
     while (true) {
-        const Type type = static_cast<Type>(stream.getByte());
+        const auto type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { return; }
-        auto key    = stream.getStringView();
-        auto tagPtr = Tag::newTag(type);
-        tagPtr->load(stream);
-        mTagMap.emplace(std::move(key), std::move(*tagPtr));
+        auto key = stream.getStringView();
+        if (auto tagPtr = Tag::newTag(type)) {
+            tagPtr->load(stream);
+            mTagMap.emplace(std::move(key), std::move(*tagPtr));
+        }
     }
 }
 
 void CompoundTag::write(bstream::BinaryStream& stream) const {
     for (const auto& [key, tag] : mTagMap) {
         auto type = tag->getType();
-        stream.writeUnsignedChar(static_cast<uint8_t>(type));
         if (type != Type::End) {
+            stream.writeUnsignedChar(static_cast<uint8_t>(type));
             stream.writeString(key);
             tag->write(stream);
         }
@@ -91,12 +92,13 @@ void CompoundTag::write(bstream::BinaryStream& stream) const {
 
 void CompoundTag::load(bstream::ReadOnlyBinaryStream& stream) {
     while (true) {
-        const Type type = static_cast<Type>(stream.getByte());
+        const auto type = static_cast<Type>(stream.getByte());
         if (type == Type::End) { return; }
-        auto key    = stream.getStringView();
-        auto tagPtr = Tag::newTag(type);
-        tagPtr->load(stream);
-        mTagMap.emplace(std::move(key), std::move(*tagPtr));
+        auto key = stream.getStringView();
+        if (auto tagPtr = Tag::newTag(type)) {
+            tagPtr->load(stream);
+            mTagMap.emplace(std::move(key), std::move(*tagPtr));
+        }
     }
 }
 

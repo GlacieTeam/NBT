@@ -12,10 +12,10 @@
 namespace nbt::io {
 
 [[nodiscard]] NBT_API std::optional<NbtFileFormat>
-                      detectContentFormat(std::string_view content, bool strictMatchSize = true);
+                      detectContentFormat(std::string_view content, bool strictMatchSize = false);
 
 [[nodiscard]] NBT_API std::optional<NbtFileFormat>
-detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false, bool strictMatchSize = true);
+detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap = false, bool strictMatchSize = false);
 
 [[nodiscard]] NBT_API NbtCompressionType
 detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap = false);
@@ -25,14 +25,14 @@ detectFileCompressionType(std::filesystem::path const& path, bool fileMemoryMap 
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseFromContent(
     std::string_view             content,
     std::optional<NbtFileFormat> format          = std::nullopt,
-    bool                         strictMatchSize = true
+    bool                         strictMatchSize = false
 );
 
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseFromFile(
     std::filesystem::path const& path,
     std::optional<NbtFileFormat> format          = std::nullopt,
     bool                         fileMemoryMap   = false,
-    bool                         strictMatchSize = true
+    bool                         strictMatchSize = false
 );
 
 [[nodiscard]] NBT_API std::string saveAsBinary(
@@ -70,14 +70,14 @@ NBT_API bool saveSnbtToFile(
 [[nodiscard]] NBT_API bool validateContent(
     std::string_view binary,
     NbtFileFormat    format          = NbtFileFormat::LittleEndian,
-    bool             strictMatchSize = true
+    bool             strictMatchSize = false
 );
 
 [[nodiscard]] NBT_API bool validateFile(
     std::filesystem::path const& path,
     NbtFileFormat                format          = NbtFileFormat::LittleEndian,
     bool                         fileMemoryMap   = false,
-    bool                         strictMatchSize = true
+    bool                         strictMatchSize = false
 );
 
 [[nodiscard]] NBT_API std::string encodeBsae64(std::string_view content);
@@ -87,7 +87,7 @@ NBT_API bool saveSnbtToFile(
 [[nodiscard]] NBT_API std::optional<CompoundTag> parseFromBsae64(
     std::string_view             content,
     std::optional<NbtFileFormat> format          = std::nullopt,
-    bool                         strictMatchSize = true
+    bool                         strictMatchSize = false
 );
 
 [[nodiscard]] NBT_API std::string saveAsBase64(

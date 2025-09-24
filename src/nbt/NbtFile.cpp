@@ -158,7 +158,7 @@ std::optional<NbtFile> NbtFile::openFile(
 }
 
 std::optional<NbtFile> NbtFile::openSnbtFile(std::filesystem::path const& filePath) {
-    std::ifstream fRead(filePath, std::ios::ate | std::ios::binary);
+    std::ifstream fRead(filePath, std::ios::ate);
     if (fRead.is_open()) {
         auto size = fRead.tellg();
         fRead.seekg(0);
