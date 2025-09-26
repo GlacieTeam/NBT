@@ -40,6 +40,19 @@ CompoundTagVariant::iterator       CompoundTagVariant::end() noexcept { return i
 CompoundTagVariant::const_iterator CompoundTagVariant::end() const noexcept { return cend(); }
 CompoundTagVariant::const_iterator CompoundTagVariant::cend() const noexcept { return const_iterator::makeEnd(*this); }
 
+void CompoundTagVariant::clear() {
+    std::visit(
+        [](auto& tag) {
+            if constexpr (requires { tag.clear(); }) {
+                tag.clear();
+            } else {
+                throw std::runtime_error("tag not hold an object, array or binary");
+            }
+        },
+        mStorage
+    );
+}
+
 CompoundTag::TagMap const& CompoundTagVariant::items() const { return as<CompoundTag>().items(); }
 CompoundTag::TagMap&       CompoundTagVariant::items() { return as<CompoundTag>().items(); }
 

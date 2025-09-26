@@ -136,12 +136,13 @@ std::optional<NbtFile> NbtFile::openFile(
     bool                         strictMatchSize
 ) {
     std::string content;
-    detail::readFile(filePath, content, fileMemoryMap);
+    auto        absPath = std::filesystem::absolute(filePath);
+    detail::readFile(absPath, content, fileMemoryMap);
     if (!fileFormat.has_value()) { fileFormat = io::detectContentFormat(content, strictMatchSize); }
     if (auto data = io::parseFromContent(content, fileFormat, strictMatchSize)) {
         auto compressionType = io::detectContentCompressionType(content);
         return NbtFile(
-            filePath,
+            absPath,
             std::move(data).value(),
             false,
             fileFormat,
@@ -155,7 +156,8 @@ std::optional<NbtFile> NbtFile::openFile(
 }
 
 std::optional<NbtFile> NbtFile::openSnbtFile(std::filesystem::path const& filePath) {
-    std::ifstream fRead(filePath, std::ios::ate);
+    auto          absPath = std::filesystem::absolute(filePath);
+    std::ifstream fRead(absPath, std::ios::ate);
     if (fRead.is_open()) {
         std::string content;
         auto        size = fRead.tellg();
@@ -164,7 +166,7 @@ std::optional<NbtFile> NbtFile::openSnbtFile(std::filesystem::path const& filePa
         fRead.read(content.data(), size);
         if (auto data = CompoundTag::fromSnbt(content)) {
             return NbtFile(
-                filePath,
+                absPath,
                 std::move(data).value(),
                 true,
                 std::nullopt,
