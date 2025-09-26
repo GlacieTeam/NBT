@@ -11,7 +11,7 @@
 namespace nbt {
 
 class Int64Tag : public Tag {
-protected:
+public:
     int64_t mStorage{0};
 
 public:

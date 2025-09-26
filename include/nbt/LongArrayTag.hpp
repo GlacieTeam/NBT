@@ -12,7 +12,7 @@
 namespace nbt {
 
 class LongArrayTag : public Tag {
-protected:
+public:
     std::vector<int64_t> mStorage;
 
 public:

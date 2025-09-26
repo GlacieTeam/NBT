@@ -12,7 +12,7 @@
 namespace nbt {
 
 class IntArrayTag : public Tag {
-protected:
+public:
     std::vector<int> mStorage;
 
 public:

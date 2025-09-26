@@ -11,7 +11,7 @@
 namespace nbt {
 
 class IntTag : public Tag {
-protected:
+public:
     int mStorage{0};
 
 public:

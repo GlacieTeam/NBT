@@ -19,7 +19,7 @@ class ListTag : public Tag {
 public:
     using TagList = std::vector<std::unique_ptr<Tag>>;
 
-private:
+public:
     TagList mStorage;
     Type    mType{Type::End};
 

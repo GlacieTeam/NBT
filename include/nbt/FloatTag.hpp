@@ -11,7 +11,7 @@
 namespace nbt {
 
 class FloatTag : public Tag {
-protected:
+public:
     float mStorage{0};
 
 public:

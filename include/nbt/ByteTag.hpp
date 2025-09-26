@@ -11,7 +11,7 @@
 namespace nbt {
 
 class ByteTag : public Tag {
-protected:
+public:
     uint8_t mStorage{0};
 
 public:

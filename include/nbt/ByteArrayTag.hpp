@@ -12,7 +12,7 @@
 namespace nbt {
 
 class ByteArrayTag : public Tag {
-protected:
+public:
     std::vector<uint8_t> mStorage;
 
 public:

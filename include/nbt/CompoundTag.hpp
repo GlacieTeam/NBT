@@ -31,7 +31,7 @@ class CompoundTag : public Tag {
 public:
     using TagMap = std::map<std::string, CompoundTagVariant, std::less<>>;
 
-private:
+public:
     TagMap mTagMap;
 
 public:

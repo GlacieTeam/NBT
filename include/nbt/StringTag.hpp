@@ -11,7 +11,7 @@
 namespace nbt {
 
 class StringTag : public Tag {
-protected:
+public:
     std::string mStorage;
 
 public:

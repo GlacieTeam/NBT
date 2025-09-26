@@ -11,7 +11,7 @@
 namespace nbt {
 
 class DoubleTag : public Tag {
-protected:
+public:
     double mStorage{0};
 
 public:

@@ -11,7 +11,7 @@
 namespace nbt {
 
 class ShortTag : public Tag {
-protected:
+public:
     short mStorage{0};
 
 public:
