@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/types/CompoundTag.hpp"
+#include "nbt/io/NBTIO.hpp"
 #include "nbt/types/ByteArrayTag.hpp"
 #include "nbt/types/ByteTag.hpp"
 #include "nbt/types/CompoundTagVariant.hpp"
@@ -484,19 +485,18 @@ void CompoundTag::deserialize(io::BytesDataInput& stream) {
     if (tagType == Type::Compound) { load(stream); }
 }
 
-std::optional<CompoundTag> CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) noexcept try {
+CompoundTag CompoundTag::fromBinaryNbt(std::string_view binaryData, bool isLittleEndian) {
     io::BytesDataInput stream(binaryData, false, isLittleEndian);
     CompoundTag        result;
     result.deserialize(stream);
     return result;
-} catch (...) { return std::nullopt; }
+}
 
-std::optional<CompoundTag>
-CompoundTag::fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian) noexcept try {
+CompoundTag CompoundTag::fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian) {
     io::BytesDataInput stream(binaryData, false, isLittleEndian);
     stream.ignoreBytes(sizeof(int));
     return fromBinaryNbt(stream.getLongStringView(), isLittleEndian);
-} catch (...) { return std::nullopt; }
+}
 
 std::string CompoundTag::toBinaryNbt(bool isLittleEndian) const noexcept {
     io::BytesDataOutput stream(isLittleEndian);
@@ -518,12 +518,12 @@ std::string CompoundTag::toBinaryNbtWithHeader(bool isLittleEndian, std::optiona
     return stream.getAndReleaseData();
 }
 
-std::optional<CompoundTag> CompoundTag::fromNetworkNbt(std::string_view binaryData) noexcept try {
+CompoundTag CompoundTag::fromNetworkNbt(std::string_view binaryData) {
     bstream::ReadOnlyBinaryStream stream(binaryData, false);
     CompoundTag                   result;
     result.deserialize(stream);
     return result;
-} catch (...) { return std::nullopt; }
+}
 
 std::string CompoundTag::toNetworkNbt() const noexcept {
     bstream::BinaryStream stream;
@@ -555,6 +555,21 @@ std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::opt
 int CompoundTag::readHeaderVersion(std::string_view content, bool isLittleEndian) noexcept {
     io::BytesDataInput stream(content, isLittleEndian);
     return stream.getInt();
+}
+
+bool CompoundTag::validateNetworkNbt(std::string_view binaryData) {
+    return io::validateContent(binaryData, NbtFileFormat::BedrockNetwork);
+}
+
+bool CompoundTag::validateBinaryNbt(std::string_view binaryData, bool isLittleEndian) {
+    return io::validateContent(binaryData, isLittleEndian ? NbtFileFormat::LittleEndian : NbtFileFormat::BigEndian);
+}
+
+bool CompoundTag::validateBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian) {
+    return io::validateContent(
+        binaryData,
+        isLittleEndian ? NbtFileFormat::LittleEndianWithHeader : NbtFileFormat::BigEndianWithHeader
+    );
 }
 
 } // namespace nbt

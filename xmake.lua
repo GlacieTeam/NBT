@@ -4,7 +4,7 @@ add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo
 
 add_requires(
     "binarystream 2.3.2",
-    "nlohmann_json 3.12.0",
+    "zlib-static 1.3.1",
     "zstr 1.0.8"
 )
 
@@ -23,7 +23,7 @@ target("NBT")
     set_languages("c++23")
     add_packages(
         "binarystream",
-        "nlohmann_json",
+        "zlib-static",
         "zstr"
     )
     add_includedirs(

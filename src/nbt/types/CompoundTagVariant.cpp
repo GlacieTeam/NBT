@@ -9,7 +9,6 @@
 #include "nbt/detail/SnbtDeserializer.hpp"
 #include "nbt/detail/SnbtSerializer.hpp"
 #include "nbt/types/CompoundTag.hpp"
-#include <nlohmann/json.hpp>
 
 namespace nbt {
 
@@ -227,13 +226,16 @@ Tag& CompoundTagVariant::operator*() { return *get(); }
 bool CompoundTagVariant::operator==(CompoundTagVariant const& other) const { return get()->equals(*other.get()); }
 
 std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
-    return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat); }, mStorage);
+    return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat, false); }, mStorage);
 }
 
 std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
-    try {
-        return nlohmann::ordered_json::parse(toSnbt(SnbtFormat::Jsonify), nullptr, true, true).dump(indent);
-    } catch (...) { return "null"; }
+    return std::visit(
+        [&](auto& tag) {
+            return detail::TypedToSnbt(tag, indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        },
+        mStorage
+    );
 }
 
 void CompoundTagVariant::merge(CompoundTagVariant const& other, bool mergeList) {

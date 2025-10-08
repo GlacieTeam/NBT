@@ -202,11 +202,16 @@ public:
     toBinaryNbtWithHeader(bool isLittleEndian = true, std::optional<int> storageVersion = std::nullopt) const noexcept;
 
 public:
-    [[nodiscard]] NBT_API static std::optional<CompoundTag> fromNetworkNbt(std::string_view binaryData) noexcept;
-    [[nodiscard]] NBT_API static std::optional<CompoundTag>
-    fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true) noexcept;
-    [[nodiscard]] NBT_API static std::optional<CompoundTag>
-    fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian = true) noexcept;
+    [[nodiscard]] NBT_API static CompoundTag fromNetworkNbt(std::string_view binaryData);
+    [[nodiscard]] NBT_API static CompoundTag fromBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
+    [[nodiscard]] NBT_API static CompoundTag
+    fromBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian = true);
+
+    [[nodiscard]] NBT_API static bool validateNetworkNbt(std::string_view binaryData);
+    [[nodiscard]] NBT_API static bool validateBinaryNbt(std::string_view binaryData, bool isLittleEndian = true);
+    [[nodiscard]] NBT_API static bool
+    validateBinaryNbtWithHeader(std::string_view binaryData, bool isLittleEndian = true);
+
     [[nodiscard]] NBT_API static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 

@@ -557,13 +557,13 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
     return parseString(s);
 }
 
-std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s) noexcept try {
+std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s) {
     if (!skipWhitespace(s)) { return std::nullopt; }
     auto res = parseSnbtValueNonSkip(s);
     if (!res) { return res; }
     if (!skipWhitespace(s)) { return std::nullopt; }
     return res;
-} catch (...) { return std::nullopt; }
+}
 
 } // namespace detail
 
