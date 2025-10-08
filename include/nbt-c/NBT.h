@@ -101,7 +101,7 @@ NBT_API void* nbt_int_tag_create(int value);
 NBT_API void  nbt_int_tag_set_value(void* handle, int value);
 NBT_API int   nbt_int_tag_get_value(void* handle);
 
-// Int64Tag
+// LongTag
 NBT_API void*   nbt_int64_tag_create(int64_t value);
 NBT_API void    nbt_int64_tag_set_value(void* handle, int64_t value);
 NBT_API int64_t nbt_int64_tag_get_value(void* handle);

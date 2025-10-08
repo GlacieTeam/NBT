@@ -52,21 +52,21 @@ void readFileMMap(std::filesystem::path const& path, std::string& content) {
     CloseHandle(hMapping);
     CloseHandle(hFile);
 #else
-    int fd = open(path.string().c_str(), O_RDONLY);
+    int fd = ::open(path.string().c_str(), O_RDONLY);
     if (fd == -1) { return; }
     struct stat sb;
-    if (fstat(fd, &sb) == -1) {
-        close(fd);
+    if (::fstat(fd, &sb) == -1) {
+        ::close(fd);
         return;
     }
-    void* mapped = mmap(nullptr, static_cast<size_t>(sb.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
+    void* mapped = ::mmap(nullptr, static_cast<size_t>(sb.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
     if (mapped == MAP_FAILED) {
-        close(fd);
+        ::close(fd);
         return;
     }
     content.assign(static_cast<char*>(mapped), static_cast<size_t>(sb.st_size));
-    munmap(mapped, static_cast<size_t>(sb.st_size));
-    close(fd);
+    ::munmap(mapped, static_cast<size_t>(sb.st_size));
+    ::close(fd);
 #endif
 }
 

@@ -6,22 +6,22 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/detail/SnbtDeserializer.hpp"
-#include "nbt/ByteArrayTag.hpp"
-#include "nbt/ByteTag.hpp"
-#include "nbt/CompoundTag.hpp"
-#include "nbt/CompoundTagVariant.hpp"
-#include "nbt/DoubleTag.hpp"
-#include "nbt/EndTag.hpp"
-#include "nbt/FloatTag.hpp"
-#include "nbt/Int64Tag.hpp"
-#include "nbt/IntArrayTag.hpp"
-#include "nbt/IntTag.hpp"
-#include "nbt/ListTag.hpp"
-#include "nbt/LongArrayTag.hpp"
-#include "nbt/ShortTag.hpp"
-#include "nbt/StringTag.hpp"
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
+#include "nbt/types/ByteArrayTag.hpp"
+#include "nbt/types/ByteTag.hpp"
+#include "nbt/types/CompoundTag.hpp"
+#include "nbt/types/CompoundTagVariant.hpp"
+#include "nbt/types/DoubleTag.hpp"
+#include "nbt/types/EndTag.hpp"
+#include "nbt/types/FloatTag.hpp"
+#include "nbt/types/IntArrayTag.hpp"
+#include "nbt/types/IntTag.hpp"
+#include "nbt/types/ListTag.hpp"
+#include "nbt/types/LongArrayTag.hpp"
+#include "nbt/types/LongTag.hpp"
+#include "nbt/types/ShortTag.hpp"
+#include "nbt/types/StringTag.hpp"
 #include <limits>
 
 namespace nbt {
@@ -152,7 +152,7 @@ std::optional<CompoundTagVariant> parseNumber(std::string_view& s) {
     case 'l':
     case 'L':
         s.remove_prefix(1);
-        return checkRange<Int64Tag, int64_t>(res);
+        return checkRange<LongTag, int64_t>(res);
     case 'f':
     case 'F':
         s.remove_prefix(1);
@@ -180,7 +180,7 @@ std::optional<CompoundTagVariant> parseNumber(std::string_view& s) {
         case string_utils::doHash(" /*l*/"):
         case string_utils::doHash(" /*L*/"):
             s.remove_prefix(6);
-            return checkRange<Int64Tag, int64_t>(res);
+            return checkRange<LongTag, int64_t>(res);
         case string_utils::doHash(" /*f*/"):
         case string_utils::doHash(" /*F*/"):
             s.remove_prefix(6);
@@ -198,7 +198,7 @@ std::optional<CompoundTagVariant> parseNumber(std::string_view& s) {
         } else {
         }
         if (auto tag = checkRange<IntTag, int>(res)) { return tag; }
-        if (auto tag = checkRange<Int64Tag, int64_t>(res)) { return tag; }
+        if (auto tag = checkRange<LongTag, int64_t>(res)) { return tag; }
         return std::nullopt;
     } else {
         return DoubleTag{(double)res};
@@ -403,7 +403,7 @@ std::optional<IntArrayTag> parseIntArray(std::string_view& s) {
 }
 
 std::optional<LongArrayTag> parseLongArray(std::string_view& s) {
-    return parseNumArray<LongArrayTag, std::vector<int64_t>, Int64Tag>(s, [](auto&& vec, auto&& num) {
+    return parseNumArray<LongArrayTag, std::vector<int64_t>, LongTag>(s, [](auto&& vec, auto&& num) {
         vec.emplace_back(num);
     });
 }

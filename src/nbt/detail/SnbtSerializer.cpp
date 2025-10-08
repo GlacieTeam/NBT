@@ -5,21 +5,21 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-#include "nbt/ByteArrayTag.hpp"
-#include "nbt/ByteTag.hpp"
-#include "nbt/CompoundTag.hpp"
-#include "nbt/CompoundTagVariant.hpp"
-#include "nbt/DoubleTag.hpp"
-#include "nbt/EndTag.hpp"
-#include "nbt/FloatTag.hpp"
-#include "nbt/Int64Tag.hpp"
-#include "nbt/IntArrayTag.hpp"
-#include "nbt/IntTag.hpp"
-#include "nbt/ListTag.hpp"
-#include "nbt/ShortTag.hpp"
-#include "nbt/StringTag.hpp"
 #include "nbt/detail/Base64.hpp"
 #include "nbt/detail/StringUtils.hpp"
+#include "nbt/types/ByteArrayTag.hpp"
+#include "nbt/types/ByteTag.hpp"
+#include "nbt/types/CompoundTag.hpp"
+#include "nbt/types/CompoundTagVariant.hpp"
+#include "nbt/types/DoubleTag.hpp"
+#include "nbt/types/EndTag.hpp"
+#include "nbt/types/FloatTag.hpp"
+#include "nbt/types/IntArrayTag.hpp"
+#include "nbt/types/IntTag.hpp"
+#include "nbt/types/ListTag.hpp"
+#include "nbt/types/LongTag.hpp"
+#include "nbt/types/ShortTag.hpp"
+#include "nbt/types/StringTag.hpp"
 #include <format>
 #include <limits>
 #include <nlohmann/json.hpp>
@@ -131,7 +131,7 @@ std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat format) {
     return toString(self.storage());
 }
 
-std::string TypedToSnbt(Int64Tag const& self, uint8_t, SnbtFormat format) {
+std::string TypedToSnbt(LongTag const& self, uint8_t, SnbtFormat format) {
     return makeSnbtTagValue(self.storage(), format, 'l');
 }
 

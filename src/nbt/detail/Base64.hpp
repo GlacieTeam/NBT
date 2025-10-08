@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
+#include <cstdint>
 #include <string>
 
 namespace nbt::base64_utils {

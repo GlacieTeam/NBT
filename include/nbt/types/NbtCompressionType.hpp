@@ -6,12 +6,14 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include "nbt/types/CompoundTagVariant.hpp"
+#include <cstdint>
 
-namespace nbt::detail {
+namespace nbt {
 
-bool validateCompoundTag(io::BytesDataInput& stream, size_t streamSize);
+enum class NbtCompressionType : uint8_t {
+    None = 0,
+    Gzip = 1,
+    Zlib = 2,
+};
 
-bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize);
-
-} // namespace nbt::detail
+} // namespace nbt

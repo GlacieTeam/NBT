@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include "nbt/SnbtFormat.hpp"
+#include "nbt/types/SnbtFormat.hpp"
 #include <string>
 
 namespace nbt {
@@ -16,7 +16,7 @@ class EndTag;
 class ByteTag;
 class ShortTag;
 class IntTag;
-class Int64Tag;
+class LongTag;
 class FloatTag;
 class DoubleTag;
 class ByteArrayTag;
@@ -30,7 +30,7 @@ namespace detail {
 std::string TypedToSnbt(ByteTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(ShortTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(IntTag const&, uint8_t, SnbtFormat);
-std::string TypedToSnbt(Int64Tag const&, uint8_t, SnbtFormat);
+std::string TypedToSnbt(LongTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(FloatTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(DoubleTag const&, uint8_t, SnbtFormat);
 std::string TypedToSnbt(ByteArrayTag const&, uint8_t, SnbtFormat);

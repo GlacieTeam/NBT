@@ -77,7 +77,7 @@ void nbt_any_tag_destroy(void* handle) {
         break;
     }
     case Tag_Int64: {
-        delete reinterpret_cast<nbt::Int64Tag*>(handle);
+        delete reinterpret_cast<nbt::LongTag*>(handle);
         break;
     }
     case Tag_Float: {
@@ -172,16 +172,16 @@ int nbt_int_tag_get_value(void* handle) {
     return toTag(handle)->as<nbt::IntTag>();
 }
 
-// Int64Tag
-void* nbt_int64_tag_create(int64_t value) { return new nbt::Int64Tag(value); }
+// LongTag
+void* nbt_int64_tag_create(int64_t value) { return new nbt::LongTag(value); }
 
 void nbt_int64_tag_set_value(void* handle, int64_t value) {
-    if (handle) { toTag(handle)->as<nbt::Int64Tag>() = value; }
+    if (handle) { toTag(handle)->as<nbt::LongTag>() = value; }
 }
 
 int64_t nbt_int64_tag_get_value(void* handle) {
     if (!handle) { return 0; }
-    return toTag(handle)->as<nbt::Int64Tag>();
+    return toTag(handle)->as<nbt::LongTag>();
 }
 
 // FloatTag

@@ -33,7 +33,7 @@ bool validateListTag(io::BytesDataInput& stream, size_t streamSize) {
         stream.ignoreBytes(sizeof(int) * size);
         break;
     }
-    case Tag::Type::Int64: {
+    case Tag::Type::Long: {
         if (stream.getPosition() + (sizeof(int64_t) * size) > streamSize) { return false; }
         stream.ignoreBytes(sizeof(int64_t) * size);
         break;
@@ -127,7 +127,7 @@ bool validateCompoundTag(io::BytesDataInput& stream, size_t streamSize) {
             stream.ignoreBytes(sizeof(int));
             break;
         }
-        case Tag::Type::Int64: {
+        case Tag::Type::Long: {
             if (stream.getPosition() + sizeof(int64_t) > streamSize) { return false; }
             stream.ignoreBytes(sizeof(int64_t));
             break;
@@ -209,7 +209,7 @@ bool validateListTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSize) {
         if (stream.isOverflowed()) { return false; }
         break;
     }
-    case Tag::Type::Int64: {
+    case Tag::Type::Long: {
         (void)stream.getVarInt64();
         if (stream.isOverflowed()) { return false; }
         break;
@@ -304,7 +304,7 @@ bool validateCompoundTag(bstream::ReadOnlyBinaryStream& stream, size_t streamSiz
             if (stream.isOverflowed()) { return false; }
             break;
         }
-        case Tag::Type::Int64: {
+        case Tag::Type::Long: {
             (void)stream.getUnsignedVarInt64();
             if (stream.isOverflowed()) { return false; }
             break;
