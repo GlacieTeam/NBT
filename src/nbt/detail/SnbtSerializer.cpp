@@ -27,7 +27,6 @@
 namespace nbt {
 
 namespace {
-static constexpr std::string_view BASE64_TAG = " /*BASE64*/";
 
 template <std::integral T>
 std::string toString(T value) {
@@ -94,9 +93,12 @@ std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
             res = str;
         } else {
             if (string_utils::isValidUTF8(str)) {
-                res = string_utils::dumpString(str, static_cast<bool>(format & SnbtFormat::ForceAscii));
+                res = res = std::format(
+                    "\"{}\"",
+                    string_utils::dumpString(str, static_cast<bool>(format & SnbtFormat::ForceAscii))
+                );
             } else {
-                res = std::format("\"{0}\"{1}", base64_utils::encode(str), BASE64_TAG);
+                res = std::format("\"{}\" /*BASE64*/", base64_utils::encode(str));
             }
         }
     }

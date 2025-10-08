@@ -79,53 +79,34 @@ std::string Tag::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
 }
 
 std::string Tag::toJson(uint8_t indent) const noexcept {
+    auto format = SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote;
     switch (getType()) {
     case Type::Byte:
-        return detail::TypedToSnbt(as<ByteTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<ByteTag>(), indent, format, true);
     case Type::Short:
-        return detail::TypedToSnbt(as<ShortTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<ShortTag>(), indent, format, true);
     case Type::Int:
-        return detail::TypedToSnbt(as<IntTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<IntTag>(), indent, format, true);
     case Type::Long:
-        return detail::TypedToSnbt(as<LongTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<LongTag>(), indent, format, true);
     case Type::Float:
-        return detail::TypedToSnbt(as<FloatTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<FloatTag>(), indent, format, true);
     case Type::Double:
-        return detail::TypedToSnbt(as<DoubleTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<DoubleTag>(), indent, format, true);
     case Type::ByteArray:
-        return detail::TypedToSnbt(
-            as<ByteArrayTag>(),
-            indent,
-            SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote,
-            true
-        );
+        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, format, true);
     case Type::String:
-        return detail::TypedToSnbt(as<StringTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<StringTag>(), indent, format, true);
     case Type::List:
-        return detail::TypedToSnbt(as<ListTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<ListTag>(), indent, format, true);
     case Type::Compound:
-        return detail::TypedToSnbt(
-            as<CompoundTag>(),
-            indent,
-            SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote,
-            true
-        );
+        return detail::TypedToSnbt(as<CompoundTag>(), indent, format, true);
     case Type::IntArray:
-        return detail::TypedToSnbt(
-            as<IntArrayTag>(),
-            indent,
-            SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote,
-            true
-        );
+        return detail::TypedToSnbt(as<IntArrayTag>(), indent, format, true);
     case Type::LongArray:
-        return detail::TypedToSnbt(
-            as<LongArrayTag>(),
-            indent,
-            SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote,
-            true
-        );
+        return detail::TypedToSnbt(as<LongArrayTag>(), indent, format, true);
     default:
-        return detail::TypedToSnbt(as<EndTag>(), indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+        return detail::TypedToSnbt(as<EndTag>(), indent, format, true);
     }
 }
 
