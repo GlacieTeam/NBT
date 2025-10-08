@@ -152,7 +152,6 @@ std::string saveAsBinary(
         break;
     }
     }
-    std::ostringstream outstream;
     switch (compressionType) {
     case NbtCompressionType::Zlib: {
         return detail::compress(content, static_cast<int>(compressionLevel), 15);
