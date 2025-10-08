@@ -135,7 +135,7 @@ bool CompoundTag::putInt(std::string_view key, int32_t value) {
     return result;
 }
 
-bool CompoundTag::putInt64(std::string_view key, int64_t value) {
+bool CompoundTag::putLong(std::string_view key, int64_t value) {
     auto [_, result] = mTagMap.emplace(key, LongTag(value));
     return result;
 }
@@ -206,7 +206,7 @@ void CompoundTag::setShort(std::string_view key, int16_t value) { operator[](key
 
 void CompoundTag::setInt(std::string_view key, int32_t value) { operator[](key) = value; }
 
-void CompoundTag::setInt64(std::string_view key, int64_t value) { operator[](key) = value; }
+void CompoundTag::setLong(std::string_view key, int64_t value) { operator[](key) = value; }
 
 void CompoundTag::setFloat(std::string_view key, float value) { operator[](key) = value; }
 
@@ -284,14 +284,14 @@ IntTag* CompoundTag::getInt(std::string_view key) {
     return nullptr;
 }
 
-const LongTag* CompoundTag::getInt64(std::string_view key) const {
+const LongTag* CompoundTag::getLong(std::string_view key) const {
     if (const auto* tag = get(key)) {
         if (tag->getType() == Type::Long) { return static_cast<const LongTag*>(tag); }
     }
     return nullptr;
 }
 
-LongTag* CompoundTag::getInt64(std::string_view key) {
+LongTag* CompoundTag::getLong(std::string_view key) {
     if (auto* tag = get(key); tag) {
         if (tag->getType() == Type::Long) { return static_cast<LongTag*>(tag); }
     }

@@ -42,7 +42,7 @@ nbt::CompoundTag nbt2 = {
     {"Byte",      64_b                                   },
     {"Short",     16384_s                                },
     {"Int",       12345678                               },
-    {"Int64",     5678900123456_l                        },
+    {"Long",      5678900123456_l                        },
     {"Float",     3.14159f                               },
     {"Double",    1.23456789                             },
     {"String",    "homo string"                          },

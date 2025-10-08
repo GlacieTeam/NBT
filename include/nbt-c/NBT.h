@@ -25,7 +25,7 @@ enum TagType {
     Tag_Byte      = 1,
     Tag_Short     = 2,
     Tag_Int       = 3,
-    Tag_Int64     = 4,
+    Tag_Long      = 4,
     Tag_Float     = 5,
     Tag_Double    = 6,
     Tag_ByteArray = 7,

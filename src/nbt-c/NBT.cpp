@@ -76,7 +76,7 @@ void nbt_any_tag_destroy(void* handle) {
         delete reinterpret_cast<nbt::IntTag*>(handle);
         break;
     }
-    case Tag_Int64: {
+    case Tag_Long: {
         delete reinterpret_cast<nbt::LongTag*>(handle);
         break;
     }

@@ -107,7 +107,7 @@ public:
     NBT_API bool putByte(std::string_view key, uint8_t value);
     NBT_API bool putShort(std::string_view key, int16_t value);
     NBT_API bool putInt(std::string_view key, int32_t value);
-    NBT_API bool putInt64(std::string_view key, int64_t value);
+    NBT_API bool putLong(std::string_view key, int64_t value);
     NBT_API bool putFloat(std::string_view key, float value);
     NBT_API bool putDouble(std::string_view key, double value);
     NBT_API bool putString(std::string_view key, std::string_view value);
@@ -125,7 +125,7 @@ public:
     NBT_API void setByte(std::string_view key, uint8_t value);
     NBT_API void setShort(std::string_view key, int16_t value);
     NBT_API void setInt(std::string_view key, int32_t value);
-    NBT_API void setInt64(std::string_view key, int64_t value);
+    NBT_API void setLong(std::string_view key, int64_t value);
     NBT_API void setFloat(std::string_view key, float value);
     NBT_API void setDouble(std::string_view key, double value);
     NBT_API void setString(std::string_view key, std::string_view value);
@@ -149,8 +149,8 @@ public:
     [[nodiscard]] NBT_API const IntTag* getInt(std::string_view key) const;
     [[nodiscard]] NBT_API IntTag*       getInt(std::string_view key);
 
-    [[nodiscard]] NBT_API const LongTag* getInt64(std::string_view key) const;
-    [[nodiscard]] NBT_API LongTag*       getInt64(std::string_view key);
+    [[nodiscard]] NBT_API const LongTag* getLong(std::string_view key) const;
+    [[nodiscard]] NBT_API LongTag*       getLong(std::string_view key);
 
     [[nodiscard]] NBT_API const FloatTag* getFloat(std::string_view key) const;
     [[nodiscard]] NBT_API FloatTag*       getFloat(std::string_view key);
