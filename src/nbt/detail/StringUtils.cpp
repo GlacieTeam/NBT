@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/detail/StringUtils.hpp"
+#include <cstdint>
 #include <format>
 #include <zlib.h>
 

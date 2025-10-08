@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/detail/CompressionUtils.hpp"
+#include <cstdint>
 #include <zlib.h>
 
 namespace nbt::detail {
