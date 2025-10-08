@@ -72,7 +72,6 @@ bool isMinimize(SnbtFormat format) {
 
 std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
     std::string res;
-    bool        base64 = false;
     if (str.empty()) {
         res = "\"\"";
     } else {
@@ -94,15 +93,13 @@ std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
         if (isTrivial) {
             res = str;
         } else {
-            base64 = string_utils::isValidUTF8(str);
-            if (base64) {
-                res = '\"' + base64_utils::encode(str) + '\"';
-            } else {
+            if (string_utils::isValidUTF8(str)) {
                 res = string_utils::dumpString(str, static_cast<bool>(format & SnbtFormat::ForceAscii));
+            } else {
+                res = std::format("\"{0}\"{1}", base64_utils::encode(str), BASE64_TAG);
             }
         }
     }
-    if (base64) { res += BASE64_TAG; }
     return res;
 }
 
@@ -124,7 +121,7 @@ std::string TypedToSnbt(ShortTag const& self, uint8_t, SnbtFormat format, bool d
 
 std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat format, bool dumpJson) {
     if (dumpJson) return toString(self.storage());
-    if (!static_cast<bool>(format & SnbtFormat::MarkIntTag)) { return makeSnbtTagValue(self.storage(), format, 'i'); }
+    if (static_cast<bool>(format & SnbtFormat::MarkIntTag)) { return makeSnbtTagValue(self.storage(), format, 'i'); }
     return toString(self.storage());
 }
 
