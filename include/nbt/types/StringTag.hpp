@@ -12,7 +12,7 @@ namespace nbt {
 
 class StringTag : public Tag {
 public:
-    std::string mStorage;
+    std::string mStorage{};
 
 public:
     [[nodiscard]] NBT_API StringTag() = default;

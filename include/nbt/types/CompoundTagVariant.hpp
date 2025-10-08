@@ -45,7 +45,7 @@ public:
         LongArrayTag>;
 
 public:
-    TagVariant mStorage;
+    TagVariant mStorage{};
 
 public:
     template <bool Const>

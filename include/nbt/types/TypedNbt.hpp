@@ -15,13 +15,13 @@ namespace nbt {
 
 class TypedNbt : public CompoundTag {
 public:
-    bool                               mIsSnbtFile;
-    std::optional<NbtFileFormat>       mFileFormat;
-    std::optional<NbtCompressionType>  mCompressionType;
-    std::optional<NbtCompressionLevel> mCompressionLevel;
-    std::optional<SnbtFormat>          mSnbtFormat;
-    std::optional<uint8_t>             mSnbtIndent;
-    bool                               mAutoSave;
+    bool                               mIsSnbtFile{false};
+    std::optional<NbtFileFormat>       mFileFormat{};
+    std::optional<NbtCompressionType>  mCompressionType{};
+    std::optional<NbtCompressionLevel> mCompressionLevel{};
+    std::optional<SnbtFormat>          mSnbtFormat{};
+    std::optional<uint8_t>             mSnbtIndent{};
+    bool                               mAutoSave{true};
 
 public:
     NBT_API TypedNbt(

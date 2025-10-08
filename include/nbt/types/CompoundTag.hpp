@@ -32,7 +32,7 @@ public:
     using TagMap = std::map<std::string, CompoundTagVariant, std::less<>>;
 
 public:
-    TagMap mTagMap;
+    TagMap mTagMap{};
 
 public:
     using iterator               = TagMap::iterator;

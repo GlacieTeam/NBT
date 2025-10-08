@@ -13,7 +13,7 @@ namespace nbt {
 
 class ByteArrayTag : public Tag {
 public:
-    std::vector<uint8_t> mStorage;
+    std::vector<uint8_t> mStorage{};
 
 public:
     [[nodiscard]] NBT_API ByteArrayTag() = default;

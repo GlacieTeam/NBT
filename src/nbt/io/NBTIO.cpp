@@ -6,13 +6,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "nbt/io/NBTIO.hpp"
-
 #include "nbt/detail/Base64.hpp"
+#include "nbt/detail/CompressionUtils.hpp"
 #include "nbt/detail/FileUtils.hpp"
 #include "nbt/detail/Validate.hpp"
-#include "nbt/types/Literals.hpp"
-#include <sstream>
-#include <zstr/zstr.hpp>
+#include <fstream>
 
 namespace nbt::io {
 
@@ -39,16 +37,7 @@ detectFileFormat(std::filesystem::path const& path, bool fileMemoryMap, bool str
     if (std::filesystem::exists(path)) {
         std::string content;
         detail::readFile(path, content, fileMemoryMap);
-        if (content.size() > 2) {
-            const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
-            const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
-            if ((b0 == 0x1F_byte && b1 == 0x8B_byte)
-                || (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte))) {
-                std::istringstream stream(content);
-                zstr::istream      decompressor(stream);
-                content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
-            }
-        }
+        content.assign(detail::decompress(content));
         return detectContentFormat(content, strictMatchSize);
     }
     return std::nullopt;
@@ -86,16 +75,7 @@ NbtCompressionType detectContentCompressionType(std::string_view content) {
 
 std::optional<CompoundTag>
 _parseFromBinary(std::string& content, std::optional<NbtFileFormat> format, bool strictMatchSize) {
-    if (content.size() > 2) {
-        const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
-        const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
-        if ((b0 == 0x1F_byte && b1 == 0x8B_byte)
-            || (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte))) {
-            std::istringstream stream(content);
-            zstr::istream      decompressor(stream);
-            content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
-        }
-    }
+    content.assign(detail::decompress(content));
     if (!format.has_value()) { format = detectContentFormat(content, strictMatchSize); }
     if (!format.has_value()) { return std::nullopt; }
     switch (*format) {
@@ -172,20 +152,13 @@ std::string saveAsBinary(
         break;
     }
     }
-    static constexpr auto BUFFER_SIZE = 1048576ull;
-    std::ostringstream    outstream;
+    std::ostringstream outstream;
     switch (compressionType) {
     case NbtCompressionType::Zlib: {
-        zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 15);
-        zstream << content;
-        zstream.flush();
-        return outstream.str();
+        return detail::compress(content, static_cast<int>(compressionLevel), 15);
     }
     case NbtCompressionType::Gzip: {
-        zstr::ostream zstream(outstream, BUFFER_SIZE, static_cast<int>(compressionLevel), 31);
-        zstream << content;
-        zstream.flush();
-        return outstream.str();
+        return detail::compress(content, static_cast<int>(compressionLevel), 31);
     }
     default:
         return content;
@@ -229,31 +202,22 @@ bool saveToFile(
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     switch (compressionType) {
     case NbtCompressionType::Zlib: {
-        zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 15);
-        if (fWrite.is_open()) {
-            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
-            fWrite.close();
-            return true;
-        }
-        return false;
+        content.assign(detail::compress(content, static_cast<int>(compressionLevel), 15));
+        break;
     }
     case NbtCompressionType::Gzip: {
-        zstr::ofstream fWrite(path, std::ios::out | std::ios::binary, static_cast<int>(compressionLevel), 31);
-        if (fWrite.is_open()) {
-            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
-            fWrite.close();
-            return true;
-        }
-        return false;
+        content.assign(detail::compress(content, static_cast<int>(compressionLevel), 31));
+        break;
     }
-    default:
-        std::ofstream fWrite(path, std::ios::out | std::ios::binary);
-        if (fWrite.is_open()) {
-            fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
-            fWrite.close();
-            return true;
-        }
-        return false;
+    default: {
+        break;
+    }
+    }
+    std::ofstream fWrite(path, std::ios::out | std::ios::binary);
+    if (fWrite.is_open()) {
+        fWrite.write(content.data(), static_cast<std::streamsize>(content.size()));
+        fWrite.close();
+        return true;
     }
     return false;
 }
@@ -366,16 +330,7 @@ bool validateFile(std::filesystem::path const& path, NbtFileFormat format, bool 
     if (std::filesystem::exists(path)) {
         std::string content;
         detail::readFile(path, content, fileMemoryMap);
-        if (content.size() > 2) {
-            const auto& b0 = static_cast<std::byte>(static_cast<uint8_t const&>(content[0]));
-            const auto& b1 = static_cast<std::byte>(static_cast<uint8_t const&>(content[1]));
-            if ((b0 == 0x1F_byte && b1 == 0x8B_byte)
-                || (b0 == 0x78_byte && (b1 == 0x01_byte || b1 == 0x9C_byte || b1 == 0xDA_byte))) {
-                std::istringstream stream(content);
-                zstr::istream      decompressor(stream);
-                content.assign(std::istreambuf_iterator<char>(decompressor), std::istreambuf_iterator<char>());
-            }
-        }
+        content.assign(detail::decompress(content));
         return validateContent(content, format, strictMatchSize);
     }
     return false;

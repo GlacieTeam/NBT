@@ -4,8 +4,7 @@ add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo
 
 add_requires(
     "binarystream 2.3.2",
-    "zlib-static 1.3.1",
-    "zstr 1.0.8"
+    "zlib-static 1.3.1"
 )
 
 if is_plat("windows") and not has_config("vs_runtime") then
@@ -23,8 +22,7 @@ target("NBT")
     set_languages("c++23")
     add_packages(
         "binarystream",
-        "zlib-static",
-        "zstr"
+        "zlib-static"
     )
     add_includedirs(
         "include",

@@ -13,7 +13,7 @@ namespace nbt {
 
 class IntArrayTag : public Tag {
 public:
-    std::vector<int> mStorage;
+    std::vector<int> mStorage{};
 
 public:
     [[nodiscard]] NBT_API IntArrayTag() = default;

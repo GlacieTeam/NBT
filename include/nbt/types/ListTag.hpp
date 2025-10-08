@@ -20,7 +20,7 @@ public:
     using TagList = std::vector<std::unique_ptr<Tag>>;
 
 public:
-    TagList mStorage;
+    TagList mStorage{};
     Type    mType{Type::End};
 
 public:

@@ -13,7 +13,7 @@ namespace nbt {
 
 class NbtFile : public TypedNbt {
 public:
-    std::filesystem::path mFilePath;
+    std::filesystem::path mFilePath{};
 
 public:
     NBT_API ~NbtFile();
