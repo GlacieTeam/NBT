@@ -56,24 +56,26 @@ bool isValidUTF8(std::string_view s) {
         if (remaining == 1) {
             return true;
         } else if (remaining == 2) {
-            const uint32_t cp = ((c & 0x0F) << 12) | ((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)
-                              | (static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F)));
+            const uint32_t cp = static_cast<uint32_t>((c & 0x0F) << 12)
+                              | static_cast<uint32_t>((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)
+                              | static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F));
             if (cp < 0x0800 || (cp >= 0xD800 && cp <= 0xDFFF)) return false;
         } else if (remaining == 3) {
-            const uint32_t cp = ((c & 0x07) << 18) | ((static_cast<uint8_t>(*(it - 3)) & 0x3F) << 12)
-                              | (static_cast<uint32_t>(((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)))
-                              | (static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F)));
+            const uint32_t cp = static_cast<uint32_t>((c & 0x07) << 18)
+                              | static_cast<uint32_t>((static_cast<uint8_t>(*(it - 3)) & 0x3F) << 12)
+                              | static_cast<uint32_t>(((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6))
+                              | static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F));
             if (cp < 0x10000 || cp > 0x10FFFF) return false;
         }
     }
     return true;
 }
 
-std::string dumpString(std::string_view content, bool ensure_ascii) {
+std::string dumpString(std::string_view content, bool ensureAscii) {
     std::string result;
     result.reserve(static_cast<size_t>(static_cast<double>(content.size()) * 1.2));
 
-    if (ensure_ascii) {
+    if (ensureAscii) {
         auto it = content.begin();
         while (it != content.end()) {
             const uint8_t c         = static_cast<uint8_t>(*it++);
@@ -128,7 +130,7 @@ std::string dumpString(std::string_view content, bool ensure_ascii) {
             }
         }
     } else {
-        for (uint8_t c : content) {
+        for (char c : content) {
             switch (c) {
             case '"':
                 result += "\\\"";
@@ -152,10 +154,10 @@ std::string dumpString(std::string_view content, bool ensure_ascii) {
                 result += "\\t";
                 break;
             default:
-                if (c <= 0x1F) {
+                if (static_cast<int>(c) <= 0x1F) {
                     result += std::format("\\u{:04X}", static_cast<uint32_t>(c));
                 } else {
-                    result += static_cast<char>(c);
+                    result += c;
                 }
             }
         }

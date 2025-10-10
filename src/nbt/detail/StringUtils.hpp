@@ -26,6 +26,6 @@ std::string& replaceAll(std::string& str, std::string_view oldValue, std::string
 
 [[nodiscard]] bool isValidUTF8(std::string_view s);
 
-[[nodiscard]] std::string dumpString(std::string_view content, bool ensure_ascii);
+[[nodiscard]] std::string dumpString(std::string_view content, bool ensureAscii);
 
 } // namespace nbt::string_utils

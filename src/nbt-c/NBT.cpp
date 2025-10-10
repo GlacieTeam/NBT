@@ -173,13 +173,13 @@ int nbt_int_tag_get_value(void* handle) {
 }
 
 // LongTag
-void* nbt_int64_tag_create(int64_t value) { return new nbt::LongTag(value); }
+void* nbt_long_tag_create(int64_t value) { return new nbt::LongTag(value); }
 
-void nbt_int64_tag_set_value(void* handle, int64_t value) {
+void nbt_long_tag_set_value(void* handle, int64_t value) {
     if (handle) { toTag(handle)->as<nbt::LongTag>() = value; }
 }
 
-int64_t nbt_int64_tag_get_value(void* handle) {
+int64_t nbt_long_tag_get_value(void* handle) {
     if (!handle) { return 0; }
     return toTag(handle)->as<nbt::LongTag>();
 }
