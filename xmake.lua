@@ -74,10 +74,12 @@ target("NBT")
                 "-fvisibility=hidden",
                 "-fvisibility-inlines-hidden"
             )
-            add_shflags(
-                "-static-libstdc++",
-                "-static-libgcc"
-            )
+            if is_plat("linux") then 
+                add_shflags(
+                    "-static-libstdc++",
+                    "-static-libgcc"
+                )
+            end
             if is_plat("macosx") then
                 add_shflags("-dynamiclib")
             end

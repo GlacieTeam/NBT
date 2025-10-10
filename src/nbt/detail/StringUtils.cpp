@@ -57,12 +57,12 @@ bool isValidUTF8(std::string_view s) {
             return true;
         } else if (remaining == 2) {
             const uint32_t cp = ((c & 0x0F) << 12) | ((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)
-                              | (static_cast<uint8_t>(*(it - 1)) & 0x3F);
+                              | (static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F)));
             if (cp < 0x0800 || (cp >= 0xD800 && cp <= 0xDFFF)) return false;
         } else if (remaining == 3) {
             const uint32_t cp = ((c & 0x07) << 18) | ((static_cast<uint8_t>(*(it - 3)) & 0x3F) << 12)
-                              | ((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)
-                              | (static_cast<uint8_t>(*(it - 1)) & 0x3F);
+                              | (static_cast<uint32_t>(((static_cast<uint8_t>(*(it - 2)) & 0x3F) << 6)))
+                              | (static_cast<uint32_t>((static_cast<uint8_t>(*(it - 1)) & 0x3F)));
             if (cp < 0x10000 || cp > 0x10FFFF) return false;
         }
     }
