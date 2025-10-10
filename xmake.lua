@@ -61,7 +61,8 @@ target("NBT")
             "-Wextra",
             "-Wconversion",
             "-pedantic",
-            "-fexceptions"
+            "-fexceptions",
+            "-fPIC"
         )
         if is_mode("release") then
             add_cxflags(
