@@ -4,7 +4,7 @@ add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo
 
 add_requires(
     "binarystream 2.3.2",
-    "zlib-static 1.3.1"
+    "zlib 1.3.1"
 )
 
 if is_plat("windows") and not has_config("vs_runtime") then
@@ -22,7 +22,7 @@ target("NBT")
     set_languages("c++23")
     add_packages(
         "binarystream",
-        "zlib-static"
+        "zlib"
     )
     add_includedirs(
         "include",
@@ -77,7 +77,9 @@ target("NBT")
             if is_plat("linux") then 
                 add_shflags(
                     "-static-libstdc++",
-                    "-static-libgcc"
+                    "-static-libgcc",
+                    "-Wl,--no-undefined",
+                    "-Wl,--exclude-libs,ALL"
                 )
             end
             if is_plat("macosx") then
