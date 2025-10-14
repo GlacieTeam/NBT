@@ -154,10 +154,10 @@ std::string dumpString(std::string_view content, bool ensureAscii) {
                 result += "\\t";
                 break;
             default:
-                if (static_cast<int>(c) <= 0x1F) {
-                    result += std::format("\\u{:04X}", static_cast<uint32_t>(c));
+                if (static_cast<uint8_t>(c) <= 0x1F) {
+                    result.append(std::format("\\u{:04X}", c));
                 } else {
-                    result += c;
+                    result.push_back(c);
                 }
             }
         }
