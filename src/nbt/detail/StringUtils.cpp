@@ -115,16 +115,16 @@ std::string dumpString(std::string_view content, bool ensureAscii) {
                 break;
             default:
                 if (codepoint <= 0x1F) {
-                    result += std::format("\\u{:04X}", codepoint);
+                    result += std::format("\\u{:04x}", codepoint);
                 } else if (codepoint <= 0x7F) {
                     result += static_cast<char>(codepoint);
                 } else {
                     if (codepoint <= 0xFFFF) {
-                        result += std::format("\\u{:04X}", codepoint);
+                        result += std::format("\\u{:04x}", codepoint);
                     } else {
                         codepoint -= 0x10000;
                         result +=
-                            std::format("\\u{:04X}\\u{:04X}", 0xD800 + (codepoint >> 10), 0xDC00 + (codepoint & 0x3FF));
+                            std::format("\\u{:04x}\\u{:04x}", 0xD800 + (codepoint >> 10), 0xDC00 + (codepoint & 0x3FF));
                     }
                 }
             }
@@ -155,7 +155,7 @@ std::string dumpString(std::string_view content, bool ensureAscii) {
                 break;
             default:
                 if (static_cast<uint8_t>(c) <= 0x1F) {
-                    result.append(std::format("\\u{:04X}", c));
+                    result.append(std::format("\\u{:04x}", c));
                 } else {
                     result.push_back(c);
                 }
