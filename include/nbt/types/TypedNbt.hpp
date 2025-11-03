@@ -21,6 +21,7 @@ public:
     std::optional<NbtCompressionLevel> mCompressionLevel{};
     std::optional<SnbtFormat>          mSnbtFormat{};
     std::optional<uint8_t>             mSnbtIndent{};
+    std::optional<SnbtNumberFormat>    mSnbtNumberFormat{};
     bool                               mAutoSave{true};
 
 public:
@@ -31,7 +32,8 @@ public:
         std::optional<NbtCompressionType>  compressionType,
         std::optional<NbtCompressionLevel> compressionLevel,
         std::optional<SnbtFormat>          snbtFormat,
-        std::optional<uint8_t>             snbtIndent
+        std::optional<uint8_t>             snbtIndent,
+        std::optional<SnbtNumberFormat>    snbtNumberFormat
     );
 
     NBT_API void setFileData(CompoundTag const& fileData);
@@ -49,6 +51,8 @@ public:
     NBT_API void setSnbtIndent(uint8_t indent);
 
     NBT_API void setAutoSave(bool value);
+
+    NBT_API void setSnbtNumberFormat(SnbtNumberFormat format);
 };
 
 } // namespace nbt

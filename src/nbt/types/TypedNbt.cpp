@@ -16,7 +16,8 @@ TypedNbt::TypedNbt(
     std::optional<NbtCompressionType>  compressionType,
     std::optional<NbtCompressionLevel> compressionLevel,
     std::optional<SnbtFormat>          snbtFormat,
-    std::optional<uint8_t>             snbtIndent
+    std::optional<uint8_t>             snbtIndent,
+    std::optional<SnbtNumberFormat>    snbtNumberFormat
 )
 : CompoundTag(std::move(fileData)),
   mIsSnbtFile(isSnbt),
@@ -25,6 +26,7 @@ TypedNbt::TypedNbt(
   mCompressionLevel(compressionLevel),
   mSnbtFormat(snbtFormat),
   mSnbtIndent(snbtIndent),
+  mSnbtNumberFormat(snbtNumberFormat),
   mAutoSave(true) {}
 
 void TypedNbt::setFileData(CompoundTag const& fileData) { static_cast<CompoundTag&>(*this) = fileData; }

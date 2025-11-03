@@ -234,12 +234,18 @@ std::optional<CompoundTag> parseSnbtFromFile(std::filesystem::path const& path) 
     return std::nullopt;
 }
 
-bool saveSnbtToFile(CompoundTag const& nbt, std::filesystem::path const& path, SnbtFormat format, uint8_t indent) {
+bool saveSnbtToFile(
+    CompoundTag const&           nbt,
+    std::filesystem::path const& path,
+    SnbtFormat                   format,
+    uint8_t                      indent,
+    SnbtNumberFormat             snbtNumberFormat
+) {
     std::ofstream fWrite;
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     fWrite.open(path, std::ios_base::out);
     if (!fWrite.is_open()) { return false; }
-    fWrite << nbt.toSnbt(format, indent);
+    fWrite << nbt.toSnbt(format, indent, snbtNumberFormat);
     fWrite.close();
     return true;
 }

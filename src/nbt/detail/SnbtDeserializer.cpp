@@ -123,6 +123,7 @@ std::optional<CompoundTagVariant> checkRange(long double& num) {
     return std::nullopt;
 }
 
+// TODO: rewrite this
 std::optional<CompoundTagVariant> parseNumber(std::string_view& s) {
     size_t      n = 0;
     long double res;

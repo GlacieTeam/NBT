@@ -23,9 +23,19 @@ NbtContent::NbtContent(
     std::optional<NbtCompressionType>  compressionType,
     std::optional<NbtCompressionLevel> compressionLevel,
     std::optional<SnbtFormat>          snbtFormat,
-    std::optional<uint8_t>             snbtIndent
+    std::optional<uint8_t>             snbtIndent,
+    std::optional<SnbtNumberFormat>    snbtNumberFormat
 )
-: TypedNbt(std::move(fileData), isSnbt, fileFormat, compressionType, compressionLevel, snbtFormat, snbtIndent),
+: TypedNbt(
+      std::move(fileData),
+      isSnbt,
+      fileFormat,
+      compressionType,
+      compressionLevel,
+      snbtFormat,
+      snbtIndent,
+      snbtNumberFormat
+  ),
   mBuffer(buffer) {}
 
 void NbtContent::save() const {
@@ -56,6 +66,7 @@ NbtContent::open(std::string& content, std::optional<NbtFileFormat> fileFormat, 
             compressionType,
             NbtCompressionLevel::Default,
             std::nullopt,
+            std::nullopt,
             std::nullopt
         );
     }
@@ -72,7 +83,8 @@ std::optional<NbtContent> NbtContent::openSnbt(std::string& content) {
             std::nullopt,
             std::nullopt,
             SnbtFormat::Minimize,
-            0
+            0,
+            SnbtNumberFormat::Default
         );
     }
     return std::nullopt;

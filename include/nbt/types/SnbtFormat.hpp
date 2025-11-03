@@ -22,9 +22,10 @@ enum class SnbtFormat : uint16_t {
     MarkIntTag                = 1 << 7,
     MarkDoubleTag             = 1 << 8,
     CommentMarks              = 1 << 9,
+    MarkSigned                = 1 << 10,
     ArrayLineFeed             = ListArrayLineFeed | BinaryArrayLineFeed,
     AlwaysLineFeed            = CompoundLineFeed | ArrayLineFeed,
-    MarkExtra                 = MarkIntTag | MarkDoubleTag,
+    MarkAllTypes              = MarkIntTag | MarkDoubleTag,
     PrettyFilePrint           = CompoundLineFeed | ListArrayLineFeed,
     Classic                   = PrettyFilePrint | ForceQuote,
     Jsonify                   = AlwaysLineFeed | ForceQuote | CommentMarks,
@@ -38,5 +39,12 @@ enum class SnbtFormat : uint16_t {
 [[nodiscard]] constexpr SnbtFormat operator&(const SnbtFormat lhs, const SnbtFormat rhs) noexcept {
     return static_cast<SnbtFormat>(std::to_underlying(lhs) & std::to_underlying(rhs));
 }
+
+enum class SnbtNumberFormat : uint8_t {
+    Decimal     = 0,
+    Hexadecimal = 1,
+    Binary      = 2,
+    Default     = Decimal,
+};
 
 } // namespace nbt

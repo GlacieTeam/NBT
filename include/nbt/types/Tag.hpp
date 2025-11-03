@@ -72,8 +72,11 @@ public:
         return operator[](std::string_view{index, N - 1});
     }
 
-    [[nodiscard]] NBT_API std::string
-                          toSnbt(SnbtFormat snbtFormat = SnbtFormat::Default, uint8_t indent = 4) const noexcept;
+    [[nodiscard]] NBT_API std::string toSnbt(
+        SnbtFormat       snbtFormat   = SnbtFormat::Default,
+        uint8_t          indent       = 4,
+        SnbtNumberFormat numberFormat = SnbtNumberFormat::Default
+    ) const noexcept;
 
     [[nodiscard]] NBT_API std::string toJson(uint8_t indent = 4) const noexcept;
 

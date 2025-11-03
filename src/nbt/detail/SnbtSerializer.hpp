@@ -27,19 +27,19 @@ class LongArrayTag;
 
 namespace detail {
 
-std::string TypedToSnbt(ByteTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(ShortTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(IntTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(LongTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(FloatTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(DoubleTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(ByteArrayTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(StringTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(ListTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(CompoundTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(IntArrayTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(LongArrayTag const&, uint8_t, SnbtFormat, bool);
-std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat, bool);
+std::string TypedToSnbt(ByteTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(ShortTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(IntTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(LongTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(FloatTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(DoubleTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(ByteArrayTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(StringTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(ListTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(CompoundTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(IntArrayTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(LongArrayTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
+std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat);
 
 } // namespace detail
 

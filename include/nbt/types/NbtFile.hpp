@@ -26,7 +26,8 @@ public:
         std::optional<NbtCompressionType>  compressionType,
         std::optional<NbtCompressionLevel> compressionLevel,
         std::optional<SnbtFormat>          snbtFormat,
-        std::optional<uint8_t>             snbtIndent
+        std::optional<uint8_t>             snbtIndent,
+        std::optional<SnbtNumberFormat>    snbtNumberFormat
     );
 
     NBT_API void setFilePath(std::filesystem::path const& filePath);

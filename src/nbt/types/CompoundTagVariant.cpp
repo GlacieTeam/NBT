@@ -225,14 +225,24 @@ Tag& CompoundTagVariant::operator*() { return *get(); }
 
 bool CompoundTagVariant::operator==(CompoundTagVariant const& other) const { return get()->equals(*other.get()); }
 
-std::string CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
-    return std::visit([&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat, false); }, mStorage);
+std::string
+CompoundTagVariant::toSnbt(SnbtFormat snbtFormat, uint8_t indent, SnbtNumberFormat numberFormat) const noexcept {
+    return std::visit(
+        [&](auto& tag) { return detail::TypedToSnbt(tag, indent, snbtFormat, false, numberFormat); },
+        mStorage
+    );
 }
 
 std::string CompoundTagVariant::toJson(uint8_t indent) const noexcept {
     return std::visit(
         [&](auto& tag) {
-            return detail::TypedToSnbt(tag, indent, SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote, true);
+            return detail::TypedToSnbt(
+                tag,
+                indent,
+                SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote,
+                true,
+                SnbtNumberFormat::Default
+            );
         },
         mStorage
     );

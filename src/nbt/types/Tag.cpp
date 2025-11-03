@@ -47,34 +47,34 @@ std::unique_ptr<Tag> Tag::newTag(Type type) {
 
 bool Tag::operator==(Tag const& other) const { return equals(other); }
 
-std::string Tag::toSnbt(SnbtFormat snbtFormat, uint8_t indent) const noexcept {
+std::string Tag::toSnbt(SnbtFormat snbtFormat, uint8_t indent, SnbtNumberFormat numberFormat) const noexcept {
     switch (getType()) {
     case Type::Byte:
-        return detail::TypedToSnbt(as<ByteTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<ByteTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Short:
-        return detail::TypedToSnbt(as<ShortTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<ShortTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Int:
-        return detail::TypedToSnbt(as<IntTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<IntTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Long:
-        return detail::TypedToSnbt(as<LongTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<LongTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Float:
-        return detail::TypedToSnbt(as<FloatTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<FloatTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Double:
-        return detail::TypedToSnbt(as<DoubleTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<DoubleTag>(), indent, snbtFormat, false, numberFormat);
     case Type::ByteArray:
-        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, snbtFormat, false, numberFormat);
     case Type::String:
-        return detail::TypedToSnbt(as<StringTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<StringTag>(), indent, snbtFormat, false, numberFormat);
     case Type::List:
-        return detail::TypedToSnbt(as<ListTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<ListTag>(), indent, snbtFormat, false, numberFormat);
     case Type::Compound:
-        return detail::TypedToSnbt(as<CompoundTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<CompoundTag>(), indent, snbtFormat, false, numberFormat);
     case Type::IntArray:
-        return detail::TypedToSnbt(as<IntArrayTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<IntArrayTag>(), indent, snbtFormat, false, numberFormat);
     case Type::LongArray:
-        return detail::TypedToSnbt(as<LongArrayTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<LongArrayTag>(), indent, snbtFormat, false, numberFormat);
     default:
-        return detail::TypedToSnbt(as<EndTag>(), indent, snbtFormat, false);
+        return detail::TypedToSnbt(as<EndTag>(), indent, snbtFormat, false, numberFormat);
     }
 }
 
@@ -82,31 +82,31 @@ std::string Tag::toJson(uint8_t indent) const noexcept {
     auto format = SnbtFormat::AlwaysLineFeed | SnbtFormat::ForceQuote;
     switch (getType()) {
     case Type::Byte:
-        return detail::TypedToSnbt(as<ByteTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<ByteTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Short:
-        return detail::TypedToSnbt(as<ShortTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<ShortTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Int:
-        return detail::TypedToSnbt(as<IntTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<IntTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Long:
-        return detail::TypedToSnbt(as<LongTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<LongTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Float:
-        return detail::TypedToSnbt(as<FloatTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<FloatTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Double:
-        return detail::TypedToSnbt(as<DoubleTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<DoubleTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::ByteArray:
-        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<ByteArrayTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::String:
-        return detail::TypedToSnbt(as<StringTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<StringTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::List:
-        return detail::TypedToSnbt(as<ListTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<ListTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::Compound:
-        return detail::TypedToSnbt(as<CompoundTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<CompoundTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::IntArray:
-        return detail::TypedToSnbt(as<IntArrayTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<IntArrayTag>(), indent, format, true, SnbtNumberFormat::Default);
     case Type::LongArray:
-        return detail::TypedToSnbt(as<LongArrayTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<LongArrayTag>(), indent, format, true, SnbtNumberFormat::Default);
     default:
-        return detail::TypedToSnbt(as<EndTag>(), indent, format, true);
+        return detail::TypedToSnbt(as<EndTag>(), indent, format, true, SnbtNumberFormat::Default);
     }
 }
 
