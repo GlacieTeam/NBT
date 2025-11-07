@@ -29,14 +29,16 @@ namespace nbt {
 namespace {
 
 template <std::integral T>
-std::string toString(T value, SnbtFormat format, SnbtNumberFormat nfmt) {
+std::string toString(T value, SnbtNumberFormat nfmt) {
     switch (nfmt) {
     case SnbtNumberFormat::Binary: {
-        return std::format("{:b}", value);
+        return std::format("0b{:b}", value);
     }
-    case SnbtNumberFormat::Hexadecimal: {
-        if (static_cast<bool>(format & SnbtFormat::ForceUppercase)) { return std::format("{:X}", value); }
-        return std::format("{:x}", value);
+    case SnbtNumberFormat::LowerHexadecimal: {
+        return std::format("0x{:x}", value);
+    }
+    case SnbtNumberFormat::UpperHexadecimal: {
+        return std::format("0x{:X}", value);
     }
     default: {
         return std::format("{:d}", value);
@@ -45,7 +47,7 @@ std::string toString(T value, SnbtFormat format, SnbtNumberFormat nfmt) {
 }
 
 template <std::floating_point T>
-std::string toString(T value, SnbtFormat, SnbtNumberFormat) {
+std::string toString(T value, SnbtNumberFormat) {
     if (std::round(value) == value) { return std::format("{:.1f}", value); }
     return std::format("{}", value);
 }
@@ -57,23 +59,23 @@ constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark, Sn
         char smk = std::is_signed_v<T> ? 's' : 'u';
         if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
             return std::format(
-                "{0} /*{1}{2:c}*/",
-                toString(value, format, nfmt),
+                "{0} /*{1:c}{2:c}*/",
+                toString(value, nfmt),
                 upper ? std::toupper(smk) : smk,
                 upper ? std::toupper(mark) : mark
             );
         }
         return std::format(
-            "{0}{1}{2:c}",
-            toString(value, format, nfmt),
+            "{0}{1:c}{2:c}",
+            toString(value, nfmt),
             upper ? std::toupper(smk) : smk,
             upper ? std::toupper(mark) : mark
         );
     }
     if (static_cast<bool>(format & SnbtFormat::CommentMarks)) {
-        return std::format("{0} /*{1:c}*/", toString(value, format, nfmt), upper ? std::toupper(mark) : mark);
+        return std::format("{0} /*{1:c}*/", toString(value, nfmt), upper ? std::toupper(mark) : mark);
     }
-    return std::format("{0}{1:c}", toString(value, format, nfmt), upper ? std::toupper(mark) : mark);
+    return std::format("{0}{1:c}", toString(value, nfmt), upper ? std::toupper(mark) : mark);
 }
 
 template <std::floating_point T>
@@ -140,39 +142,39 @@ namespace detail {
 std::string TypedToSnbt(EndTag const&, uint8_t, SnbtFormat, bool, SnbtNumberFormat) { return "null"; }
 
 std::string TypedToSnbt(ByteTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     return makeSnbtTagValue(self.storage(), format, 'b', nfmt);
 }
 
 std::string TypedToSnbt(ShortTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     return makeSnbtTagValue(self.storage(), format, 's', nfmt);
 }
 
 std::string TypedToSnbt(IntTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     if (static_cast<bool>(format & SnbtFormat::MarkIntTag)) {
         return makeSnbtTagValue(self.storage(), format, 'i', nfmt);
     }
-    return toString(self.storage(), format, nfmt);
+    return toString(self.storage(), nfmt);
 }
 
 std::string TypedToSnbt(LongTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     return makeSnbtTagValue(self.storage(), format, 'l', nfmt);
 }
 
 std::string TypedToSnbt(FloatTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     return makeSnbtTagValue(self.storage(), format, 'f', nfmt);
 }
 
 std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-    if (dumpJson) return toString(self.storage(), format, nfmt);
+    if (dumpJson) return toString(self.storage(), nfmt);
     if (static_cast<bool>(format & SnbtFormat::MarkDoubleTag)) {
         return makeSnbtTagValue(self.storage(), format, 'd', nfmt);
     }
-    return toString(self.storage(), format, nfmt);
+    return toString(self.storage(), nfmt);
 }
 
 std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format, bool, SnbtNumberFormat) {
@@ -215,7 +217,8 @@ std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format, 
     return res;
 }
 
-std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat) {
+std::string
+TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
     std::string res;
 
     static constexpr std::string_view lbracket{"{"}, rbracket{"}"};
@@ -241,7 +244,7 @@ std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat form
         res += ':';
 
         if (!isMinimized) { res += ' '; }
-        auto key = v.toSnbt(format, indent);
+        auto key = v.toSnbt(format, indent, nfmt);
         if (dumpJson) { key = v.toJson(); }
 
         if (isNewLine) { string_utils::replaceAll(key, "\n", "\n" + indentSpace); }
@@ -284,7 +287,7 @@ TypedToSnbt(ByteArrayTag const& self, uint8_t indent, SnbtFormat format, bool du
         if (isNewLine) { res += indentSpace; }
 
         if (dumpJson) {
-            res += toString(tag, format, nfmt);
+            res += toString(tag, nfmt);
         } else {
             res += makeSnbtTagValue(tag, format, 'b', nfmt);
         }
@@ -326,9 +329,11 @@ TypedToSnbt(IntArrayTag const& self, uint8_t indent, SnbtFormat format, bool dum
         if (isNewLine) { res += indentSpace; }
 
         if (dumpJson) {
-            res += toString(tag, format, nfmt);
-        } else {
+            res += toString(tag, nfmt);
+        } else if (static_cast<bool>(format & SnbtFormat::MarkIntTag)) {
             res += makeSnbtTagValue(tag, format, 'i', nfmt);
+        } else {
+            res += toString(tag, nfmt);
         }
 
         if (i > 0) {
@@ -368,7 +373,7 @@ TypedToSnbt(LongArrayTag const& self, uint8_t indent, SnbtFormat format, bool du
         if (isNewLine) { res += indentSpace; }
 
         if (dumpJson) {
-            res += toString(tag, format, nfmt);
+            res += toString(tag, nfmt);
         } else {
             res += makeSnbtTagValue(tag, format, 'l', nfmt);
         }

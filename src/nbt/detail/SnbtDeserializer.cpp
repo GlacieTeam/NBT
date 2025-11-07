@@ -147,17 +147,14 @@ inline std::optional<std::string_view> parseNumberView(std::string_view str, siz
 
 inline std::string parseNumberMark(std::string_view& sv) noexcept {
     auto first = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return std::isspace(c); });
-    if (first == sv.end()) {
-        sv = sv.substr(0, 0);
-        return {};
-    }
-    sv.remove_prefix(static_cast<size_t>(first - sv.begin()));
-    auto last   = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return c == ',' || c == '}'; });
-    auto result = std::string(sv.substr(first - sv.begin(), last - first + 1));
+    if (first == sv.end()) { return {}; }
+    auto last   = std::find_if(first, sv.end(), [](uint8_t c) { return c == ',' || c == '}' || c == ']'; });
+    auto result = std::string(sv.substr(first - sv.begin(), last - first));
     for (char& c : result) {
         if (static_cast<uint8_t>(c) >= 'A' && static_cast<uint8_t>(c) <= 'Z') { c |= 0x20; }
     }
     while (std::isspace(result.back())) { result.pop_back(); }
+    sv.remove_prefix(static_cast<size_t>(first - sv.begin()));
     return result;
 }
 
@@ -216,7 +213,6 @@ std::optional<CompoundTagVariant> checkRange(std::string_view str) {
     return std::nullopt;
 }
 
-// TODO: rewrite this
 std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
     size_t pos   = 0;
     bool   isInt = true;

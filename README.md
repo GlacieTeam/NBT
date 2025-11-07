@@ -20,6 +20,7 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 ## Features ⚡
 - **Ultra-fast parsing** - Achieves 200 MB/s processing speed on modern CPUs
 - **Complete NBT support** - All NBT types (Java and Bedrock)
+- **Full SNBT support** - Full SNBT support, include new SNBT format since Java Edition 1.21.5
 - **Zero-copy design** - Minimal memory allocation during parsing
 - **Streaming interface** - Process large NBT files with constant memory footprint
 - **Cross-platform** - Windows, Linux, macOS support

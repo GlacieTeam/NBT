@@ -239,13 +239,13 @@ bool saveSnbtToFile(
     std::filesystem::path const& path,
     SnbtFormat                   format,
     uint8_t                      indent,
-    SnbtNumberFormat             sfmt
+    SnbtNumberFormat             nfmt
 ) {
     std::ofstream fWrite;
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     fWrite.open(path, std::ios_base::out);
     if (!fWrite.is_open()) { return false; }
-    fWrite << nbt.toSnbt(format, indent, sfmt);
+    fWrite << nbt.toSnbt(format, indent, nfmt);
     fWrite.close();
     return true;
 }

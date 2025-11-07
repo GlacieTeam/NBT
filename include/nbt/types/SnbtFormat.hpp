@@ -41,10 +41,11 @@ enum class SnbtFormat : uint16_t {
 }
 
 enum class SnbtNumberFormat : uint8_t {
-    Decimal     = 0,
-    Hexadecimal = 1,
-    Binary      = 2,
-    Default     = Decimal,
+    Decimal          = 0,
+    LowerHexadecimal = 1,
+    UpperHexadecimal = 2,
+    Binary           = 3,
+    Default          = Decimal,
 };
 
 } // namespace nbt
