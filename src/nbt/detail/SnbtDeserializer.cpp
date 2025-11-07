@@ -25,6 +25,8 @@
 #include <charconv>
 #include <limits>
 
+#include <print>
+
 namespace nbt {
 
 namespace {
@@ -99,7 +101,7 @@ char get(std::string_view& s) {
     return c;
 }
 
-inline std::optional<std::string_view> parseNumberView(std::string_view str, size_t& n, bool& isInt) noexcept {
+inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n, bool& isInt) noexcept {
     n     = 0;
     isInt = true;
     if (str.empty()) return std::nullopt;
@@ -125,24 +127,36 @@ inline std::optional<std::string_view> parseNumberView(std::string_view str, siz
     }
 
     auto digit_start = it;
-    if (hex) {
-        while (it != end && std::isxdigit(static_cast<uint8_t>(*it))) { ++it; }
-    } else if (bin) {
-        while (it != end && (*it == '0' || *it == '1')) { ++it; }
-    } else {
-        while (it != end && std::isdigit(static_cast<uint8_t>(*it))) { ++it; }
-    }
+    auto scan_digit  = [&] {
+        if (hex) {
+            while (it != end && (std::isxdigit(static_cast<uint8_t>(*it)) || *it == '_')) ++it;
+        } else if (bin) {
+            while (it != end && (*it == '0' || *it == '1' || *it == '_')) ++it;
+        } else {
+            while (it != end && (std::isdigit(static_cast<uint8_t>(*it)) || *it == '_')) ++it;
+        }
+    };
+    scan_digit();
 
     if (!hex && !bin && it != end && *it == '.') {
         isInt = false;
         ++it;
-        while (it != end && std::isdigit(static_cast<uint8_t>(*it))) ++it;
+        scan_digit();
     }
 
-    if (it == digit_start) return std::nullopt;
+    bool ok = false;
+    for (auto tmp = digit_start; tmp != it; ++tmp) {
+        if (*tmp != '_') {
+            ok = true;
+            break;
+        }
+    }
+    if (!ok) return std::nullopt;
 
-    n = static_cast<size_t>(it - str.begin());
-    return str.substr(start - str.begin(), it - start);
+    n           = static_cast<size_t>(it - str.begin());
+    auto result = std::string(str.substr(start - str.begin(), it - start));
+    result.erase(std::remove_if(result.begin(), result.end(), [](uint8_t c) { return c == '_'; }), result.end());
+    return result;
 }
 
 inline std::string parseNumberMark(std::string_view& sv) noexcept {
@@ -160,10 +174,13 @@ inline std::string parseNumberMark(std::string_view& sv) noexcept {
 
 inline std::optional<std::variant<uint64_t, int64_t>> parseInt(std::string_view s) noexcept {
     bool negative = false;
-    if (s.front() == '+' || s.front() == '-') {
-        negative = (s.front() == '-');
+    if (s.front() == '+') {
         s.remove_prefix(1);
         if (s.empty()) return std::nullopt;
+    }
+    if (s.front() == '-') {
+        negative = true;
+        if (s.size() == 1) return std::nullopt;
     }
     int base = 10;
     if (s.size() >= 2 && s[0] == '0') {
@@ -216,9 +233,10 @@ std::optional<CompoundTagVariant> checkRange(std::string_view str) {
 std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
     size_t pos   = 0;
     bool   isInt = true;
-    if (auto num = parseNumberView(str, pos, isInt)) {
+    if (auto num = parseNumberStr(str, pos, isInt)) {
         str.remove_prefix(pos);
         auto mk = parseNumberMark(str);
+        std::println("[C++] mark |{}|, num |{}|", mk, *num);
         if (mk.empty()) {
             if (isInt) {
                 if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
