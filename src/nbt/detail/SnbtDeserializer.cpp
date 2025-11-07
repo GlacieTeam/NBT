@@ -25,8 +25,6 @@
 #include <charconv>
 #include <limits>
 
-#include <print>
-
 namespace nbt {
 
 namespace {
@@ -236,7 +234,6 @@ std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
     if (auto num = parseNumberStr(str, pos, isInt)) {
         str.remove_prefix(pos);
         auto mk = parseNumberMark(str);
-        std::println("[C++] mark |{}|, num |{}|", mk, *num);
         if (mk.empty()) {
             if (isInt) {
                 if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
