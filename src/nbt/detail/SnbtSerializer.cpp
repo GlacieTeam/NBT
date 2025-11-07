@@ -76,7 +76,6 @@ constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark, Sn
     return std::format("{0}{1:c}", toString(value, format, nfmt), upper ? std::toupper(mark) : mark);
 }
 
-// TODO: rewrite this
 template <std::floating_point T>
 constexpr std::string makeSnbtTagValue(T value, SnbtFormat format, char mark, SnbtNumberFormat) {
     bool upper = static_cast<bool>(format & SnbtFormat::ForceUppercase);
@@ -176,11 +175,11 @@ std::string TypedToSnbt(DoubleTag const& self, uint8_t, SnbtFormat format, bool 
     return toString(self.storage(), format, nfmt);
 }
 
-std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format, bool, SnbtNumberFormat nfmt) {
+std::string TypedToSnbt(StringTag const& self, uint8_t, SnbtFormat format, bool, SnbtNumberFormat) {
     return toDumpString(self.storage(), format, false);
 }
 
-std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
+std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat) {
     std::string res;
 
     static constexpr std::string_view lbracket{"["}, rbracket{"]"};
@@ -216,9 +215,7 @@ std::string TypedToSnbt(ListTag const& self, uint8_t indent, SnbtFormat format, 
     return res;
 }
 
-std::string
-TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat nfmt) {
-
+std::string TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat format, bool dumpJson, SnbtNumberFormat) {
     std::string res;
 
     static constexpr std::string_view lbracket{"{"}, rbracket{"}"};

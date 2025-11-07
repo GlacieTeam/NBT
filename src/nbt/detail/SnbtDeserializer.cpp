@@ -22,6 +22,7 @@
 #include "nbt/types/LongTag.hpp"
 #include "nbt/types/ShortTag.hpp"
 #include "nbt/types/StringTag.hpp"
+#include <charconv>
 #include <limits>
 
 namespace nbt {
@@ -98,112 +99,242 @@ char get(std::string_view& s) {
     return c;
 }
 
-std::optional<long double> stold(std::string_view const& s, size_t& n) {
-    int&        errnoRef = errno;
-    char const* ptr      = s.data();
-    char*       eptr;
-    errnoRef              = 0;
-    const long double res = strtold(ptr, &eptr);
-    if (ptr == eptr) { return std::nullopt; }
-    if (errnoRef == ERANGE) { return std::nullopt; }
-    n = static_cast<size_t>(eptr - ptr);
-    return res;
+inline std::optional<std::string_view> parseNumberView(std::string_view str, size_t& n, bool& isInt) noexcept {
+    n     = 0;
+    isInt = true;
+    if (str.empty()) return std::nullopt;
+
+    auto it = str.begin(), end = str.end();
+
+    while (it != end && std::isspace(static_cast<uint8_t>(*it))) ++it;
+    auto start = it;
+    if (it == end) return std::nullopt;
+
+    if (*it == '+' || *it == '-') ++it;
+
+    bool hex = false, bin = false;
+    if (it + 1 < end && *it == '0') {
+        char c = *(it + 1);
+        if (c == 'x' || c == 'X') {
+            hex  = true;
+            it  += 2;
+        } else if (c == 'b' || c == 'B') {
+            bin  = true;
+            it  += 2;
+        }
+    }
+
+    auto digit_start = it;
+    if (hex) {
+        while (it != end && std::isxdigit(static_cast<uint8_t>(*it))) { ++it; }
+    } else if (bin) {
+        while (it != end && (*it == '0' || *it == '1')) { ++it; }
+    } else {
+        while (it != end && std::isdigit(static_cast<uint8_t>(*it))) { ++it; }
+    }
+
+    if (!hex && !bin && it != end && *it == '.') {
+        isInt = false;
+        ++it;
+        while (it != end && std::isdigit(static_cast<uint8_t>(*it))) ++it;
+    }
+
+    if (it == digit_start) return std::nullopt;
+
+    n = static_cast<size_t>(it - str.begin());
+    return str.substr(start - str.begin(), it - start);
+}
+
+inline std::string parseNumberMark(std::string_view& sv) noexcept {
+    auto first = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return std::isspace(c); });
+    if (first == sv.end()) {
+        sv = sv.substr(0, 0);
+        return {};
+    }
+    sv.remove_prefix(static_cast<size_t>(first - sv.begin()));
+    auto last   = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return c == ',' || c == '}'; });
+    auto result = std::string(sv.substr(first - sv.begin(), last - first + 1));
+    for (char& c : result) {
+        if (static_cast<uint8_t>(c) >= 'A' && static_cast<uint8_t>(c) <= 'Z') { c |= 0x20; }
+    }
+    while (std::isspace(result.back())) { result.pop_back(); }
+    return result;
+}
+
+inline std::optional<std::variant<uint64_t, int64_t>> parseInt(std::string_view s) noexcept {
+    bool negative = false;
+    if (s.front() == '+' || s.front() == '-') {
+        negative = (s.front() == '-');
+        s.remove_prefix(1);
+        if (s.empty()) return std::nullopt;
+    }
+    int base = 10;
+    if (s.size() >= 2 && s[0] == '0') {
+        char c = s[1];
+        if (c == 'x' || c == 'X') {
+            base = 16;
+            s.remove_prefix(2);
+        } else if (c == 'b' || c == 'B') {
+            base = 2;
+            s.remove_prefix(2);
+        }
+    }
+    if (negative && base != 10) return std::nullopt;
+    if (base == 10 && negative) {
+        int64_t v      = 0;
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), v, 10);
+        if (ec != std::errc{} || ptr != s.data() + s.size()) return std::nullopt;
+        return v;
+    } else {
+        uint64_t v     = 0;
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), v, base);
+        if (ec != std::errc{} || ptr != s.data() + s.size()) return std::nullopt;
+        return v;
+    }
+    return std::nullopt;
 }
 
 template <class R, class T>
-std::optional<CompoundTagVariant> checkRange(long double& num) {
-    if (std::numeric_limits<T>::lowest() <= num && num <= std::numeric_limits<T>::max()) {
-        return R{(T)num};
-    } else if constexpr (!std::is_floating_point_v<T>) {
-        using unsigned_t = std::make_unsigned_t<T>;
-        if (std::numeric_limits<unsigned_t>::lowest() <= num && num <= std::numeric_limits<unsigned_t>::max()) {
-            return R{(unsigned_t)num};
+std::optional<CompoundTagVariant> checkRange(std::string_view str) {
+    if constexpr (std::is_floating_point_v<T>) {
+        auto num = static_cast<T>(std::stod(std::string(str)));
+        if (std::numeric_limits<T>::lowest() <= num && num <= std::numeric_limits<T>::max()) { return R(num); }
+    } else {
+        if (auto intValue = parseInt(str)) {
+            return std::visit(
+                [](auto val) -> std::optional<CompoundTagVariant> {
+                    auto num = static_cast<T>(val);
+                    if (std::numeric_limits<T>::lowest() <= num && num <= std::numeric_limits<T>::max()) {
+                        return R(num);
+                    }
+                    return std::nullopt;
+                },
+                *intValue
+            );
         }
     }
     return std::nullopt;
 }
 
 // TODO: rewrite this
-std::optional<CompoundTagVariant> parseNumber(std::string_view& s) {
-    size_t      n = 0;
-    long double res;
-    if (auto tmp = stold(s, n); tmp) {
-        res = *tmp;
-    } else {
-        return std::nullopt;
-    }
-    bool isInt = true;
-    for (size_t i = 0; i < n; i++) {
-        if (!std::isxdigit(s[i]) && s[i] != '-') { isInt = false; }
-    }
-    s.remove_prefix(n);
-    switch (s.front()) {
-    case 'b':
-    case 'B':
-        s.remove_prefix(1);
-        return checkRange<ByteTag, uint8_t>(res);
-    case 's':
-    case 'S':
-        s.remove_prefix(1);
-        return checkRange<ShortTag, short>(res);
-    case 'i':
-    case 'I':
-        s.remove_prefix(1);
-        return checkRange<IntTag, int>(res);
-    case 'l':
-    case 'L':
-        s.remove_prefix(1);
-        return checkRange<LongTag, int64_t>(res);
-    case 'f':
-    case 'F':
-        s.remove_prefix(1);
-        return checkRange<FloatTag, float>(res);
-    case 'd':
-    case 'D':
-        s.remove_prefix(1);
-        return checkRange<DoubleTag, double>(res);
-    default:
-        break;
-    }
-    if (s.size() >= 6) switch (string_utils::doHash(s.substr(0, 6))) {
-        case string_utils::doHash(" /*b*/"):
-        case string_utils::doHash(" /*B*/"):
-            s.remove_prefix(6);
-            return checkRange<ByteTag, uint8_t>(res);
-        case string_utils::doHash(" /*s*/"):
-        case string_utils::doHash(" /*S*/"):
-            s.remove_prefix(6);
-            return checkRange<ShortTag, short>(res);
-        case string_utils::doHash(" /*i*/"):
-        case string_utils::doHash(" /*I*/"):
-            s.remove_prefix(6);
-            return checkRange<IntTag, int>(res);
-        case string_utils::doHash(" /*l*/"):
-        case string_utils::doHash(" /*L*/"):
-            s.remove_prefix(6);
-            return checkRange<LongTag, int64_t>(res);
-        case string_utils::doHash(" /*f*/"):
-        case string_utils::doHash(" /*F*/"):
-            s.remove_prefix(6);
-            return checkRange<FloatTag, float>(res);
-        case string_utils::doHash(" /*d*/"):
-        case string_utils::doHash(" /*D*/"):
-            s.remove_prefix(6);
-            return checkRange<DoubleTag, double>(res);
-        default:
-            break;
+std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
+    size_t pos   = 0;
+    bool   isInt = true;
+    if (auto num = parseNumberView(str, pos, isInt)) {
+        str.remove_prefix(pos);
+        auto mk = parseNumberMark(str);
+        if (mk.empty()) {
+            if (isInt) {
+                if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
+                return checkRange<LongTag, int>(*num);
+            } else {
+                return checkRange<DoubleTag, double>(*num);
+            }
+        } else if (mk.size() == 1) {
+            switch (mk.front()) {
+            case 'b':
+                str.remove_prefix(1);
+                return checkRange<ByteTag, uint8_t>(*num);
+            case 's':
+                str.remove_prefix(1);
+                return checkRange<ShortTag, short>(*num);
+            case 'i':
+                str.remove_prefix(1);
+                return checkRange<IntTag, int>(*num);
+            case 'l':
+                str.remove_prefix(1);
+                return checkRange<LongTag, int64_t>(*num);
+            case 'f':
+                str.remove_prefix(1);
+                return checkRange<FloatTag, float>(*num);
+            case 'd':
+                str.remove_prefix(1);
+                return checkRange<DoubleTag, double>(*num);
+            default:
+                break;
+            }
+        } else if (mk.size() == 2) {
+            switch (string_utils::doHash(mk)) {
+            case string_utils::doHash("sb"):
+            case string_utils::doHash("ub"): {
+                str.remove_prefix(2);
+                return checkRange<ByteTag, uint8_t>(*num);
+            }
+            case string_utils::doHash("ss"):
+            case string_utils::doHash("us"): {
+                str.remove_prefix(2);
+                return checkRange<ShortTag, short>(*num);
+            }
+            case string_utils::doHash("si"):
+            case string_utils::doHash("ui"): {
+                str.remove_prefix(2);
+                return checkRange<IntTag, int>(*num);
+            }
+            case string_utils::doHash("sl"):
+            case string_utils::doHash("ul"): {
+                str.remove_prefix(2);
+                return checkRange<LongTag, int64_t>(*num);
+            }
+            default:
+                break;
+            }
+        } else if (mk.size() == 5) {
+            switch (string_utils::doHash(mk)) {
+            case string_utils::doHash("/*b*/"): {
+                str.remove_prefix(5);
+                return checkRange<ByteTag, uint8_t>(*num);
+            }
+            case string_utils::doHash("/*s*/"): {
+                str.remove_prefix(5);
+                return checkRange<ShortTag, short>(*num);
+            }
+            case string_utils::doHash("/*i*/"): {
+                str.remove_prefix(5);
+                return checkRange<IntTag, int>(*num);
+            }
+            case string_utils::doHash("/*l*/"): {
+                str.remove_prefix(5);
+                return checkRange<LongTag, int64_t>(*num);
+            }
+            case string_utils::doHash("/*f*/"): {
+                str.remove_prefix(5);
+                return checkRange<FloatTag, float>(*num);
+            }
+            case string_utils::doHash("/*d*/"): {
+                str.remove_prefix(5);
+                return checkRange<DoubleTag, double>(*num);
+            }
+            default:
+                break;
+            }
+        } else if (mk.size() == 6) {
+            switch (string_utils::doHash(mk)) {
+            case string_utils::doHash("/*sb*/"):
+            case string_utils::doHash("/*ub*/"): {
+                str.remove_prefix(6);
+                return checkRange<ByteTag, uint8_t>(*num);
+            }
+            case string_utils::doHash("/*ss*/"):
+            case string_utils::doHash("/*us*/"): {
+                str.remove_prefix(6);
+                return checkRange<ShortTag, short>(*num);
+            }
+            case string_utils::doHash("/*si*/"):
+            case string_utils::doHash("/*ui*/"): {
+                str.remove_prefix(6);
+                return checkRange<IntTag, int>(*num);
+            }
+            case string_utils::doHash("/*sl*/"):
+            case string_utils::doHash("/*ul*/"): {
+                str.remove_prefix(6);
+                return checkRange<LongTag, int64_t>(*num);
+            }
+            default:
+                break;
+            }
         }
-    if (isInt) {
-        if (std::numeric_limits<int>::lowest() <= res && res <= std::numeric_limits<int>::max()) {
-            return IntTag{(int)res};
-        } else {
-        }
-        if (auto tag = checkRange<IntTag, int>(res)) { return tag; }
-        if (auto tag = checkRange<LongTag, int64_t>(res)) { return tag; }
-        return std::nullopt;
-    } else {
-        return DoubleTag{(double)res};
     }
+    return std::nullopt;
 }
 
 std::optional<int> get_codepoint(std::string_view& s) {

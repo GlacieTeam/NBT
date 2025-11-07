@@ -239,13 +239,13 @@ bool saveSnbtToFile(
     std::filesystem::path const& path,
     SnbtFormat                   format,
     uint8_t                      indent,
-    SnbtNumberFormat             snbtNumberFormat
+    SnbtNumberFormat             sfmt
 ) {
     std::ofstream fWrite;
     if (!std::filesystem::exists(path.parent_path())) { std::filesystem::create_directories(path.parent_path()); }
     fWrite.open(path, std::ios_base::out);
     if (!fWrite.is_open()) { return false; }
-    fWrite << nbt.toSnbt(format, indent, snbtNumberFormat);
+    fWrite << nbt.toSnbt(format, indent, sfmt);
     fWrite.close();
     return true;
 }
@@ -254,7 +254,9 @@ std::optional<CompoundTag> parseSnbtFromContent(std::string_view content, std::o
     return CompoundTag::fromSnbt(content, parsedLength);
 }
 
-std::string dumpSnbt(CompoundTag const& nbt, SnbtFormat format, uint8_t indent) { return nbt.toSnbt(format, indent); }
+std::string dumpSnbt(CompoundTag const& nbt, SnbtFormat format, uint8_t indent, SnbtNumberFormat snbtNumberFormat) {
+    return nbt.toSnbt(format, indent, snbtNumberFormat);
+}
 
 bool validateContent(std::string_view binary, NbtFileFormat format, bool strictMatchSize) {
     switch (format) {
