@@ -25,7 +25,7 @@ enum class SnbtFormat : uint16_t {
     MarkSigned                = 1 << 10,
     ArrayLineFeed             = ListArrayLineFeed | BinaryArrayLineFeed,
     AlwaysLineFeed            = CompoundLineFeed | ArrayLineFeed,
-    MarkAllTypes              = MarkIntTag | MarkDoubleTag,
+    MarkAllTags               = MarkIntTag | MarkDoubleTag,
     PrettyFilePrint           = CompoundLineFeed | ListArrayLineFeed,
     Classic                   = PrettyFilePrint | ForceQuote,
     Jsonify                   = AlwaysLineFeed | ForceQuote | CommentMarks,

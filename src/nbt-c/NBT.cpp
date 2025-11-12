@@ -25,7 +25,7 @@ inline nbtio_buffer* make_nbtio_buffer(std::vector<uint8_t> const& buffer) {
 
 extern "C" {
 
-void nbtio_buffer_destroy(nbtio_buffer* buffer) {
+void nbtio_buffer_free(nbtio_buffer* buffer) {
     if (buffer) {
         if (buffer->data) { delete[] buffer->data; }
         delete buffer;
@@ -33,9 +33,9 @@ void nbtio_buffer_destroy(nbtio_buffer* buffer) {
 }
 
 // Any Tag
-TagType nbt_any_tag_get_type(void* handle) {
-    if (!handle) { return TagType::Tag_End; }
-    return static_cast<TagType>(toTag(handle)->getType());
+NBT_Type nbt_any_tag_get_type(void* handle) {
+    if (!handle) { return NBT_Type::TAG_END; }
+    return static_cast<NBT_Type>(toTag(handle)->getType());
 }
 
 bool nbt_any_tag_equals(void* handle, void* other) {
@@ -61,54 +61,54 @@ void nbt_any_tag_load(void* handle, void* stream) {
     if (handle) { return toTag(handle)->load(*reinterpret_cast<bstream::ReadOnlyBinaryStream*>(stream)); }
 }
 
-void nbt_any_tag_destroy(void* handle) {
+void nbt_any_tag_free(void* handle) {
     if (!handle) { return; }
     switch (nbt_any_tag_get_type(handle)) {
-    case Tag_Byte: {
+    case TAG_BYTE: {
         delete reinterpret_cast<nbt::ByteTag*>(handle);
         break;
     }
-    case Tag_Short: {
+    case TAG_SHORT: {
         delete reinterpret_cast<nbt::ShortTag*>(handle);
         break;
     }
-    case Tag_Int: {
+    case TAG_INT: {
         delete reinterpret_cast<nbt::IntTag*>(handle);
         break;
     }
-    case Tag_Long: {
+    case TAG_LONG: {
         delete reinterpret_cast<nbt::LongTag*>(handle);
         break;
     }
-    case Tag_Float: {
+    case TAG_FLOAT: {
         delete reinterpret_cast<nbt::FloatTag*>(handle);
         break;
     }
-    case Tag_Double: {
+    case TAG_DOUBLE: {
         delete reinterpret_cast<nbt::DoubleTag*>(handle);
         break;
     }
-    case Tag_ByteArray: {
+    case TAG_BYTEARRAY: {
         delete reinterpret_cast<nbt::ByteArrayTag*>(handle);
         break;
     }
-    case Tag_String: {
+    case TAG_STRING: {
         delete reinterpret_cast<nbt::StringTag*>(handle);
         break;
     }
-    case Tag_List: {
+    case TAG_LIST: {
         delete reinterpret_cast<nbt::ListTag*>(handle);
         break;
     }
-    case Tag_Compound: {
+    case TAG_COMPOUND: {
         delete reinterpret_cast<nbt::CompoundTag*>(handle);
         break;
     }
-    case Tag_IntArray: {
+    case TAG_INTARRAY: {
         delete reinterpret_cast<nbt::IntArrayTag*>(handle);
         break;
     }
-    case Tag_LongArray: {
+    case TAG_LONGARRAY: {
         delete reinterpret_cast<nbt::LongArrayTag*>(handle);
         break;
     }
@@ -118,9 +118,13 @@ void nbt_any_tag_destroy(void* handle) {
     }
 }
 
-nbtio_buffer* nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t indent) {
+nbtio_buffer* nbt_any_tag_to_snbt(void* handle, SNBT_Format format, uint8_t indent, SNBT_NumberFormat number_format) {
     if (handle) {
-        std::string value = toTag(handle)->as<nbt::Tag>().toSnbt(static_cast<nbt::SnbtFormat>(format), indent);
+        std::string value = toTag(handle)->as<nbt::Tag>().toSnbt(
+            static_cast<nbt::SnbtFormat>(format),
+            indent,
+            static_cast<nbt::SnbtNumberFormat>(number_format)
+        );
         return make_nbtio_buffer(value);
     }
     return nullptr;
@@ -482,7 +486,7 @@ void* nbt_parse_snbt_from_file(const char* path) {
     return nullptr;
 }
 
-bool nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent) {
+bool nbt_save_snbt_to_file(void* handle, const char* path, SNBT_Format format, uint8_t indent) {
     if (handle) {
         return nbt::io::saveSnbtToFile(
             toTag(handle)->as<nbt::CompoundTag>(),
@@ -510,14 +514,14 @@ NBT_FileFormat nbt_detect_file_format(const char* path, bool fmmap) {
     if (auto result = nbt::io::detectFileFormat(path, fmmap)) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
-        return NBT_FileFormat::NBT_Format_Invalid;
+        return NBT_FileFormat::NBT_FORMAT_INVALID;
     }
 }
 NBT_FileFormat nbt_detect_content_format(const uint8_t* data, size_t size) {
     if (auto result = nbt::io::detectContentFormat(std::string_view(reinterpret_cast<const char*>(data), size))) {
         return static_cast<NBT_FileFormat>(*result);
     } else {
-        return NBT_FileFormat::NBT_Format_Invalid;
+        return NBT_FileFormat::NBT_FORMAT_INVALID;
     }
 }
 

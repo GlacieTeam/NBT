@@ -18,69 +18,78 @@ struct nbtio_buffer {
     uint8_t* data;
     size_t   size;
 };
-NBT_API void nbtio_buffer_destroy(nbtio_buffer* buffer);
+NBT_API void nbtio_buffer_free(nbtio_buffer* buffer);
 
-enum TagType {
-    Tag_End       = 0,
-    Tag_Byte      = 1,
-    Tag_Short     = 2,
-    Tag_Int       = 3,
-    Tag_Long      = 4,
-    Tag_Float     = 5,
-    Tag_Double    = 6,
-    Tag_ByteArray = 7,
-    Tag_String    = 8,
-    Tag_List      = 9,
-    Tag_Compound  = 10,
-    Tag_IntArray  = 11,
-    Tag_LongArray = 12,
+enum NBT_Type {
+    TAG_END       = 0,
+    TAG_BYTE      = 1,
+    TAG_SHORT     = 2,
+    TAG_INT       = 3,
+    TAG_LONG      = 4,
+    TAG_FLOAT     = 5,
+    TAG_DOUBLE    = 6,
+    TAG_BYTEARRAY = 7,
+    TAG_STRING    = 8,
+    TAG_LIST      = 9,
+    TAG_COMPOUND  = 10,
+    TAG_INTARRAY  = 11,
+    TAG_LONGARRAY = 12,
 };
 
-enum Snbt_Format {
-    Snbt_Minimize                  = 0,
-    Snbt_CompoundLineFeed          = 1,
-    Snbt_ListArrayLineFeed         = 2,
-    Snbt_PrettyFilePrint           = 3,
-    Snbt_BinaryArrayLineFeed       = 4,
-    Snbt_ArrayLineFeed             = 6,
-    Snbt_AlwaysLineFeed            = 7,
-    Snbt_ForceLineFeedIgnoreIndent = 8,
-    Snbt_ForceAscii                = 16,
-    Snbt_ForceQuote                = 32,
-    Snbt_Classic                   = 35,
-    Snbt_ForceUppercase            = 64,
-    Snbt_MarkIntTag                = 128,
-    Snbt_MarkDoubleTag             = 256,
-    Snbt_MarkExtra                 = 384,
-    Snbt_CommentMarks              = 512,
-    Snbt_Jsonify                   = 551,
+enum SNBT_Format {
+    SNBT_MINIMIZE                      = 0,
+    SNBT_COMPOUND_LINE_FEED            = 1,
+    SNBT_LIST_ARRAY_LINE_FEED          = 2,
+    SNBT_PRETTY_FILE_PRINT             = 3,
+    SNBT_BINARY_ARRAY_LINE_FEED        = 4,
+    SNBT_ARRAY_LINE_FEED               = 6,
+    SNBT_ALWAYS_LINE_FEED              = 7,
+    SNBT_FORCE_LINE_FEED_IGNORE_INDENT = 8,
+    SNBT_FORCE_ASCII                   = 16,
+    SNBT_FORCE_QUOTE                   = 32,
+    SNBT_CLASSIC                       = 35,
+    SNBT_FORCE_UPPERCASE               = 64,
+    SNBT_MARK_INT_TAG                  = 128,
+    SNBT_MARK_DOUBLE_TAG               = 256,
+    SNBT_MARK_ALL_TAGS                 = 384,
+    SNBT_COMMENT_MARKS                 = 512,
+    SNBT_JSONIFY                       = 551,
+    SNBT_MARK_SIGNED                   = 1024,
 };
 
 enum NBT_FileFormat {
-    NBT_Format_Invalid                      = -1,
-    NBT_Format_LittleEndianBinary           = 0,
-    NBT_Format_LittleEndianBinaryWithHeader = 1,
-    NBT_Format_BigEndianBinary              = 2,
-    NBT_Format_BigEndianBinaryWithHeader    = 3,
-    NBT_Format_BedrockNetwork               = 4,
+    NBT_FORMAT_INVALID                   = -1,
+    NBT_FORMAT_LITTLE_ENDIAN             = 0,
+    NBT_FORMAT_LITTLE_ENDIAN_WITH_HEADER = 1,
+    NBT_FORMAT_BIG_ENDIAN                = 2,
+    NBT_FORMAT_BIG_ENDIAN_WITH_HEADER    = 3,
+    NBT_FORMAT_BEDROCK_NETWORK           = 4,
 };
 
 enum NBT_CompressionType {
-    NBT_Compression_None = 0,
-    NBT_Compression_Gzip = 1,
-    NBT_Compression_Zlib = 2,
+    NBT_COMPRESSION_NONE = 0,
+    NBT_COMPRESSION_GZIP = 1,
+    NBT_COMPRESSION_ZLIB = 2,
+};
+
+enum SNBT_NumberFormat {
+    SNBT_NUMBER_DECIMAL           = 0,
+    SNBT_NUMBER_LOWER_HEXADECIMAL = 1,
+    SNBT_NUMBER_UPPER_HEXADECIMAL = 2,
+    SNBT_NUMBER_BINARY            = 3,
 };
 
 // Any Tag
-NBT_API TagType nbt_any_tag_get_type(void* handle);
-NBT_API bool    nbt_any_tag_equals(void* handle, void* other);
-NBT_API void*   nbt_any_tag_copy(void* handle);
-NBT_API size_t  nbt_any_tag_hash(void* handle);
-NBT_API void    nbt_any_tag_write(void* handle, void* stream);
-NBT_API void    nbt_any_tag_load(void* handle, void* stream);
-NBT_API void    nbt_any_tag_destroy(void* handle);
+NBT_API NBT_Type nbt_any_tag_get_type(void* handle);
+NBT_API bool     nbt_any_tag_equals(void* handle, void* other);
+NBT_API void*    nbt_any_tag_copy(void* handle);
+NBT_API size_t   nbt_any_tag_hash(void* handle);
+NBT_API void     nbt_any_tag_write(void* handle, void* stream);
+NBT_API void     nbt_any_tag_load(void* handle, void* stream);
+NBT_API void     nbt_any_tag_free(void* handle);
 
-NBT_API nbtio_buffer* nbt_any_tag_to_snbt(void* handle, Snbt_Format format, uint8_t indent);
+NBT_API nbtio_buffer*
+nbt_any_tag_to_snbt(void* handle, SNBT_Format format, uint8_t indent, SNBT_NumberFormat number_format);
 NBT_API nbtio_buffer* nbt_any_tag_to_json(void* handle, uint8_t indent);
 
 // EndTag
@@ -181,7 +190,7 @@ NBT_API bool  nbt_save_to_file(
      int                 compressionLevel
  );
 NBT_API void* nbt_parse_snbt_from_file(const char* path);
-NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, Snbt_Format format, uint8_t indent);
+NBT_API bool  nbt_save_snbt_to_file(void* handle, const char* path, SNBT_Format format, uint8_t indent);
 
 NBT_API bool nbt_validate_file(const char* path, NBT_FileFormat format, bool fmmap, bool strictMatchSize);
 NBT_API bool nbt_validate_content(const uint8_t* data, size_t size, NBT_FileFormat format, bool strictMatchSize);
