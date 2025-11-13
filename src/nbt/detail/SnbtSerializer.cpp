@@ -235,6 +235,8 @@ TypedToSnbt(CompoundTag const& self, uint8_t indent, SnbtFormat format, bool dum
     if (isNewLine && self.size() > 0) { res += '\n'; }
 
     for (auto& [k, v] : self.items()) {
+        if (v.hold(Tag::Type::End)) { continue; }
+
         i--;
         if (isNewLine) { res += indentSpace; }
         auto keyStr = toDumpString(k, format, true);

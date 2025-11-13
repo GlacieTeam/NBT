@@ -83,7 +83,7 @@ std::size_t ListTag::hash() const {
 std::unique_ptr<ListTag> ListTag::clone() const { return std::make_unique<ListTag>(mStorageImpl->mStorage); }
 
 void ListTag::write(io::BytesDataOutput& stream) const {
-    stream.writeByte((uint8_t)mType);
+    stream.writeByte(static_cast<uint8_t>(mType));
     stream.writeInt(static_cast<int>(mStorageImpl->mStorage.size()));
     for (const auto& data : mStorageImpl->mStorage) { data->write(stream); }
 }
