@@ -110,11 +110,11 @@ std::string Tag::toJson(uint8_t indent) const noexcept {
     }
 }
 
-Tag& Tag::operator[](size_t index) {
+CompoundTagVariant& Tag::operator[](size_t index) {
     if (getType() == Type::List) { return as<ListTag>().operator[](index); }
     throw std::runtime_error("tag not hold an array");
 }
-Tag const& Tag::operator[](size_t index) const {
+CompoundTagVariant const& Tag::operator[](size_t index) const {
     if (getType() == Type::List) { return as<ListTag>().operator[](index); }
     throw std::runtime_error("tag not hold an array");
 }

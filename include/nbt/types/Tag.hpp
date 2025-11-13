@@ -56,8 +56,8 @@ public:
 public:
     [[nodiscard]] NBT_API bool operator==(Tag const& other) const;
 
-    [[nodiscard]] NBT_API Tag&       operator[](size_t index);
-    [[nodiscard]] NBT_API Tag const& operator[](size_t index) const;
+    [[nodiscard]] NBT_API CompoundTagVariant&       operator[](size_t index);
+    [[nodiscard]] NBT_API CompoundTagVariant const& operator[](size_t index) const;
 
     [[nodiscard]] NBT_API CompoundTagVariant&       operator[](std::string_view index);
     [[nodiscard]] NBT_API CompoundTagVariant const& operator[](std::string_view index) const;
