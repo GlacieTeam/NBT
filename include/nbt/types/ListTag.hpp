@@ -6,22 +6,21 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include <functional>
 #include <nbt/types/Tag.hpp>
 #include <vector>
 
 namespace nbt {
 
-class CompoundTag;
 class CompoundTagVariant;
 
 class ListTag : public Tag {
 public:
     using TagList = std::vector<CompoundTagVariant>;
+    struct TagListImpl;
 
 public:
-    TagList mStorage{};
-    Type    mType{Type::End};
+    std::unique_ptr<TagListImpl> mStorageImpl{};
+    Type                         mType{Type::End};
 
 public:
     using iterator               = TagList::iterator;
@@ -30,12 +29,20 @@ public:
     using const_reverse_iterator = TagList::const_reverse_iterator;
 
 public:
-    [[nodiscard]] NBT_API ListTag() = default;
+    [[nodiscard]] NBT_API ListTag();
     [[nodiscard]] NBT_API ListTag(std::initializer_list<CompoundTagVariant> tags);
     [[nodiscard]] NBT_API ListTag(std::vector<CompoundTagVariant> const& tags);
     [[nodiscard]] NBT_API ListTag(std::vector<CompoundTagVariant>&& tags);
     [[nodiscard]] NBT_API ListTag(std::vector<std::unique_ptr<Tag>> const& tags);
     [[nodiscard]] NBT_API ListTag(std::vector<std::unique_ptr<Tag>>&& tags);
+
+    NBT_API ~ListTag();
+
+    [[nodiscard]] NBT_API ListTag(ListTag const& other);
+    [[nodiscard]] NBT_API ListTag(ListTag&& other);
+
+    NBT_API ListTag& operator=(ListTag const& other);
+    NBT_API ListTag& operator=(ListTag&& other);
 
     [[nodiscard]] NBT_API Type getType() const override;
 

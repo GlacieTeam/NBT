@@ -31,7 +31,7 @@ A blazing-fast C++ library for parsing, generating, and manipulating Minecraft N
 
 ## Quick Start 🚀
 ```C++
-using namespace nbt::literals;
+using namespace nbt::literals::integral;
 
 // Parsing NBT from file (Automatically detect NBT format and decompress)
 auto nbt1 = nbt::io::parseFromFile("./level.dat");

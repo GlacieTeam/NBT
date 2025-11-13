@@ -29,6 +29,16 @@ CompoundTagVariant::CompoundTagVariant(std::string s) : mStorage(std::in_place_t
 
 CompoundTagVariant::CompoundTagVariant(std::string_view s) : mStorage(std::in_place_type<StringTag>, std::string(s)) {}
 
+size_t CompoundTagVariant::hash() const { return get()->hash(); }
+
+void CompoundTagVariant::write(io::BytesDataOutput& stream) const { get()->write(stream); }
+
+void CompoundTagVariant::load(io::BytesDataInput& stream) { get()->load(stream); }
+
+void CompoundTagVariant::write(bstream::BinaryStream& stream) const { get()->write(stream); }
+
+void CompoundTagVariant::load(bstream::ReadOnlyBinaryStream& stream) { get()->load(stream); }
+
 CompoundTagVariant::iterator       CompoundTagVariant::begin() noexcept { return iterator::makeBegin(*this); }
 CompoundTagVariant::const_iterator CompoundTagVariant::begin() const noexcept { return cbegin(); }
 CompoundTagVariant::const_iterator CompoundTagVariant::cbegin() const noexcept {
@@ -51,6 +61,8 @@ void CompoundTagVariant::clear() {
         mStorage
     );
 }
+
+bool CompoundTagVariant::equals(CompoundTagVariant const& other) const { return get()->equals(*other.get()); }
 
 CompoundTag::TagMap const& CompoundTagVariant::items() const { return as<CompoundTag>().items(); }
 CompoundTag::TagMap&       CompoundTagVariant::items() { return as<CompoundTag>().items(); }

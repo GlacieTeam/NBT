@@ -226,6 +226,16 @@ public:
     [[nodiscard]] constexpr CompoundTagVariant(char const (&str)[N])
     : CompoundTagVariant(std::string_view{str, N - 1}) {}
 
+    NBT_API size_t hash() const;
+
+    NBT_API void write(io::BytesDataOutput& stream) const;
+
+    NBT_API void load(io::BytesDataInput& stream);
+
+    NBT_API void write(bstream::BinaryStream& stream) const;
+
+    NBT_API void load(bstream::ReadOnlyBinaryStream& stream);
+
     [[nodiscard]] NBT_API iterator       begin() noexcept;
     [[nodiscard]] NBT_API const_iterator begin() const noexcept;
     [[nodiscard]] NBT_API const_iterator cbegin() const noexcept;
@@ -238,6 +248,8 @@ public:
     [[nodiscard]] constexpr Tag::Type getType() const noexcept { return index(); }
 
     NBT_API void clear();
+
+    NBT_API bool equals(CompoundTagVariant const& other) const;
 
     template <std::derived_from<Tag> T>
     [[nodiscard]] constexpr bool hold() const noexcept {

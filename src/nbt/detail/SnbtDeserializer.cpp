@@ -23,6 +23,7 @@
 #include "nbt/types/ShortTag.hpp"
 #include "nbt/types/StringTag.hpp"
 #include <charconv>
+#include <functional>
 #include <limits>
 
 namespace nbt {
@@ -152,7 +153,7 @@ inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n
     if (!ok) return std::nullopt;
 
     n           = static_cast<size_t>(it - str.begin());
-    auto result = std::string(str.substr(start - str.begin(), it - start));
+    auto result = std::string(str.substr(static_cast<size_t>(start - str.begin()), static_cast<size_t>(it - start)));
     result.erase(std::remove_if(result.begin(), result.end(), [](uint8_t c) { return c == '_'; }), result.end());
     return result;
 }
@@ -161,7 +162,7 @@ inline std::string parseNumberMark(std::string_view& sv) noexcept {
     auto first = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return std::isspace(c); });
     if (first == sv.end()) { return {}; }
     auto last   = std::find_if(first, sv.end(), [](uint8_t c) { return c == ',' || c == '}' || c == ']'; });
-    auto result = std::string(sv.substr(first - sv.begin(), last - first));
+    auto result = std::string(sv.substr(static_cast<size_t>(first - sv.begin()), static_cast<size_t>(last - first)));
     for (char& c : result) {
         if (static_cast<uint8_t>(c) >= 'A' && static_cast<uint8_t>(c) <= 'Z') { c |= 0x20; }
     }
@@ -587,7 +588,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with(']')) {
             s.remove_prefix(1);
-            if (!res.empty()) res.mType = res.mStorage.front()->getType();
+            if (!res.empty()) res.mType = res.storage().front()->getType();
             return res;
         }
         auto value = detail::parseSnbtValueNonSkip(s);
@@ -598,7 +599,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         switch (s.front()) {
         case ']':
             s.remove_prefix(1);
-            res.mType = res.mStorage.front()->getType();
+            res.mType = res.storage().front()->getType();
             return res;
         case ',': {
             s.remove_prefix(1);
