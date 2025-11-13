@@ -21,6 +21,7 @@
 #include "nbt/types/ShortTag.hpp"
 #include "nbt/types/StringTag.hpp"
 #include <algorithm>
+#include <format>
 
 namespace nbt {
 
@@ -410,14 +411,16 @@ ListTag* CompoundTag::getList(std::string_view key) {
     return nullptr;
 }
 
-bool CompoundTag::contains(std::string_view key) const { return get(key) != nullptr; }
+bool CompoundTag::contains(std::string_view key) const {
+    return mTagMap.contains(key) && !mTagMap.at(std::string(key)).hold(Type::End);
+}
 
 bool CompoundTag::contains(std::string_view key, Tag::Type type) const {
-    if (const auto* tag = get(key); tag) { return tag->getType() == type; }
+    if (contains(key)) { return mTagMap.at(std::string(key)).hold(type); }
     return false;
 }
 
-bool CompoundTag::empty() const noexcept { return mTagMap.empty(); }
+bool CompoundTag::empty() const noexcept { return (size() == 0); }
 
 bool CompoundTag::remove(std::string_view index) {
     if (mTagMap.contains(index)) {
@@ -531,15 +534,28 @@ std::string CompoundTag::toNetworkNbt() const noexcept {
     return stream.getAndReleaseData();
 }
 
-CompoundTagVariant&       CompoundTag::at(std::string_view index) { return mTagMap.at(std::string(index)); }
-CompoundTagVariant const& CompoundTag::at(std::string_view index) const { return mTagMap.at(std::string(index)); }
-
-CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return mTagMap[std::string(index)]; }
-CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const {
+CompoundTagVariant& CompoundTag::at(std::string_view index) {
+    if (!contains(index)) { throw std::out_of_range(std::format("Tag not contains key: {}", index)); }
+    return mTagMap.at(std::string(index));
+}
+CompoundTagVariant const& CompoundTag::at(std::string_view index) const {
+    if (!contains(index)) { throw std::out_of_range(std::format("Tag not contains key: {}", index)); }
     return mTagMap.at(std::string(index));
 }
 
-size_t CompoundTag::size() const noexcept { return mTagMap.size(); }
+CompoundTagVariant&       CompoundTag::operator[](std::string_view index) { return mTagMap[std::string(index)]; }
+CompoundTagVariant const& CompoundTag::operator[](std::string_view index) const {
+    if (!contains(index)) { throw std::out_of_range(std::format("Tag not contains key: {}", index)); }
+    return mTagMap.at(std::string(index));
+}
+
+size_t CompoundTag::size() const noexcept {
+    size_t result = 0;
+    for (auto& [_, v] : mTagMap) {
+        if (!v.hold(Type::End)) { result++; }
+    }
+    return result;
+}
 
 std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
     return CompoundTagVariant::parse(snbt, parsedLength)
