@@ -587,7 +587,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with(']')) {
             s.remove_prefix(1);
-            if (!res.empty()) res.getElementType() = res.storage().front()->getType();
+            if (!res.empty()) res.mType = res.mStorage.front()->getType();
             return res;
         }
         auto value = detail::parseSnbtValueNonSkip(s);
@@ -598,7 +598,7 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         switch (s.front()) {
         case ']':
             s.remove_prefix(1);
-            res.getElementType() = res.storage().front()->getType();
+            res.mType = res.mStorage.front()->getType();
             return res;
         case ',': {
             s.remove_prefix(1);

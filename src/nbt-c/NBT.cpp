@@ -263,7 +263,7 @@ void nbt_list_tag_add_tag(void* handle, void* tag) {
 void* nbt_list_tag_get_tag(void* handle, size_t index) {
     if (handle) {
         auto& tag = toTag(handle)->as<nbt::ListTag>();
-        if (index < tag.size()) { return tag[index].copy().release(); }
+        if (index < tag.size()) { return tag[index].toUniqueCopy().release(); }
     }
     return nullptr;
 }
