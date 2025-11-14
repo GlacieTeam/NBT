@@ -244,7 +244,7 @@ public:
     [[nodiscard]] NBT_API const_iterator end() const noexcept;
     [[nodiscard]] NBT_API const_iterator cend() const noexcept;
 
-    [[nodiscard]] constexpr Tag::Type index() const noexcept { return Tag::Type(mStorage.index()); }
+    [[nodiscard]] constexpr Tag::Type index() const noexcept { return static_cast<Tag::Type>(mStorage.index()); }
     [[nodiscard]] constexpr Tag::Type getType() const noexcept { return index(); }
 
     NBT_API void clear();
@@ -307,8 +307,8 @@ public:
         }
     }
 
-    [[nodiscard]] NBT_API Tag&       operator[](size_t index);
-    [[nodiscard]] NBT_API Tag const& operator[](size_t index) const;
+    [[nodiscard]] NBT_API CompoundTagVariant&       operator[](size_t index);
+    [[nodiscard]] NBT_API CompoundTagVariant const& operator[](size_t index) const;
 
     [[nodiscard]] NBT_API CompoundTagVariant&       operator[](std::string_view index);
     [[nodiscard]] NBT_API CompoundTagVariant const& operator[](std::string_view index) const;
@@ -324,7 +324,6 @@ public:
     }
 
     [[nodiscard]] NBT_API std::unique_ptr<Tag> toUniqueCopy() const&;
-
     [[nodiscard]] NBT_API std::unique_ptr<Tag> toUnique() &&;
 
     NBT_API bool remove(std::string_view index);
@@ -334,6 +333,7 @@ public:
 
     NBT_API void push_back(CompoundTagVariant val);
     NBT_API void push_back(Tag const& val);
+    NBT_API void push_back(std::unique_ptr<Tag>&& val);
 
     template <typename T>
         requires std::is_arithmetic_v<T>

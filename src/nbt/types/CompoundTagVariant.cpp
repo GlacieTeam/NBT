@@ -68,16 +68,16 @@ CompoundTag::TagMap const& CompoundTagVariant::items() const { return as<Compoun
 CompoundTag::TagMap&       CompoundTagVariant::items() { return as<CompoundTag>().items(); }
 
 bool CompoundTagVariant::contains(std::string_view key) const noexcept {
-    if (is_object()) { return as<CompoundTag>().contains(std::string(key)); }
+    if (is_object()) { return as<CompoundTag>().contains(key); }
     return false;
 }
 
 bool CompoundTagVariant::contains(std::string_view key, Tag::Type type) const noexcept {
-    if (is_object()) { return as<CompoundTag>().contains(std::string(key), type); }
+    if (is_object()) { return as<CompoundTag>().contains(key, type); }
     return false;
 }
 
-Tag& CompoundTagVariant::operator[](size_t index) {
+CompoundTagVariant& CompoundTagVariant::operator[](size_t index) {
     if (hold(Tag::Type::List)) {
         return as<ListTag>()[index];
     } else {
@@ -85,7 +85,7 @@ Tag& CompoundTagVariant::operator[](size_t index) {
     }
 }
 
-Tag const& CompoundTagVariant::operator[](size_t index) const {
+CompoundTagVariant const& CompoundTagVariant::operator[](size_t index) const {
     if (hold(Tag::Type::List)) {
         return as<ListTag>()[index];
     } else {
@@ -106,7 +106,7 @@ CompoundTagVariant const& CompoundTagVariant::operator[](std::string_view index)
 
 std::unique_ptr<Tag> CompoundTagVariant::toUniqueCopy() const& {
     return std::visit(
-        [](auto& val) -> std::unique_ptr<Tag> { return std::make_unique<std::decay_t<decltype(val)>>(val); },
+        [](auto const& val) -> std::unique_ptr<Tag> { return std::make_unique<std::decay_t<decltype(val)>>(val); },
         mStorage
     );
 }
@@ -138,13 +138,19 @@ bool CompoundTagVariant::rename(std::string_view index, std::string_view newName
 void CompoundTagVariant::push_back(CompoundTagVariant val) {
     if (is_null()) { mStorage = ListTag{}; }
     if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
-    as<ListTag>().push_back(std::move(val).toUnique());
+    as<ListTag>().push_back(std::move(val));
 }
 
 void CompoundTagVariant::push_back(Tag const& val) {
     if (is_null()) { mStorage = ListTag{}; }
     if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
     as<ListTag>().push_back(val);
+}
+
+void CompoundTagVariant::push_back(std::unique_ptr<Tag>&& val) {
+    if (is_null()) { mStorage = ListTag{}; }
+    if (!hold(Tag::Type::List)) { throw std::runtime_error("tag not hold an array"); }
+    as<ListTag>().push_back(std::move(val));
 }
 
 CompoundTagVariant::operator std::byte() const {
