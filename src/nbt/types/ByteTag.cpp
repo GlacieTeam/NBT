@@ -9,7 +9,7 @@
 
 namespace nbt {
 
-bool ByteTag::equals(const Tag& other) const {
+bool ByteTag::equals(Tag const& other) const {
     return (other.getType() == Tag::Type::Byte) && (mStorage == static_cast<const ByteTag&>(other).mStorage);
 }
 

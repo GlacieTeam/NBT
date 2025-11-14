@@ -16,7 +16,7 @@ IntArrayTag::IntArrayTag(std::initializer_list<int> val) : mStorage(val) {}
 IntArrayTag::operator std::vector<int> const&() const { return mStorage; }
 IntArrayTag::operator std::vector<int>&() { return mStorage; }
 
-bool IntArrayTag::equals(const Tag& other) const {
+bool IntArrayTag::equals(Tag const& other) const {
     return (other.getType() == Tag::Type::IntArray) && (mStorage == static_cast<const IntArrayTag&>(other).mStorage);
 }
 

@@ -9,7 +9,7 @@
 
 namespace nbt {
 
-bool EndTag::equals(const Tag& other) const { return other.getType() == Tag::Type::End; }
+bool EndTag::equals(Tag const& other) const { return other.getType() == Tag::Type::End; }
 
 Tag::Type EndTag::getType() const { return Type::End; }
 

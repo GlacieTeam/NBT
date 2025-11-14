@@ -16,7 +16,7 @@ LongArrayTag::LongArrayTag(std::initializer_list<int64_t> val) : mStorage(val) {
 LongArrayTag::operator std::vector<int64_t> const&() const { return mStorage; }
 LongArrayTag::operator std::vector<int64_t>&() { return mStorage; }
 
-bool LongArrayTag::equals(const Tag& other) const {
+bool LongArrayTag::equals(Tag const& other) const {
     return (other.getType() == Tag::Type::LongArray) && (mStorage == static_cast<const LongArrayTag&>(other).mStorage);
 }
 

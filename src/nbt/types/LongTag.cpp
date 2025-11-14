@@ -9,7 +9,7 @@
 
 namespace nbt {
 
-bool LongTag::equals(const Tag& other) const {
+bool LongTag::equals(Tag const& other) const {
     return (other.getType() == Tag::Type::Long) && (mStorage == static_cast<const LongTag&>(other).mStorage);
 }
 

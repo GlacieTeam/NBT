@@ -42,7 +42,7 @@ ByteArrayTag::operator std::string_view() const {
     return std::string_view(reinterpret_cast<char const*>(mStorage.data()), mStorage.size());
 }
 
-bool ByteArrayTag::equals(const Tag& other) const {
+bool ByteArrayTag::equals(Tag const& other) const {
     return (other.getType() == Tag::Type::ByteArray) && (mStorage == static_cast<const ByteArrayTag&>(other).mStorage);
 }
 

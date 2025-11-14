@@ -62,7 +62,7 @@ ListTag& ListTag::operator=(ListTag const& other) {
 
 ListTag& ListTag::operator=(ListTag&& other) = default;
 
-bool ListTag::equals(const Tag& other) const {
+bool ListTag::equals(Tag const& other) const {
     return (other.getType() == Type::List)
         && (mStorageImpl->mStorage == static_cast<const ListTag&>(other).mStorageImpl->mStorage);
 }
@@ -74,7 +74,7 @@ std::unique_ptr<Tag> ListTag::copy() const { return clone(); }
 std::size_t ListTag::hash() const {
     std::size_t hash = 0;
     for (auto& value : mStorageImpl->mStorage) {
-        std::size_t element_hash  = value.get()->hash();
+        std::size_t element_hash  = value.hash();
         hash                     ^= element_hash + 0x9e3779b9 + (hash << 6) + (hash >> 2);
     }
     return hash;
