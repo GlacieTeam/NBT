@@ -150,11 +150,19 @@ inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n
             break;
         }
     }
-    if (!ok) return std::nullopt;
 
     n           = static_cast<size_t>(it - str.begin());
     auto result = std::string(str.substr(static_cast<size_t>(start - str.begin()), static_cast<size_t>(it - start)));
     result.erase(std::remove_if(result.begin(), result.end(), [](uint8_t c) { return c == '_'; }), result.end());
+
+    if (result == "0b" || result == "0B") {
+        n     = 1;
+        isInt = true;
+        return "0";
+    }
+
+    if (!ok) { return std::nullopt; }
+
     return result;
 }
 
@@ -230,7 +238,6 @@ std::optional<CompoundTagVariant> checkRange(std::string_view str) {
 }
 
 std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
-    if (str == "0b") { return ByteTag(0); } // 0b it self is not a binary integer
     size_t pos   = 0;
     bool   isInt = true;
     if (auto num = parseNumberStr(str, pos, isInt)) {
