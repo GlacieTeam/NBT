@@ -230,6 +230,7 @@ std::optional<CompoundTagVariant> checkRange(std::string_view str) {
 }
 
 std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
+    if (str == "0b") { return ByteTag(0); } // 0b it self is not a binary integer
     size_t pos   = 0;
     bool   isInt = true;
     if (auto num = parseNumberStr(str, pos, isInt)) {
