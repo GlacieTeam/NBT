@@ -687,6 +687,7 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
     case CHAR_EOF:
     case '\0':
         return std::nullopt;
+    case '+':
     case '-':
     case '0':
     case '1':
@@ -698,6 +699,7 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
     case '7':
     case '8':
     case '9':
+    case '.':
         return parseNumber(s);
     case '[':
         return parseList(s);

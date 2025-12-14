@@ -105,8 +105,9 @@ std::string toDumpString(std::string const& str, SnbtFormat format, bool key) {
         res = "\"\"";
     } else {
         bool isTrivial = true;
-        if (!static_cast<bool>(format & SnbtFormat::ForceQuote)) {
-            if (!key && (str[0] == '-' || isdigit(str[0]))) {
+        if (!(static_cast<bool>(format & SnbtFormat::ForceKeyQuote) && key)
+            && !(static_cast<bool>(format & SnbtFormat::ForceValueQuote) && !key)) {
+            if (!key && (str[0] == '-' || str[0] == '+' || str[0] == '.' || isdigit(str[0]))) {
                 isTrivial = false;
             } else {
                 for (auto c : str) {
