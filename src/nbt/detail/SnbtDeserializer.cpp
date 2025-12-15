@@ -32,7 +32,7 @@ namespace {
 
 static constexpr auto CHAR_EOF = static_cast<char>(std::char_traits<char>::eof());
 
-bool ignoreComment(std::string_view& s) noexcept {
+bool ignoreComment(std::string_view& s, char first) noexcept {
     size_t i = 0;
     switch (s[i++]) {
     case '*': {
@@ -55,13 +55,30 @@ bool ignoreComment(std::string_view& s) noexcept {
                 continue;
             }
         }
-        return true;
+        break;
+    }
+    case '/': {
+        if (first == '/') {
+            while (i < s.size()) {
+                switch (s[i++]) {
+                case CHAR_EOF:
+                case '\0':
+                    return false;
+                case '\r':
+                case '\n': {
+                    s.remove_prefix(std::min(i + 1, s.size()));
+                    return true;
+                }
+                default:
+                    continue;
+                }
+            }
+        }
+        break;
     }
     default: {
         while (i < s.size()) {
             switch (s[i++]) {
-            case '\n':
-            case '\r':
             case CHAR_EOF:
             case '\0':
                 s.remove_prefix(std::min(i, s.size()));
@@ -87,7 +104,8 @@ bool skipWhitespace(std::string_view& s) {
     scanSpaces(s);
     while (s.starts_with('/') || s.starts_with('#') || s.starts_with(';')) {
         s.remove_prefix(1);
-        if (!ignoreComment(s)) { return false; }
+        char first = s.front();
+        if (!ignoreComment(s, first)) { return false; }
         scanSpaces(s);
     }
     return true;
