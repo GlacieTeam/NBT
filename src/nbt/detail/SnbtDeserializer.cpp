@@ -32,10 +32,10 @@ namespace {
 
 static constexpr auto CHAR_EOF = static_cast<char>(std::char_traits<char>::eof());
 
-bool ignoreComment(std::string_view& s) noexcept {
-    size_t i = 0;
-    switch (s[i++]) {
-    case '*': {
+bool ignoreComment(std::string_view& s, char start) noexcept {
+    size_t i      = 0;
+    char   second = s[i++];
+    if (start == '/' && second == '*') {
         while (i < s.size()) {
             switch (s[i++]) {
             case CHAR_EOF:
@@ -46,7 +46,6 @@ bool ignoreComment(std::string_view& s) noexcept {
                 case '/':
                     s.remove_prefix(std::min(i + 1, s.size()));
                     return true;
-
                 default:
                     continue;
                 }
@@ -56,8 +55,7 @@ bool ignoreComment(std::string_view& s) noexcept {
             }
         }
         return true;
-    }
-    default: {
+    } else if ((start == '/' && second == '/') || start == '#') {
         while (i < s.size()) {
             switch (s[i++]) {
             case '\n':
@@ -71,8 +69,6 @@ bool ignoreComment(std::string_view& s) noexcept {
                 break;
             }
         }
-        break;
-    }
     }
     return false;
 }
@@ -86,8 +82,9 @@ void scanSpaces(std::string_view& s) noexcept {
 bool skipWhitespace(std::string_view& s) {
     scanSpaces(s);
     while (s.starts_with('/') || s.starts_with('#') || s.starts_with(';')) {
+        char start = s[0];
         s.remove_prefix(1);
-        if (!ignoreComment(s)) { return false; }
+        if (!ignoreComment(s, start)) { return false; }
         scanSpaces(s);
     }
     return true;
@@ -166,7 +163,7 @@ inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n
     return result;
 }
 
-inline std::string parseNumberMark(std::string_view& sv) noexcept {
+inline std::optional<std::string> parseNumberMark(std::string_view& sv) noexcept {
     auto first = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return std::isspace(c); });
     if (first == sv.end()) { return {}; }
     auto last   = std::find_if(first, sv.end(), [](uint8_t c) { return c == ',' || c == '}' || c == ']'; });
@@ -176,6 +173,7 @@ inline std::string parseNumberMark(std::string_view& sv) noexcept {
     }
     while (std::isspace(result.back())) { result.pop_back(); }
     sv.remove_prefix(static_cast<size_t>(first - sv.begin()));
+    if (!skipWhitespace(sv)) { return std::nullopt; }
     return result;
 }
 
@@ -237,12 +235,27 @@ std::optional<CompoundTagVariant> checkRange(std::string_view str) {
     return std::nullopt;
 }
 
-std::optional<CompoundTagVariant> parseNumber(std::string_view& str) {
+std::optional<CompoundTagVariant> parseNumber(std::string_view& str, bool parseJson) {
     size_t pos   = 0;
     bool   isInt = true;
     if (auto num = parseNumberStr(str, pos, isInt)) {
         str.remove_prefix(pos);
-        auto mk = parseNumberMark(str);
+
+        if (parseJson) {
+            if (!skipWhitespace(str)) { return std::nullopt; }
+            if (isInt) {
+                if (auto tag = checkRange<ByteTag, uint8_t>(*num)) { return tag; }
+                if (auto tag = checkRange<ShortTag, short>(*num)) { return tag; }
+                if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
+                if (auto tag = checkRange<LongTag, int64_t>(*num)) { return tag; }
+            }
+            if (auto tag = checkRange<FloatTag, float>(*num)) { return tag; }
+            return checkRange<DoubleTag, double>(*num);
+        }
+
+        auto mark = parseNumberMark(str);
+        if (!mark) { return std::nullopt; }
+        auto& mk = *mark;
         if (mk.empty()) {
             if (isInt) {
                 if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
@@ -390,6 +403,7 @@ std::optional<std::string> parseString(std::string_view& s) {
                 s.remove_prefix(1);
                 res.push_back(fc);
             } else {
+                if (!skipWhitespace(s)) { return std::nullopt; }
                 return res;
             }
         }
@@ -400,12 +414,16 @@ std::optional<std::string> parseString(std::string_view& s) {
         case '\"': {
             if (starts == '\"') {
                 if (s.starts_with(" /*BASE64*/")) { return base64_utils::decode(res); }
+                if (!skipWhitespace(s)) { return std::nullopt; }
                 return res;
             }
             res.push_back('\"');
         } break;
         case '\'': {
-            if (starts == '\'') { return res; }
+            if (starts == '\'') {
+                if (!skipWhitespace(s)) { return std::nullopt; }
+                return res;
+            }
             res.push_back('\'');
         } break;
         case '\\': {
@@ -517,9 +535,10 @@ std::optional<R> parseNumArray(std::string_view& s, F&& f) {
         if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with(']')) {
             s.remove_prefix(1);
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         }
-        if (auto value = parseNumber(s); value) {
+        if (auto value = parseNumber(s, false); value) {
             if (!value->hold<H>()) {
                 return std::nullopt;
             } else {
@@ -532,6 +551,7 @@ std::optional<R> parseNumArray(std::string_view& s, F&& f) {
         switch (s.front()) {
         case ']':
             s.remove_prefix(1);
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         case ',':
             s.remove_prefix(1);
@@ -561,11 +581,9 @@ std::optional<LongArrayTag> parseLongArray(std::string_view& s) {
 }
 
 std::optional<CompoundTagVariant> parseList(std::string_view& s) {
-    if (s.starts_with("[ /*") && (s.size() > 7 && s[6] == '*' && s[7] == '/')) {
-        s.remove_prefix(4);
-    } else {
-        s.remove_prefix(1);
-    }
+    s.remove_prefix(1);
+    scanSpaces(s);
+    if (s.starts_with("/*") && (s.size() > 5 && s[4] == '*' && s[5] == '/')) { s.remove_prefix(4); }
     if (s.starts_with("B;")) {
         s.remove_prefix(2);
         if (s.starts_with("*/")) { s.remove_prefix(2); }
@@ -597,9 +615,10 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         if (s.starts_with(']')) {
             s.remove_prefix(1);
             if (!res.empty()) res.mType = res.storage().front()->getType();
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         }
-        auto value = detail::parseSnbtValueNonSkip(s);
+        auto value = detail::parseSnbtValueNonSkip(s, false);
         if (!value) { return std::nullopt; }
         res.push_back(std::move(*value).toUnique());
 
@@ -608,6 +627,8 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
         case ']':
             s.remove_prefix(1);
             res.mType = res.storage().front()->getType();
+            res.checkAndFixElements();
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         case ',': {
             s.remove_prefix(1);
@@ -619,7 +640,59 @@ std::optional<CompoundTagVariant> parseList(std::string_view& s) {
     return std::nullopt;
 }
 
-std::optional<CompoundTagVariant> parseCompound(std::string_view& s) {
+std::optional<CompoundTagVariant> parseJsonList(std::string_view& s) {
+    s.remove_prefix(1);
+    ListTag res{};
+    while (!s.empty()) {
+        if (!skipWhitespace(s)) { return std::nullopt; }
+        if (s.starts_with(']')) {
+            s.remove_prefix(1);
+            if (!res.empty()) res.mType = res.storage().front()->getType();
+            if (!skipWhitespace(s)) { return std::nullopt; }
+            return res;
+        }
+        auto value = detail::parseSnbtValueNonSkip(s, true);
+        if (!value) { return std::nullopt; }
+        res.push_back(std::move(*value).toUnique());
+
+        if (!skipWhitespace(s)) { return std::nullopt; }
+        switch (s.front()) {
+        case ']':
+            s.remove_prefix(1);
+            res.mType = res.storage().front()->getType();
+            res.checkAndFixElements();
+            switch (res.getElementType()) {
+            case Tag::Type::Byte: {
+                ByteArrayTag newres{};
+                for (auto& tag : res) { newres.push_back(tag.as<ByteTag>().storage()); }
+                return newres;
+            }
+            case Tag::Type::Int: {
+                IntArrayTag newres{};
+                for (auto& tag : res) { newres.push_back(tag.as<IntTag>().storage()); }
+                return newres;
+            }
+            case Tag::Type::Long: {
+                LongArrayTag newres{};
+                for (auto& tag : res) { newres.push_back(tag.as<LongTag>().storage()); }
+                return newres;
+            }
+            default:
+                break;
+            }
+            if (!skipWhitespace(s)) { return std::nullopt; }
+            return res;
+        case ',': {
+            s.remove_prefix(1);
+        }
+        default:
+            break;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<CompoundTagVariant> parseCompound(std::string_view& s, bool parseJson) {
     get(s);
     if (!skipWhitespace(s)) { return std::nullopt; }
     if (s.starts_with('}')) {
@@ -631,6 +704,7 @@ std::optional<CompoundTagVariant> parseCompound(std::string_view& s) {
         if (!skipWhitespace(s)) { return std::nullopt; }
         if (s.starts_with('}')) {
             s.remove_prefix(1);
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         }
         auto key = parseString(s);
@@ -638,13 +712,14 @@ std::optional<CompoundTagVariant> parseCompound(std::string_view& s) {
         if (!skipWhitespace(s)) { return std::nullopt; }
         auto p = get(s);
         if (p != ':' && p != '=') { return std::nullopt; }
-        auto value = detail::parseSnbtValue(s);
+        auto value = detail::parseSnbtValue(s, parseJson);
         if (!value) { return std::nullopt; }
         res[*key] = *value;
 
         switch (s.front()) {
         case '}':
             s.remove_prefix(1);
+            if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         case ',':
             s.remove_prefix(1);
@@ -659,8 +734,11 @@ std::optional<CompoundTagVariant> parseCompound(std::string_view& s) {
 
 namespace detail {
 
-std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
+std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s, bool parseJson) {
     if (s.empty()) { return std::nullopt; }
+    if (parseJson) {
+        if (!skipWhitespace(s)) { return std::nullopt; }
+    }
     switch (s.front()) {
     case 't':
         if (s.starts_with("true")) {
@@ -700,20 +778,21 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s) {
     case '8':
     case '9':
     case '.':
-        return parseNumber(s);
+        return parseNumber(s, parseJson);
     case '[':
+        if (parseJson) { return parseJsonList(s); }
         return parseList(s);
     case '{':
-        return parseCompound(s);
+        return parseCompound(s, parseJson);
     default:
         break;
     }
     return parseString(s);
 }
 
-std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s) {
+std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s, bool parseJson) {
     if (!skipWhitespace(s)) { return std::nullopt; }
-    auto res = parseSnbtValueNonSkip(s);
+    auto res = parseSnbtValueNonSkip(s, parseJson);
     if (!res) { return res; }
     if (!skipWhitespace(s)) { return std::nullopt; }
     return res;

@@ -15,8 +15,8 @@ class CompoundTagVariant;
 
 namespace detail {
 
-std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s);
-std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s);
+std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s, bool parseJson);
+std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s, bool parseJson);
 
 } // namespace detail
 

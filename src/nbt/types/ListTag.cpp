@@ -146,14 +146,61 @@ void ListTag::push_back(Tag const& tag) {
     mStorageImpl->mStorage.emplace_back(tag.copy());
 }
 
-void ListTag::push_back(CompoundTagVariant const& val) {
-    if (mStorageImpl->mStorage.empty()) { mType = val.getType(); }
-    mStorageImpl->mStorage.push_back(val);
-}
-
-void ListTag::push_back(CompoundTagVariant&& val) {
+void ListTag::push_back(CompoundTagVariant val) {
     if (mStorageImpl->mStorage.empty()) { mType = val.getType(); }
     mStorageImpl->mStorage.push_back(std::move(val));
+}
+
+bool ListTag::add(std::unique_ptr<Tag>&& tag) {
+    if (mStorageImpl->mStorage.empty()) {
+        mType = tag->getType();
+    } else if (mType != tag->getType()) {
+        return false;
+    }
+    mStorageImpl->mStorage.emplace_back(std::move(tag));
+    return true;
+}
+
+bool ListTag::add(Tag const& tag) {
+    if (mStorageImpl->mStorage.empty()) {
+        mType = tag.getType();
+    } else if (mType != tag.getType()) {
+        return false;
+    }
+    mStorageImpl->mStorage.emplace_back(tag.copy());
+    return true;
+}
+
+bool ListTag::add(CompoundTagVariant val) {
+    if (mStorageImpl->mStorage.empty()) {
+        mType = val.getType();
+    } else if (mType != val.getType()) {
+        return false;
+    }
+    mStorageImpl->mStorage.push_back(std::move(val));
+    return true;
+}
+
+bool ListTag::checkElements() {
+    for (auto& tag : mStorageImpl->mStorage) {
+        if (!tag.hold(mType)) { return false; }
+    }
+    return true;
+}
+
+bool ListTag::checkAndFixElements() {
+    if (!checkElements()) {
+        mType = Type::Compound;
+        for (auto& tag : mStorageImpl->mStorage) {
+            if (!tag.hold(Type::Compound)) {
+                tag = CompoundTag({
+                    {"", tag}
+                });
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 void ListTag::reserve(size_t size) { mStorageImpl->mStorage.reserve(size); }
@@ -231,15 +278,7 @@ bool ListTag::set(size_t index, std::unique_ptr<Tag>&& tag) {
     return false;
 }
 
-bool ListTag::set(size_t index, CompoundTagVariant const& tag) {
-    if (index < mStorageImpl->mStorage.size()) {
-        mStorageImpl->mStorage[index] = tag;
-        return true;
-    }
-    return false;
-}
-
-bool ListTag::set(size_t index, CompoundTagVariant&& tag) {
+bool ListTag::set(size_t index, CompoundTagVariant tag) {
     if (index < mStorageImpl->mStorage.size()) {
         mStorageImpl->mStorage[index] = std::move(tag);
         return true;

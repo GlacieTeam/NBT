@@ -72,8 +72,14 @@ public:
 
     NBT_API void push_back(std::unique_ptr<Tag>&& tag);
     NBT_API void push_back(Tag const& tag);
-    NBT_API void push_back(CompoundTagVariant const& val);
-    NBT_API void push_back(CompoundTagVariant&& val);
+    NBT_API void push_back(CompoundTagVariant val);
+
+    NBT_API bool add(std::unique_ptr<Tag>&& tag);
+    NBT_API bool add(Tag const& tag);
+    NBT_API bool add(CompoundTagVariant val);
+
+    NBT_API bool checkElements();
+    NBT_API bool checkAndFixElements();
 
     NBT_API void reserve(size_t size);
 
@@ -111,8 +117,7 @@ public:
 
     NBT_API bool set(size_t index, Tag const& tag);
     NBT_API bool set(size_t index, std::unique_ptr<Tag>&& tag);
-    NBT_API bool set(size_t index, CompoundTagVariant const& tag);
-    NBT_API bool set(size_t index, CompoundTagVariant&& tag);
+    NBT_API bool set(size_t index, CompoundTagVariant tag);
 };
 
 } // namespace nbt

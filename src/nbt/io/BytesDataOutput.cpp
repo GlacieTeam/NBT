@@ -25,12 +25,12 @@ void BytesDataOutput::writeBytes(const void* origin, size_t num) {
 }
 
 void BytesDataOutput::writeString(std::string_view value) {
-    writeShort((int16_t)value.size());
+    writeShort(static_cast<int16_t>(value.size()));
     writeBytes(value.data(), value.size());
 }
 
 void BytesDataOutput::writeLongString(std::string_view value) {
-    writeInt((int)value.size());
+    writeInt(static_cast<int>(value.size()));
     writeBytes(value.data(), value.size());
 }
 
