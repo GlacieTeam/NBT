@@ -35,10 +35,10 @@ std::string toString(T value, SnbtNumberFormat nfmt) {
         return std::format("0b{:b}", value);
     }
     case SnbtNumberFormat::LowerHexadecimal: {
-        return std::format("0x{:x}", value);
+        return std::format("{:#x}", value);
     }
     case SnbtNumberFormat::UpperHexadecimal: {
-        return std::format("0x{:X}", value);
+        return std::format("{:#X}", value);
     }
     default: {
         return std::format("{:d}", value);

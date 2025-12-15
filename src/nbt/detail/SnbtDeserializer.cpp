@@ -32,10 +32,10 @@ namespace {
 
 static constexpr auto CHAR_EOF = static_cast<char>(std::char_traits<char>::eof());
 
-bool ignoreComment(std::string_view& s, char start) noexcept {
-    size_t i      = 0;
-    char   second = s[i++];
-    if (start == '/' && second == '*') {
+bool ignoreComment(std::string_view& s) noexcept {
+    size_t i = 0;
+    switch (s[i++]) {
+    case '*': {
         while (i < s.size()) {
             switch (s[i++]) {
             case CHAR_EOF:
@@ -46,6 +46,7 @@ bool ignoreComment(std::string_view& s, char start) noexcept {
                 case '/':
                     s.remove_prefix(std::min(i + 1, s.size()));
                     return true;
+
                 default:
                     continue;
                 }
@@ -55,7 +56,8 @@ bool ignoreComment(std::string_view& s, char start) noexcept {
             }
         }
         return true;
-    } else if ((start == '/' && second == '/') || start == '#') {
+    }
+    default: {
         while (i < s.size()) {
             switch (s[i++]) {
             case '\n':
@@ -69,6 +71,8 @@ bool ignoreComment(std::string_view& s, char start) noexcept {
                 break;
             }
         }
+        break;
+    }
     }
     return false;
 }
@@ -82,9 +86,8 @@ void scanSpaces(std::string_view& s) noexcept {
 bool skipWhitespace(std::string_view& s) {
     scanSpaces(s);
     while (s.starts_with('/') || s.starts_with('#') || s.starts_with(';')) {
-        char start = s[0];
         s.remove_prefix(1);
-        if (!ignoreComment(s, start)) { return false; }
+        if (!ignoreComment(s)) { return false; }
         scanSpaces(s);
     }
     return true;
@@ -102,7 +105,8 @@ inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n
     isInt = true;
     if (str.empty()) return std::nullopt;
 
-    auto it = str.begin(), end = str.end();
+    auto it  = str.begin();
+    auto end = str.end();
 
     while (it != end && std::isspace(static_cast<uint8_t>(*it))) ++it;
     auto start = it;
@@ -185,7 +189,8 @@ inline std::optional<std::variant<uint64_t, int64_t>> parseInt(std::string_view 
     }
     if (s.front() == '-') {
         negative = true;
-        if (s.size() == 1) return std::nullopt;
+        s.remove_prefix(1);
+        if (s.empty()) return std::nullopt;
     }
     int base = 10;
     if (s.size() >= 2 && s[0] == '0') {
@@ -198,19 +203,10 @@ inline std::optional<std::variant<uint64_t, int64_t>> parseInt(std::string_view 
             s.remove_prefix(2);
         }
     }
-    if (negative && base != 10) return std::nullopt;
-    if (base == 10 && negative) {
-        int64_t v      = 0;
-        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), v, 10);
-        if (ec != std::errc{} || ptr != s.data() + s.size()) return std::nullopt;
-        return v;
-    } else {
-        uint64_t v     = 0;
-        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), v, base);
-        if (ec != std::errc{} || ptr != s.data() + s.size()) return std::nullopt;
-        return v;
-    }
-    return std::nullopt;
+    uint64_t v     = 0;
+    auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), v, base);
+    if (ec != std::errc{} || ptr != s.data() + s.size()) { return std::nullopt; }
+    return negative ? -static_cast<int64_t>(v) : v;
 }
 
 template <class R, class T>
@@ -387,11 +383,13 @@ std::optional<int> get_codepoint(std::string_view& s) {
     return codepoint;
 }
 
-std::optional<std::string> parseString(std::string_view& s) {
+std::optional<std::string> parseString(std::string_view& s, bool parseJson) {
     char starts = s.front();
-    if (starts != '\"' && starts != '\''
-        && !(isalnum(starts) || starts == '-' || starts == '+' || starts == '_' || starts == '.')) {
-        return std::nullopt;
+    if (starts != '\"' && starts != '\'') {
+        if (parseJson) { return std::nullopt; }
+        if (!(isalnum(starts) || starts == '-' || starts == '+' || starts == '_' || starts == '.')) {
+            return std::nullopt;
+        }
     }
     std::string res;
     if (starts == '\"' || starts == '\'') {
@@ -693,7 +691,7 @@ std::optional<CompoundTagVariant> parseJsonList(std::string_view& s) {
 }
 
 std::optional<CompoundTagVariant> parseCompound(std::string_view& s, bool parseJson) {
-    get(s);
+    s.remove_prefix(1);
     if (!skipWhitespace(s)) { return std::nullopt; }
     if (s.starts_with('}')) {
         s.remove_prefix(1);
@@ -707,7 +705,7 @@ std::optional<CompoundTagVariant> parseCompound(std::string_view& s, bool parseJ
             if (!skipWhitespace(s)) { return std::nullopt; }
             return res;
         }
-        auto key = parseString(s);
+        auto key = parseString(s, parseJson);
         if (!key) { return std::nullopt; }
         if (!skipWhitespace(s)) { return std::nullopt; }
         auto p = get(s);
@@ -787,7 +785,7 @@ std::optional<CompoundTagVariant> parseSnbtValueNonSkip(std::string_view& s, boo
     default:
         break;
     }
-    return parseString(s);
+    return parseString(s, parseJson);
 }
 
 std::optional<CompoundTagVariant> parseSnbtValue(std::string_view& s, bool parseJson) {
