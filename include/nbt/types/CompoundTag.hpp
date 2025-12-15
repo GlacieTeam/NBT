@@ -151,6 +151,8 @@ public:
 
     [[nodiscard]] NBT_API static std::optional<CompoundTag>
     fromSnbt(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
+    [[nodiscard]] NBT_API static std::optional<CompoundTag>
+    fromJson(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 
     [[nodiscard]] NBT_API static int readHeaderVersion(std::string_view content, bool isLittleEndian = true) noexcept;
 };

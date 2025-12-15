@@ -284,4 +284,12 @@ CompoundTagVariant::parse(std::string_view snbt, std::optional<size_t> parsedLen
     return result;
 }
 
+std::optional<CompoundTagVariant>
+CompoundTagVariant::parseJson(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
+    auto begin{snbt.begin()};
+    auto result = detail::parseSnbtValue(snbt, true);
+    if (parsedLength) { *parsedLength = static_cast<size_t>(snbt.begin() - begin); }
+    return result;
+}
+
 } // namespace nbt

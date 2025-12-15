@@ -398,6 +398,9 @@ public:
 
     [[nodiscard]] NBT_API static std::optional<CompoundTagVariant>
     parse(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
+
+    [[nodiscard]] NBT_API static std::optional<CompoundTagVariant>
+    parseJson(std::string_view snbt, std::optional<size_t> parsedLength = {}) noexcept;
 };
 
 } // namespace nbt

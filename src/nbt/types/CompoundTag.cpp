@@ -295,6 +295,17 @@ std::optional<CompoundTag> CompoundTag::fromSnbt(std::string_view snbt, std::opt
         });
 }
 
+std::optional<CompoundTag> CompoundTag::fromJson(std::string_view snbt, std::optional<size_t> parsedLength) noexcept {
+    return CompoundTagVariant::parseJson(snbt, parsedLength)
+        .and_then([](CompoundTagVariant&& val) -> std::optional<CompoundTag> {
+            if (val.hold<CompoundTag>()) {
+                return std::move(val.as<CompoundTag>());
+            } else {
+                return std::nullopt;
+            }
+        });
+}
+
 int CompoundTag::readHeaderVersion(std::string_view content, bool isLittleEndian) noexcept {
     io::BytesDataInput stream(content, isLittleEndian);
     return stream.getInt();
