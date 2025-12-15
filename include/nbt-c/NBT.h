@@ -46,15 +46,16 @@ enum SNBT_Format {
     SNBT_ALWAYS_LINE_FEED              = 7,
     SNBT_FORCE_LINE_FEED_IGNORE_INDENT = 8,
     SNBT_FORCE_ASCII                   = 16,
-    SNBT_FORCE_QUOTE                   = 32,
-    SNBT_CLASSIC                       = 35,
-    SNBT_FORCE_UPPERCASE               = 64,
-    SNBT_MARK_INT_TAG                  = 128,
-    SNBT_MARK_DOUBLE_TAG               = 256,
-    SNBT_MARK_ALL_TAGS                 = 384,
-    SNBT_COMMENT_MARKS                 = 512,
-    SNBT_JSONIFY                       = 551,
-    SNBT_MARK_SIGNED                   = 1024,
+    SNBT_FORCE_KEY_QUOTE               = 32,
+    SNBT_FORCE_VALUE_QUOTE             = 64,
+    SNBT_FORCE_QUOTE                   = 96,
+    SNBT_CLASSIC                       = 99,
+    SNBT_FORCE_UPPERCASE               = 128,
+    SNBT_MARK_INT_TAG                  = 256,
+    SNBT_MARK_DOUBLE_TAG               = 512,
+    COMMENTS_MARK                      = 1024,
+    SNBT_JSONIFY                       = 1127,
+    MARK_SIGNED                        = 2048,
 };
 
 enum NBT_FileFormat {
@@ -161,6 +162,7 @@ NBT_API nbtio_buffer* nbt_compound_tag_to_network_nbt(void* handle);
 NBT_API void* nbt_compound_tag_from_binary_nbt(const uint8_t* data, size_t size, bool little_endian, bool read_header);
 NBT_API void* nbt_compound_tag_from_network_nbt(const uint8_t* data, size_t size);
 NBT_API void* nbt_compound_tag_from_snbt(const uint8_t* data, size_t size);
+NBT_API void* nbt_compound_tag_from_json(const uint8_t* data, size_t size);
 
 // IntArrayTag
 NBT_API void*  nbt_int_array_tag_create();

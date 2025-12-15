@@ -376,6 +376,13 @@ void* nbt_compound_tag_from_snbt(const uint8_t* data, size_t size) {
     return nullptr;
 }
 
+void* nbt_compound_tag_from_json(const uint8_t* data, size_t size) {
+    std::string_view content(reinterpret_cast<const char*>(data), size);
+    if (auto result = nbt::CompoundTag::fromJson(content)) { return new nbt::CompoundTag(*result); }
+    return nullptr;
+}
+
+
 // IntArrayTag
 void* nbt_int_array_tag_create() { return new nbt::IntArrayTag(); }
 
