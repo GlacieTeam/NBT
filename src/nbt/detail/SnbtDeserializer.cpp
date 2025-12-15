@@ -32,7 +32,7 @@ namespace {
 
 static constexpr auto CHAR_EOF = static_cast<char>(std::char_traits<char>::eof());
 
-bool ignoreComment(std::string_view& s, char first) noexcept {
+bool ignoreComment(std::string_view& s) noexcept {
     size_t i = 0;
     switch (s[i++]) {
     case '*': {
@@ -46,7 +46,6 @@ bool ignoreComment(std::string_view& s, char first) noexcept {
                 case '/':
                     s.remove_prefix(std::min(i + 1, s.size()));
                     return true;
-
                 default:
                     continue;
                 }
@@ -58,20 +57,18 @@ bool ignoreComment(std::string_view& s, char first) noexcept {
         break;
     }
     case '/': {
-        if (first == '/') {
-            while (i < s.size()) {
-                switch (s[i++]) {
-                case CHAR_EOF:
-                case '\0':
-                    return false;
-                case '\r':
-                case '\n': {
-                    s.remove_prefix(std::min(i + 1, s.size()));
-                    return true;
-                }
-                default:
-                    continue;
-                }
+        while (i < s.size()) {
+            switch (s[i++]) {
+            case CHAR_EOF:
+            case '\0':
+                return false;
+            case '\r':
+            case '\n': {
+                s.remove_prefix(std::min(i + 1, s.size()));
+                return true;
+            }
+            default:
+                continue;
             }
         }
         break;
@@ -102,10 +99,9 @@ void scanSpaces(std::string_view& s) noexcept {
 
 bool skipWhitespace(std::string_view& s) {
     scanSpaces(s);
-    while (s.starts_with('/') || s.starts_with('#') || s.starts_with(';')) {
+    while (s.starts_with('/')) {
         s.remove_prefix(1);
-        char first = s.front();
-        if (!ignoreComment(s, first)) { return false; }
+        if (!ignoreComment(s)) { return false; }
         scanSpaces(s);
     }
     return true;
@@ -185,7 +181,7 @@ inline std::optional<std::string> parseNumberStr(std::string_view str, size_t& n
     return result;
 }
 
-inline std::optional<std::string> parseNumberMark(std::string_view& sv) noexcept {
+inline std::string parseNumberMark(std::string_view& sv) noexcept {
     auto first = std::find_if_not(sv.begin(), sv.end(), [](uint8_t c) { return std::isspace(c); });
     if (first == sv.end()) { return {}; }
     auto last   = std::find_if(first, sv.end(), [](uint8_t c) { return c == ',' || c == '}' || c == ']'; });
@@ -195,7 +191,6 @@ inline std::optional<std::string> parseNumberMark(std::string_view& sv) noexcept
     }
     while (std::isspace(result.back())) { result.pop_back(); }
     sv.remove_prefix(static_cast<size_t>(first - sv.begin()));
-    if (!skipWhitespace(sv)) { return std::nullopt; }
     return result;
 }
 
@@ -267,9 +262,7 @@ std::optional<CompoundTagVariant> parseNumber(std::string_view& str, bool parseJ
             return checkRange<DoubleTag, double>(*num);
         }
 
-        auto mark = parseNumberMark(str);
-        if (!mark) { return std::nullopt; }
-        auto& mk = *mark;
+        auto mk = parseNumberMark(str);
         if (mk.empty()) {
             if (isInt) {
                 if (auto tag = checkRange<IntTag, int>(*num)) { return tag; }
@@ -599,7 +592,7 @@ std::optional<LongArrayTag> parseLongArray(std::string_view& s) {
 std::optional<CompoundTagVariant> parseList(std::string_view& s) {
     s.remove_prefix(1);
     scanSpaces(s);
-    if (s.starts_with("/*") && (s.size() > 5 && s[4] == '*' && s[5] == '/')) { s.remove_prefix(4); }
+    if (s.starts_with("/*") && (s.size() > 5 && s[4] == '*' && s[5] == '/')) { s.remove_prefix(2); }
     if (s.starts_with("B;")) {
         s.remove_prefix(2);
         if (s.starts_with("*/")) { s.remove_prefix(2); }
